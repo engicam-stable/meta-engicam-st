@@ -1,0 +1,32 @@
+From c29f82fcd818403c9bdf4defdf2a08317662828d Mon Sep 17 00:00:00 2001
+From: Matteo Lisi <matteo.lisi@engicam.com>
+Date: Thu, 7 Mar 2019 17:02:33 +0100
+Subject: [PATCH 02/10] fix opendrain error on mmc1
+
+---
+ drivers/mmc/host/mmci.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 0b7b60787..8b3089d0d 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -1949,6 +1949,7 @@ static int mmci_probe(struct amba_device *dev,
+ 	host = mmc_priv(mmc);
+ 	host->mmc = mmc;
+ 
++    variant->opendrain=1; //ENG: otherwise error Can't select opendrain pins
+ 	/*
+ 	 * Some variant (STM32) doesn't have opendrain bit, nevertheless
+ 	 * pins can be set accordingly using pinctrl
+@@ -1976,6 +1977,7 @@ static int mmci_probe(struct amba_device *dev,
+ 			ret = PTR_ERR(host->pins_opendrain);
+ 			goto host_free;
+ 		}
++
+ 	}
+ 
+ 	host->hw_designer = amba_manf(dev);
+-- 
+2.17.1
+

@@ -1,0 +1,152 @@
+From a72a215d862818175072e7b21835f6875bc08701 Mon Sep 17 00:00:00 2001
+From: Matteo Lisi <matteo.lisi@engicam.com>
+Date: Fri, 15 Mar 2019 15:13:39 +0100
+Subject: [PATCH 10/10] add /sys/class/thermal/thermal_zone0 support
+
+---
+ arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts | 33 ++++++++++-----------
+ arch/arm/configs/stm32mp1ugea_defconfig     | 20 ++++++++-----
+ 2 files changed, 28 insertions(+), 25 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts b/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
+index 1a77155e4..f5338b88f 100644
+--- a/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
+@@ -785,29 +785,25 @@
+ 
+ 
+ &adc {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&adc12_usb_pwr_pins_a>;
++	/* ANA0, ANA1 are dedicated pins and don't need pinctrl: only in6. */
+ 	vdd-supply = <&vdd>;
+-	vdda-supply = <&vdd>;
+-	vref-supply = <&vrefbuf>;
++	vdda-supply = <&vdda>;
++	vref-supply = <&vdda>;
+ 	status = "okay";
+ 	adc1: adc@0 {
+-		/*
+-		 * Type-C USB_PWR_CC1 & USB_PWR_CC2 on in18 & in19.
+-		 * Use at least 5 * RC time, e.g. 5 * (Rp + Rd) * C:
+-		 * 5 * (56 + 47kOhms) * 5pF => 2.5us.
+-		 * Use arbitrary margin here (e.g. 5µs).
+-		 */
+-		st,min-sample-time-nsecs = <5000>;
+-		/* ANA0, ANA1, USB Type-C CC1 & CC2 */
+-		st,adc-channels = <0 1 18 19>;
++		st,adc-channels = <0 1>;
++		/* 16.5 ck_cycles sampling time */
++		st,min-sample-time-nsecs = <400>;
++		status = "okay";
++	};
++	jadc1: jadc@0 {
++		st,adc-channels = <0 1>;
++		/* 16.5 ck_cycles sampling time */
++		st,min-sample-time-nsecs = <400>;
+ 		status = "okay";
+ 	};
++	/* temperature sensor on adc2 */
+ 	adc2: adc@100 {
+-		/* ANA0, ANA1, temp sensor, USB Type-C CC1 & CC2 */
+-		st,adc-channels = <0 1 12 18 19>;
+-		/* temperature sensor min sample time */
+-		st,min-sample-time-nsecs = <10000>;
+ 		status = "okay";
+ 	};
+ 	adc_temp: temp {
+@@ -815,6 +811,9 @@
+ 	};
+ };
+ 
++&dts {
++	status = "okay";
++};
+ 
+ &pwr {
+ 	status = "okay";
+diff --git a/arch/arm/configs/stm32mp1ugea_defconfig b/arch/arm/configs/stm32mp1ugea_defconfig
+index 904687fca..b0533289e 100644
+--- a/arch/arm/configs/stm32mp1ugea_defconfig
++++ b/arch/arm/configs/stm32mp1ugea_defconfig
+@@ -4,10 +4,10 @@
+ #
+ 
+ #
+-# Compiler: gcc (Ubuntu 7.3.0-16ubuntu3) 7.3.0
++# Compiler: arm-openstlinux_weston-linux-gnueabi-gcc (GCC) 8.2.0
+ #
+ CONFIG_CC_IS_GCC=y
+-CONFIG_GCC_VERSION=70300
++CONFIG_GCC_VERSION=80200
+ CONFIG_CLANG_VERSION=0
+ CONFIG_IRQ_WORK=y
+ CONFIG_BUILDTIME_EXTABLE_SORT=y
+@@ -3474,7 +3474,7 @@ CONFIG_EXYNOS_THERMAL=y
+ # STMicroelectronics thermal drivers
+ #
+ CONFIG_ST_THERMAL=y
+-# CONFIG_ST_THERMAL_SYSCFG is not set
++CONFIG_ST_THERMAL_SYSCFG=y
+ CONFIG_ST_THERMAL_MEMMAP=y
+ CONFIG_STM32_THERMAL=y
+ 
+@@ -3701,7 +3701,7 @@ CONFIG_TWL4030_POWER=y
+ CONFIG_MFD_WM8994=m
+ # CONFIG_MFD_ROHM_BD718XX is not set
+ # CONFIG_MFD_STM32_LPTIMER is not set
+-# CONFIG_MFD_STM32_TIMERS is not set
++CONFIG_MFD_STM32_TIMERS=y
+ CONFIG_MFD_STM32MP1_PWR=y
+ # CONFIG_MFD_STMFX is not set
+ # CONFIG_MFD_STPMIC1 is not set
+@@ -3766,8 +3766,8 @@ CONFIG_REGULATOR_RN5T618=y
+ # CONFIG_REGULATOR_S2MPA01 is not set
+ CONFIG_REGULATOR_S2MPS11=y
+ CONFIG_REGULATOR_S5M8767=y
+-# CONFIG_REGULATOR_STM32_VREFBUF is not set
+-# CONFIG_REGULATOR_STM32_PWR is not set
++CONFIG_REGULATOR_STM32_VREFBUF=y
++CONFIG_REGULATOR_STM32_PWR=y
+ CONFIG_REGULATOR_TI_ABB=y
+ # CONFIG_REGULATOR_SY8106A is not set
+ CONFIG_REGULATOR_TPS51632=y
+@@ -6286,7 +6286,9 @@ CONFIG_MESON_SARADC=y
+ # CONFIG_ROCKCHIP_SARADC is not set
+ # CONFIG_SPEAR_ADC is not set
+ # CONFIG_SD_ADC_MODULATOR is not set
+-# CONFIG_STM32_ADC_CORE is not set
++CONFIG_STM32_ADC_CORE=y
++CONFIG_STM32_ADC=y
++CONFIG_STM32_ADC_TEMP=y
+ # CONFIG_STM32_DFSDM_CORE is not set
+ # CONFIG_STM32_DFSDM_ADC is not set
+ # CONFIG_SUN4I_GPADC is not set
+@@ -6510,6 +6512,7 @@ CONFIG_AK8975=y
+ #
+ CONFIG_IIO_HRTIMER_TRIGGER=y
+ # CONFIG_IIO_INTERRUPT_TRIGGER is not set
++CONFIG_IIO_STM32_TIMER_TRIGGER=y
+ # CONFIG_IIO_TIGHTLOOP_TRIGGER is not set
+ # CONFIG_IIO_SYSFS_TRIGGER is not set
+ 
+@@ -6604,6 +6607,7 @@ CONFIG_PWM_ROCKCHIP=m
+ CONFIG_PWM_SAMSUNG=m
+ # CONFIG_PWM_SPEAR is not set
+ CONFIG_PWM_STI=y
++# CONFIG_PWM_STM32 is not set
+ # CONFIG_PWM_STMPE is not set
+ CONFIG_PWM_SUN4I=y
+ CONFIG_PWM_TEGRA=y
+@@ -6757,7 +6761,7 @@ CONFIG_NVMEM_IMX_OCOTP=y
+ # CONFIG_QCOM_QFPROM is not set
+ # CONFIG_ROCKCHIP_EFUSE is not set
+ CONFIG_NVMEM_BCM_OCOTP=y
+-# CONFIG_NVMEM_STM32_ROMEM is not set
++CONFIG_NVMEM_STM32_ROMEM=y
+ CONFIG_NVMEM_SUNXI_SID=y
+ # CONFIG_UNIPHIER_EFUSE is not set
+ CONFIG_NVMEM_VF610_OCOTP=y
+-- 
+2.17.1
+

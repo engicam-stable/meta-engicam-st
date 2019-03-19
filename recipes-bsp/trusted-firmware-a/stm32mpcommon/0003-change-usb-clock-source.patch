@@ -1,0 +1,49 @@
+From 6289e703fc3591ab3cd502378be9746ea33c674a Mon Sep 17 00:00:00 2001
+From: Matteo Lisi <matteo.lisi@engicam.com>
+Date: Fri, 8 Mar 2019 14:25:45 +0100
+Subject: [PATCH 3/5] change usb clock source
+
+---
+ fdts/stm32mp15-mx.h            | 2 +-
+ fdts/stm32mp157a-ugeast-mx.dts | 5 ++---
+ 2 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/fdts/stm32mp15-mx.h b/fdts/stm32mp15-mx.h
+index 19d048d..0578849 100644
+--- a/fdts/stm32mp15-mx.h
++++ b/fdts/stm32mp15-mx.h
+@@ -14,7 +14,7 @@
+  * Relaxed Timing Mode: false
+  * Address mapping type: RBC
+  *
+- * Save Date: 2019.03.06, save Time: 17:34:08
++ * Save Date: 2019.03.07, save Time: 11:25:13
+  */
+ 
+ #define DDR_MEM_NAME	"DDR3-DDR3L 16bits 528000Khz"
+diff --git a/fdts/stm32mp157a-ugeast-mx.dts b/fdts/stm32mp157a-ugeast-mx.dts
+index bb0e3a4..148db9f 100644
+--- a/fdts/stm32mp157a-ugeast-mx.dts
++++ b/fdts/stm32mp157a-ugeast-mx.dts
+@@ -15,7 +15,6 @@
+ #include "stm32mp15-ddr.dtsi"
+ #include "stm32mp157c-security.dtsi"
+ 
+-
+ /* USER CODE BEGIN includes */
+ /* USER CODE END includes */
+ 
+@@ -187,8 +186,8 @@ clocks {
+         CLK_SPI45_DISABLED
+         CLK_SPI6_DISABLED
+         CLK_I2C46_CSI
+-        CLK_SDMMC3_HCLK2
+-        CLK_USBO_PLL4R
++        CLK_SDMMC3_DISABLED
++        CLK_USBO_USBPHY
+         CLK_ADC_DISABLED
+         CLK_CEC_DISABLED
+         CLK_I2C12_PCLK1
+-- 
+2.17.1
+
