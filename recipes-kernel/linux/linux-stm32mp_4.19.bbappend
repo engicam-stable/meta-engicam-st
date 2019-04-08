@@ -12,5 +12,5 @@ SRC_URI+=" \
             file://0010-add-sys-class-thermal-thermal_zone0-support.patch \
             file://0011-Add-edt-ft5x26-touch-driver.patch \
             file://0012-add-lcd-udev-7p.patch \
-            file://defconfig \
+            file://0013-fix-gpu-section-on-ugea.patch \
         "

@@ -1,7 +1,7 @@
 From 01b6fa8cbbf93ab06443656104b9225c6bbdc458 Mon Sep 17 00:00:00 2001
 From: Matteo Lisi <matteo.lisi@engicam.com>
 Date: Mon, 11 Mar 2019 11:07:01 +0100
-Subject: [PATCH 4/5] add decproct section
+Subject: [PATCH 4/6] add decproct section
 
 ---
  fdts/stm32mp157a-ugeast-mx.dts | 24 ++++++++++++++++++++----

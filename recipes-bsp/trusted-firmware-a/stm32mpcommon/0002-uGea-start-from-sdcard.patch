@@ -1,7 +1,7 @@
 From 61cd4e1f10154e79bc885d29d0814fea3037cefc Mon Sep 17 00:00:00 2001
 From: Matteo Lisi <matteo.lisi@engicam.com>
 Date: Thu, 7 Mar 2019 12:14:17 +0100
-Subject: [PATCH 2/5] uGea start from sdcard
+Subject: [PATCH 2/6] uGea start from sdcard
 
 ---
  fdts/stm32mp15-mx.h            |  38 +--

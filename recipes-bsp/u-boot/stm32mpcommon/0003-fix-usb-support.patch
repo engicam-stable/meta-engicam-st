@@ -1,7 +1,7 @@
 From 58fd0d0578d7bdaf3c35ae20435bbc909b6a1c8c Mon Sep 17 00:00:00 2001
 From: Matteo Lisi <matteo.lisi@engicam.com>
 Date: Mon, 11 Mar 2019 12:00:43 +0100
-Subject: [PATCH 3/3]  fix usb support
+Subject: [PATCH 3/4]  fix usb support
 
 ---
  arch/arm/dts/stm32mp157a-ugeast-mx.dts | 26 ++++++++++++++++++++++++++

@@ -1,7 +1,7 @@
 From 6289e703fc3591ab3cd502378be9746ea33c674a Mon Sep 17 00:00:00 2001
 From: Matteo Lisi <matteo.lisi@engicam.com>
 Date: Fri, 8 Mar 2019 14:25:45 +0100
-Subject: [PATCH 3/5] change usb clock source
+Subject: [PATCH 3/6] change usb clock source
 
 ---
  fdts/stm32mp15-mx.h            | 2 +-

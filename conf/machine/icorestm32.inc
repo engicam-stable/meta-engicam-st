@@ -21,12 +21,6 @@ include conf/machine/include/tune-cortexa7.inc
 BOOTSCHEME_LABELS += "trusted"
 
 # =========================================================================
-# Machine settings
-# =========================================================================
-# Define list of devicetree per board
-STM32MP_DT_FILES_EV += "stm32mp157c-i.corestm32mp1-mx"
-
-# =========================================================================
 # Machine features
 # =========================================================================
 #MACHINE_FEATURES += "bluetooth"
@@ -66,13 +60,7 @@ FLASHLAYOUT_CONFIG_LABELS += "sdcard"
 # M4 copro
 # =========================================================================
 # Define the devicetree for M4 example
-M4_DEVICETREE += "stm32mp157c-i.corestm32mp1-mx-m4-examples"
+M4_DEVICETREE += "stm32mp157c-ev1-m4-examples"
 
 # Define specific board reference to use
 M4_BOARDS = "STM32MP157C-EV1"
-
-# =========================================================================
-# extlinux configuration
-# =========================================================================
-# As example, modify the default boot config for each target to M4 config
-UBOOT_EXTLINUX_DEFAULT_LABEL_mp157c-i.corestm32mp1-mx-m4-examples_sdcard = "stm32mp157c-i.corestm32mp1-mx-m4-examples-sdcard"

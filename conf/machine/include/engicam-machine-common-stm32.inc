@@ -88,11 +88,15 @@ MOUNT_PARTITIONS_LIST += "${STM32MP_VENDORFS_LABEL},${STM32MP_VENDORFS_MOUNTPOIN
 
 # Define image partition size (supposed to be set as max size in image recipe)
 BOOTFS_PARTITION_SIZE = "65536"
+#BOOTFS_PARTITION_SIZE = "16384"
 # New value proposed for rootfs is 768MB
 ROOTFS_PARTITION_SIZE = "768432"
+#ROOTFS_PARTITION_SIZE = "327680"
 # If we consider the highest constraint is NAND size (so < 1GB)
 # Boot binaries 4 MB max (with optee) + bootfs 64 MB max + rootfs 768 MB max + userfs size (4*32MB) < 1024 MB
 USERFS_PARTITION_SIZE = "131072"
+#USERFS_PARTITION_SIZE = "75536"
+
 # New value proposed for vendorfs is 16MB
 VENDORFS_PARTITION_SIZE = "16384"
 

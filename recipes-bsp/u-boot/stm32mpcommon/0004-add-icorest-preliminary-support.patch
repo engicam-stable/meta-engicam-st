@@ -1,49 +1,51 @@
-From 4ef1feb5a749c3710fcca1999d763bf1c87d1f82 Mon Sep 17 00:00:00 2001
+From bddd719400dd52289186c480ff8eafa3451ac604 Mon Sep 17 00:00:00 2001
 From: Matteo Lisi <matteo.lisi@engicam.com>
-Date: Mon, 11 Mar 2019 11:06:13 +0100
-Subject: [PATCH 1/4] start ugea stm32 support
+Date: Tue, 26 Mar 2019 13:57:15 +0100
+Subject: [PATCH 4/4] add icorest preliminary support
 
 ---
- arch/arm/dts/stm32mp15-mx.h                   | 119 +++
- .../arm/dts/stm32mp157a-ugeast-mx-u-boot.dtsi | 223 +++++
- arch/arm/dts/stm32mp157a-ugeast-mx.dts        | 724 ++++++++++++++
- arch/arm/mach-stm32mp/Kconfig                 |  22 +
- board/engicam-st/stm32mp1-ugea/Kconfig        |  20 +
- board/engicam-st/stm32mp1-ugea/MAINTAINERS    |  11 +
- board/engicam-st/stm32mp1-ugea/Makefile       |  13 +
- board/engicam-st/stm32mp1-ugea/README         | 342 +++++++
- board/engicam-st/stm32mp1-ugea/board.c        | 177 ++++
- board/engicam-st/stm32mp1-ugea/cmd_stboard.c  | 145 +++
- board/engicam-st/stm32mp1-ugea/extlinux.conf  |  20 +
- .../stm32mp1-ugea/fit_copro_kernel_dtb.its    | 103 ++
- .../stm32mp1-ugea/fit_kernel_dtb.its          |  82 ++
- board/engicam-st/stm32mp1-ugea/spl.c          |  45 +
- board/engicam-st/stm32mp1-ugea/stm32mp1.c     | 945 ++++++++++++++++++
- configs/stm32mp15_ugeast_trusted_defconfig    | 104 ++
- include/configs/stm32mp1-ugea.h               | 190 ++++
- 17 files changed, 3285 insertions(+)
- create mode 100644 arch/arm/dts/stm32mp15-mx.h
- create mode 100644 arch/arm/dts/stm32mp157a-ugeast-mx-u-boot.dtsi
- create mode 100644 arch/arm/dts/stm32mp157a-ugeast-mx.dts
- create mode 100644 board/engicam-st/stm32mp1-ugea/Kconfig
- create mode 100644 board/engicam-st/stm32mp1-ugea/MAINTAINERS
- create mode 100644 board/engicam-st/stm32mp1-ugea/Makefile
- create mode 100644 board/engicam-st/stm32mp1-ugea/README
- create mode 100644 board/engicam-st/stm32mp1-ugea/board.c
- create mode 100644 board/engicam-st/stm32mp1-ugea/cmd_stboard.c
- create mode 100644 board/engicam-st/stm32mp1-ugea/extlinux.conf
- create mode 100644 board/engicam-st/stm32mp1-ugea/fit_copro_kernel_dtb.its
- create mode 100644 board/engicam-st/stm32mp1-ugea/fit_kernel_dtb.its
- create mode 100644 board/engicam-st/stm32mp1-ugea/spl.c
- create mode 100644 board/engicam-st/stm32mp1-ugea/stm32mp1.c
- create mode 100644 configs/stm32mp15_ugeast_trusted_defconfig
- create mode 100644 include/configs/stm32mp1-ugea.h
+ arch/arm/dts/stm32mp15-icore-mx.h             | 119 +++
+ .../dts/stm32mp157a-icorestm32-mx-u-boot.dtsi | 247 +++++
+ arch/arm/dts/stm32mp157a-icorestm32-mx.dts    | 648 ++++++++++++
+ arch/arm/dts/stm32mp157a-ugeast-mx.dts        |   4 +-
+ arch/arm/mach-stm32mp/Kconfig                 |  21 +
+ board/engicam-st/stm32mp1-icore/Kconfig       |  20 +
+ board/engicam-st/stm32mp1-icore/MAINTAINERS   |  11 +
+ board/engicam-st/stm32mp1-icore/Makefile      |  13 +
+ board/engicam-st/stm32mp1-icore/README        | 342 ++++++
+ board/engicam-st/stm32mp1-icore/board.c       | 177 ++++
+ board/engicam-st/stm32mp1-icore/cmd_stboard.c | 145 +++
+ board/engicam-st/stm32mp1-icore/extlinux.conf |  20 +
+ .../stm32mp1-icore/fit_copro_kernel_dtb.its   | 103 ++
+ .../stm32mp1-icore/fit_kernel_dtb.its         |  82 ++
+ board/engicam-st/stm32mp1-icore/spl.c         |  45 +
+ board/engicam-st/stm32mp1-icore/stm32mp1.c    | 976 ++++++++++++++++++
+ configs/stm32mp15_icorest_trusted_defconfig   | 104 ++
+ drivers/pinctrl/pinctrl-stmfx.c               |   3 +-
+ include/configs/stm32mp1-icore.h              | 190 ++++
+ 19 files changed, 3266 insertions(+), 4 deletions(-)
+ create mode 100644 arch/arm/dts/stm32mp15-icore-mx.h
+ create mode 100644 arch/arm/dts/stm32mp157a-icorestm32-mx-u-boot.dtsi
+ create mode 100644 arch/arm/dts/stm32mp157a-icorestm32-mx.dts
+ create mode 100644 board/engicam-st/stm32mp1-icore/Kconfig
+ create mode 100644 board/engicam-st/stm32mp1-icore/MAINTAINERS
+ create mode 100644 board/engicam-st/stm32mp1-icore/Makefile
+ create mode 100644 board/engicam-st/stm32mp1-icore/README
+ create mode 100644 board/engicam-st/stm32mp1-icore/board.c
+ create mode 100644 board/engicam-st/stm32mp1-icore/cmd_stboard.c
+ create mode 100644 board/engicam-st/stm32mp1-icore/extlinux.conf
+ create mode 100644 board/engicam-st/stm32mp1-icore/fit_copro_kernel_dtb.its
+ create mode 100644 board/engicam-st/stm32mp1-icore/fit_kernel_dtb.its
+ create mode 100644 board/engicam-st/stm32mp1-icore/spl.c
+ create mode 100644 board/engicam-st/stm32mp1-icore/stm32mp1.c
+ create mode 100644 configs/stm32mp15_icorest_trusted_defconfig
+ create mode 100644 include/configs/stm32mp1-icore.h
 
-diff --git a/arch/arm/dts/stm32mp15-mx.h b/arch/arm/dts/stm32mp15-mx.h
+diff --git a/arch/arm/dts/stm32mp15-icore-mx.h b/arch/arm/dts/stm32mp15-icore-mx.h
 new file mode 100644
-index 0000000..0578849
+index 0000000..50f287f
 --- /dev/null
-+++ b/arch/arm/dts/stm32mp15-mx.h
++++ b/arch/arm/dts/stm32mp15-icore-mx.h
 @@ -0,0 +1,119 @@
 +/*
 + * Copyright (C) 2015-2018, STMicroelectronics - All Rights Reserved
@@ -55,20 +57,20 @@ index 0000000..0578849
 +/*
 + * File generated by STMicroelectronics STM32CubeMX DDR Tool for MPUs
 + * DDR type: DDR3 / DDR3L
-+ * DDR width: 16bits
-+ * DDR density: 2Gb
-+ * System frequency: 528000Khz
++ * DDR width: 32bits
++ * DDR density: 4Gb
++ * System frequency: 480000Khz
 + * Relaxed Timing Mode: false
 + * Address mapping type: RBC
 + *
-+ * Save Date: 2019.03.07, save Time: 11:25:13
++ * Save Date: 2019.03.25, save Time: 11:12:22
 + */
 +
-+#define DDR_MEM_NAME	"DDR3-DDR3L 16bits 528000Khz"
-+#define DDR_MEM_SPEED	528000
-+#define DDR_MEM_SIZE	0x10000000
++#define DDR_MEM_NAME	"DDR3-DDR3L 32bits 480000Khz"
++#define DDR_MEM_SPEED	480000
++#define DDR_MEM_SIZE	0x20000000
 +
-+#define DDR_MSTR 0x00041401
++#define DDR_MSTR 0x00040401
 +#define DDR_MRCTRL0 0x00000010
 +#define DDR_MRCTRL1 0x00000000
 +#define DDR_DERATEEN 0x00000000
@@ -78,20 +80,20 @@ index 0000000..0578849
 +#define DDR_HWLPCTL 0x00000000
 +#define DDR_RFSHCTL0 0x00210000
 +#define DDR_RFSHCTL3 0x00000000
-+#define DDR_RFSHTMG 0x0080008A
++#define DDR_RFSHTMG 0x0075007D
 +#define DDR_CRCPARCTL0 0x00000000
-+#define DDR_DRAMTMG0 0x121B2414
-+#define DDR_DRAMTMG1 0x000A041C
-+#define DDR_DRAMTMG2 0x0608090F
++#define DDR_DRAMTMG0 0x12182012
++#define DDR_DRAMTMG1 0x000A0419
++#define DDR_DRAMTMG2 0x0607080F
 +#define DDR_DRAMTMG3 0x0050400C
-+#define DDR_DRAMTMG4 0x08040608
-+#define DDR_DRAMTMG5 0x06060403
++#define DDR_DRAMTMG4 0x07040507
++#define DDR_DRAMTMG5 0x05050403
 +#define DDR_DRAMTMG6 0x02020002
 +#define DDR_DRAMTMG7 0x00000202
 +#define DDR_DRAMTMG8 0x00001005
 +#define DDR_DRAMTMG14 0x000000A0
 +#define DDR_ZQCTL0 0xC2000040
-+#define DDR_DFITMG0 0x02060105
++#define DDR_DFITMG0 0x02050105
 +#define DDR_DFITMG1 0x00000202
 +#define DDR_DFILPCFG0 0x07000000
 +#define DDR_DFIUPD0 0xC0400003
@@ -122,27 +124,27 @@ index 0000000..0578849
 +#define DDR_PCFGQOS1_1 0x00800040
 +#define DDR_PCFGWQOS0_1 0x01100C03
 +#define DDR_PCFGWQOS1_1 0x01000200
-+#define DDR_ADDRMAP1 0x00070707
++#define DDR_ADDRMAP1 0x00080808
 +#define DDR_ADDRMAP2 0x00000000
-+#define DDR_ADDRMAP3 0x1F000000
++#define DDR_ADDRMAP3 0x00000000
 +#define DDR_ADDRMAP4 0x00001F1F
-+#define DDR_ADDRMAP5 0x06060606
-+#define DDR_ADDRMAP6 0x0F0F0606
++#define DDR_ADDRMAP5 0x07070707
++#define DDR_ADDRMAP6 0x0F0F0707
 +#define DDR_ADDRMAP9 0x00000000
 +#define DDR_ADDRMAP10 0x00000000
 +#define DDR_ADDRMAP11 0x00000000
 +#define DDR_PGCR 0x01442E02
-+#define DDR_PTR0 0x0022A41B
-+#define DDR_PTR1 0x047C0740
-+#define DDR_PTR2 0x042D9C80
++#define DDR_PTR0 0x00226698
++#define DDR_PTR1 0x0413A980
++#define DDR_PTR2 0x042D7700
 +#define DDR_ACIOCR 0x10400812
 +#define DDR_DXCCR 0x00000C40
 +#define DDR_DSGCR 0xF200001F
 +#define DDR_DCR 0x0000000B
-+#define DDR_DTPR0 0x38D488D0
-+#define DDR_DTPR1 0x098A00D8
-+#define DDR_DTPR2 0x10023600
-+#define DDR_MR0 0x00000840
++#define DDR_DTPR0 0x32B277D0
++#define DDR_DTPR1 0x097D00C0
++#define DDR_DTPR2 0x10023200
++#define DDR_MR0 0x00000830
 +#define DDR_MR1 0x00000000
 +#define DDR_MR2 0x00000208
 +#define DDR_MR3 0x00000000
@@ -156,20 +158,20 @@ index 0000000..0578849
 +#define DDR_DX1DLLCR 0x40000000
 +#define DDR_DX1DQTR 0xFFFFFFFF
 +#define DDR_DX1DQSTR 0x3DB02000
-+#define DDR_DX2GCR 0x00000000
-+#define DDR_DX2DLLCR 0x00000000
-+#define DDR_DX2DQTR 0x00000000
-+#define DDR_DX2DQSTR 0x00000000
-+#define DDR_DX3GCR 0x00000000
-+#define DDR_DX3DLLCR 0x00000000
-+#define DDR_DX3DQTR 0x00000000
-+#define DDR_DX3DQSTR 0x00000000
-diff --git a/arch/arm/dts/stm32mp157a-ugeast-mx-u-boot.dtsi b/arch/arm/dts/stm32mp157a-ugeast-mx-u-boot.dtsi
++#define DDR_DX2GCR 0x0000CE81
++#define DDR_DX2DLLCR 0x40000000
++#define DDR_DX2DQTR 0xFFFFFFFF
++#define DDR_DX2DQSTR 0x3DB02000
++#define DDR_DX3GCR 0x0000CE81
++#define DDR_DX3DLLCR 0x40000000
++#define DDR_DX3DQTR 0xFFFFFFFF
++#define DDR_DX3DQSTR 0x3DB02000
+diff --git a/arch/arm/dts/stm32mp157a-icorestm32-mx-u-boot.dtsi b/arch/arm/dts/stm32mp157a-icorestm32-mx-u-boot.dtsi
 new file mode 100644
-index 0000000..765d83c
+index 0000000..613e3af
 --- /dev/null
-+++ b/arch/arm/dts/stm32mp157a-ugeast-mx-u-boot.dtsi
-@@ -0,0 +1,223 @@
++++ b/arch/arm/dts/stm32mp157a-icorestm32-mx-u-boot.dtsi
+@@ -0,0 +1,247 @@
 +/* SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause*/
 +/*
 + * Copyright (C) 2019, STMicroelectronics - All Rights Reserved
@@ -194,6 +196,11 @@ index 0000000..765d83c
 +    /* USER CODE BEGIN clocks */
 +    /* USER CODE END clocks */
 +
++    clk_lsi: clk-lsi {
++        /* USER CODE BEGIN clocks */
++        /* USER CODE END clocks */
++        u-boot,dm-pre-reloc;
++    };
 +    clk_hsi: clk-hsi {
 +        /* USER CODE BEGIN clocks */
 +        /* USER CODE END clocks */
@@ -202,12 +209,6 @@ index 0000000..765d83c
 +    clk_csi: clk-csi {
 +        /* USER CODE BEGIN clocks */
 +        /* USER CODE END clocks */
-+        u-boot,dm-pre-reloc;
-+    };
-+    clk_lse: clk-lse {
-+        /* USER CODE BEGIN clocks */
-+        /* USER CODE END clocks */
-+        st,drive=<LSEDRV_MEDIUM_HIGH>;
 +        u-boot,dm-pre-reloc;
 +    };
 +    clk_hse: clk-hse {
@@ -272,33 +273,33 @@ index 0000000..765d83c
 +    u-boot,dm-pre-reloc;
 +    st,clksrc = <
 +        CLK_MPU_PLL1P
-+        CLK_AXI_PLL2P
-+        CLK_MCU_HSI
++        CLK_AXI_HSI
++        CLK_MCU_PLL3P
 +        CLK_PLL12_HSI
 +        CLK_PLL3_HSI
-+        CLK_PLL4_HSE
-+        CLK_RTC_LSE
++        CLK_PLL4_HSI
++        CLK_RTC_LSI
 +        CLK_MCO1_DISABLED
 +        CLK_MCO2_DISABLED
 +    >;
 +    st,clkdiv = <
 +        1         /*MPU*/
-+        1         /*AXI*/
++        0         /*AXI*/
 +        0         /*MCU*/
-+        0         /*APB1*/
-+        0         /*APB2*/
-+        0         /*APB3*/
-+        1         /*APB4*/
-+        1         /*APB5*/
++        1         /*APB1*/
++        1         /*APB2*/
++        1         /*APB3*/
++        0         /*APB4*/
++        0         /*APB5*/
 +        0         /*RTC*/
 +        0         /*MCO1*/
 +        0         /*MCO2*/
 +    >;
 +    st,pkcs = <
-+        CLK_CKPER_DISABLED
++        CLK_CKPER_HSI
 +        CLK_FMC_ACLK
-+        CLK_ETH_PLL4P
-+        CLK_SDMMC12_HSI
++        CLK_ETH_PLL3Q
++        CLK_SDMMC12_HCLK6
 +        CLK_STGEN_HSI
 +        CLK_USBPHY_HSE
 +        CLK_SPI2S1_DISABLED
@@ -307,20 +308,20 @@ index 0000000..765d83c
 +        CLK_SPI6_DISABLED
 +        CLK_I2C46_CSI
 +        CLK_SDMMC3_DISABLED
-+        CLK_USBO_PLL4R
++        CLK_USBO_USBPHY
 +        CLK_ADC_DISABLED
 +        CLK_CEC_DISABLED
 +        CLK_I2C12_PCLK1
 +        CLK_I2C35_DISABLED
-+        CLK_UART1_PCLK5
-+        CLK_UART24_HSE
-+        CLK_UART35_PCLK1
-+        CLK_UART6_PCLK2
++        CLK_UART1_DISABLED
++        CLK_UART24_PCLK1
++        CLK_UART35_DISABLED
++        CLK_UART6_DISABLED
 +        CLK_UART78_DISABLED
-+        CLK_SPDIF_PLL4P
++        CLK_SPDIF_DISABLED
 +        CLK_FDCAN_HSE
 +        CLK_SAI1_DISABLED
-+        CLK_SAI2_SPDIF
++        CLK_SAI2_CKPER
 +        CLK_SAI3_DISABLED
 +        CLK_SAI4_DISABLED
 +        CLK_LPTIM1_DISABLED
@@ -332,11 +333,15 @@ index 0000000..765d83c
 +        u-boot,dm-pre-reloc;
 +    };
 +    pll2:st,pll@1 {
-+        cfg = < 3 32 1 0 0 7>;
++        cfg = < 3 29 1 0 0 6>;
++        u-boot,dm-pre-reloc;
++    };
++    pll3:st,pll@2 {
++        cfg = < 3 24 1 7 1 3>;
 +        u-boot,dm-pre-reloc;
 +    };
 +    pll4:st,pll@3 {
-+        cfg = < 1 49 11 10 1 7>;
++        cfg = < 3 24 1 4 0 2>;
 +        u-boot,dm-pre-reloc;
 +    };
 +};
@@ -346,6 +351,13 @@ index 0000000..765d83c
 +
 +    /* USER CODE BEGIN fmc */
 +    /* USER CODE END fmc */
++};
++
++&ltdc{
++    u-boot,dm-pre-reloc;
++
++    /* USER CODE BEGIN ltdc */
++    /* USER CODE END ltdc */
 +};
 +
 +&rcc{
@@ -362,6 +374,13 @@ index 0000000..765d83c
 +    /* USER CODE END sdmmc1 */
 +};
 +
++&sdmmc2{
++    u-boot,dm-pre-reloc;
++
++    /* USER CODE BEGIN sdmmc2 */
++    /* USER CODE END sdmmc2 */
++};
++
 +&uart4{
 +    u-boot,dm-pre-reloc;
 +
@@ -369,36 +388,43 @@ index 0000000..765d83c
 +    /* USER CODE END uart4 */
 +};
 +
-+&usart1{
++&usbotg_hs{
 +    u-boot,dm-pre-reloc;
 +
-+    /* USER CODE BEGIN usart1 */
-+    /* USER CODE END usart1 */
++    /* USER CODE BEGIN usbotg_hs */
++    /* USER CODE END usbotg_hs */
 +};
 +
-+&usart3{
++&usbphyc{
 +    u-boot,dm-pre-reloc;
 +
-+    /* USER CODE BEGIN usart3 */
-+    /* USER CODE END usart3 */
++    /* USER CODE BEGIN usbphyc */
++    /* USER CODE END usbphyc */
 +};
 +
-+&usart6{
++&usbphyc_port0{
 +    u-boot,dm-pre-reloc;
 +
-+    /* USER CODE BEGIN usart6 */
-+    /* USER CODE END usart6 */
++    /* USER CODE BEGIN usbphyc_port0 */
++    /* USER CODE END usbphyc_port0 */
++};
++
++&usbphyc_port1{
++    u-boot,dm-pre-reloc;
++
++    /* USER CODE BEGIN usbphyc_port1 */
++    /* USER CODE END usbphyc_port1 */
 +};
 +
 +/* USER CODE BEGIN addons */
 +/* USER CODE END addons */
 +
-diff --git a/arch/arm/dts/stm32mp157a-ugeast-mx.dts b/arch/arm/dts/stm32mp157a-ugeast-mx.dts
+diff --git a/arch/arm/dts/stm32mp157a-icorestm32-mx.dts b/arch/arm/dts/stm32mp157a-icorestm32-mx.dts
 new file mode 100644
-index 0000000..f980e68
+index 0000000..ecec359
 --- /dev/null
-+++ b/arch/arm/dts/stm32mp157a-ugeast-mx.dts
-@@ -0,0 +1,724 @@
++++ b/arch/arm/dts/stm32mp157a-icorestm32-mx.dts
+@@ -0,0 +1,648 @@
 +/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
 +/*
 + * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
@@ -408,17 +434,22 @@ index 0000000..f980e68
 +/dts-v1/;
 +#include "stm32mp157c.dtsi"
 +#include "stm32mp157c-m4-srm.dtsi"
-+#include "stm32mp157cac-pinctrl.dtsi"
++#include "stm32mp157caa-pinctrl.dtsi"
++#include <dt-bindings/gpio/gpio.h>
 +
 +/* USER CODE BEGIN includes */
 +/* USER CODE END includes */
 +
 +/ {
 +	model = "STMicroelectronics custom STM32CubeMX board";
-+	compatible = "st,stm32mp157a-ugeast-mx", "st,stm32mp157";
-+
++	compatible = "st,stm32mp157a-icorestm32-mx", "st,stm32mp157";
++#if 0
++    config {
++            st,reset-phy-gpios = <&gpiod 10 GPIO_ACTIVE_LOW>;
++    };
++#endif
 +    memory@c0000000 {
-+        reg = <0xc0000000 0x10000000>;
++        reg = <0xc0000000 0x20000000>;
 +
 +        /* USER CODE BEGIN memory */
 +        /* USER CODE END memory */
@@ -432,8 +463,8 @@ index 0000000..f980e68
 +        /* USER CODE BEGIN reserved-memory */
 +        /* USER CODE END reserved-memory */
 +
-+        gpu_reserved: gpu@ce000000 {
-+            reg = <0xce000000 0x2000000>;
++        gpu_reserved: gpu@dc000000 {
++            reg = <0xdc000000 0x4000000>;
 +            no-map;
 +        };
 +    };
@@ -453,14 +484,14 @@ index 0000000..f980e68
 +        /* USER CODE BEGIN clocks */
 +        /* USER CODE END clocks */
 +
++        clk_lsi: clk-lsi {
++            clock-frequency = <32000>;
++        };
 +        clk_hsi: clk-hsi {
 +            clock-frequency = <64000000>;
 +        };
 +        clk_csi: clk-csi {
 +            clock-frequency = <4000000>;
-+        };
-+        clk_lse: clk-lse {
-+            clock-frequency = <32768>;
 +        };
 +        clk_hse: clk-hse {
 +            clock-frequency = <24000000>;
@@ -472,41 +503,40 @@ index 0000000..f980e68
 +&pinctrl {
 +    u-boot,dm-pre-reloc;
 +    eth1_pins_mx: eth1_mx-0 {
-+        pins1 {
-+            pinmux = <STM32_PINMUX('A', 1, AF0)>, /* ETH1_CLK */
-+                     <STM32_PINMUX('C', 1, AF11)>, /* ETH1_MDC */
-+                     <STM32_PINMUX('G', 13, AF11)>, /* ETH1_TXD0 */
-+                     <STM32_PINMUX('G', 14, AF11)>; /* ETH1_TXD1 */
-+            bias-disable;
-+            drive-push-pull;
-+            slew-rate = <1>;
-+        };
-+        pins2 {
-+            pinmux = <STM32_PINMUX('A', 2, AF11)>; /* ETH1_MDIO */
-+            bias-disable;
-+            drive-push-pull;
-+            slew-rate = <0>;
-+        };
-+        pins3 {
-+            pinmux = <STM32_PINMUX('A', 7, AF11)>, /* ETH1_CRS_DV */
-+                     <STM32_PINMUX('C', 4, AF11)>, /* ETH1_RXD0 */
-+                     <STM32_PINMUX('C', 5, AF11)>; /* ETH1_RXD1 */
-+            bias-disable;
-+        };
-+        pins4 {
-+            pinmux = <STM32_PINMUX('B', 11, AF11)>; /* ETH1_TX_EN */
-+        };
++				pins-1 {
++					pinmux =  <STM32_PINMUX('A', 1, AF0)>, /* ETH_CLK */
++						 <STM32_PINMUX('A', 2, AF11)>, /* ETH_MDIO */
++						 <STM32_PINMUX('C', 1, AF11)>, /* ETH_MDC */
++						 <STM32_PINMUX('A', 7, AF11)>, /* ETH_RX_DV */
++						 <STM32_PINMUX('B', 11, AF11)>, /* ETH_TX_EN */
++						 <STM32_PINMUX('C', 4, AF11)>, /* ETH_RX_D0 */
++						 <STM32_PINMUX('C', 5, AF11)>, /* ETH_RX_D1 */
++						 <STM32_PINMUX('G', 13, AF11)>, /* ETH_TX_D0 */
++						 <STM32_PINMUX('G', 14, AF11)>, /* ETH_TX_D1 */						 
++						 <STM32_PINMUX('D', 10, GPIO)>;
++					bias-disable;
++					drive-push-pull;
++					slew-rate = <3>;
++				};
++				pins-2 {
++                    pinmux = <STM32_PINMUX('D', 10, GPIO)>;
++                    bias-pull-up;
++                    drive-push-pull;
++                    output-low;
++                    slew-rate = <0>;				
++				};
 +    };
++
 +    fdcan1_pins_mx: fdcan1_mx-0 {
 +        pins1 {
-+            pinmux = <STM32_PINMUX('I', 9, AF9)>; /* FDCAN1_RX */
-+            bias-disable;
-+        };
-+        pins2 {
-+            pinmux = <STM32_PINMUX('B', 9, AF9)>; /* FDCAN1_TX */
++            pinmux = <STM32_PINMUX('H', 13, AF9)>; /* FDCAN1_TX */
 +            bias-disable;
 +            drive-push-pull;
 +            slew-rate = <0>;
++        };
++        pins2 {
++            pinmux = <STM32_PINMUX('H', 14, AF9)>; /* FDCAN1_RX */
++            bias-disable;
 +        };
 +    };
 +    fmc_pins_mx: fmc_mx-0 {
@@ -554,57 +584,23 @@ index 0000000..f980e68
 +            slew-rate = <0>;
 +        };
 +    };
-+    ltdc_pins_mx: ltdc_mx-0 {
-+        pins1 {
-+            pinmux = <STM32_PINMUX('A', 3, AF9)>, /* LTDC_B2 */
-+                     <STM32_PINMUX('A', 4, AF14)>, /* LTDC_VSYNC */
-+                     <STM32_PINMUX('A', 8, AF14)>, /* LTDC_R6 */
-+                     <STM32_PINMUX('A', 9, AF14)>, /* LTDC_R5 */
-+                     <STM32_PINMUX('A', 15, AF14)>, /* LTDC_R1 */
-+                     <STM32_PINMUX('D', 10, AF14)>, /* LTDC_B3 */
-+                     <STM32_PINMUX('E', 4, AF14)>, /* LTDC_B0 */
-+                     <STM32_PINMUX('E', 5, AF14)>, /* LTDC_G0 */
-+                     <STM32_PINMUX('E', 6, AF14)>, /* LTDC_G1 */
-+                     <STM32_PINMUX('F', 10, AF14)>, /* LTDC_DE */
-+                     <STM32_PINMUX('G', 6, AF14)>, /* LTDC_R7 */
-+                     <STM32_PINMUX('G', 12, AF14)>, /* LTDC_B1 */
-+                     <STM32_PINMUX('H', 2, AF14)>, /* LTDC_R0 */
-+                     <STM32_PINMUX('H', 8, AF14)>, /* LTDC_R2 */
-+                     <STM32_PINMUX('H', 9, AF14)>, /* LTDC_R3 */
-+                     <STM32_PINMUX('H', 10, AF14)>, /* LTDC_R4 */
-+                     <STM32_PINMUX('H', 13, AF14)>, /* LTDC_G2 */
-+                     <STM32_PINMUX('H', 14, AF14)>, /* LTDC_G3 */
-+                     <STM32_PINMUX('H', 15, AF14)>, /* LTDC_G4 */
-+                     <STM32_PINMUX('I', 0, AF14)>, /* LTDC_G5 */
-+                     <STM32_PINMUX('I', 1, AF14)>, /* LTDC_G6 */
-+                     <STM32_PINMUX('I', 2, AF14)>, /* LTDC_G7 */
-+                     <STM32_PINMUX('I', 4, AF14)>, /* LTDC_B4 */
-+                     <STM32_PINMUX('I', 5, AF14)>, /* LTDC_B5 */
-+                     <STM32_PINMUX('I', 6, AF14)>, /* LTDC_B6 */
-+                     <STM32_PINMUX('I', 7, AF14)>, /* LTDC_B7 */
-+                     <STM32_PINMUX('I', 10, AF14)>; /* LTDC_HSYNC */
++    sai2a_pins_mx: sai2a_mx-0 {
++        pins {
++            pinmux = <STM32_PINMUX('E', 0, AF10)>, /* SAI2_MCLK_A */
++                     <STM32_PINMUX('I', 5, AF10)>, /* SAI2_SCK_A */
++                     <STM32_PINMUX('I', 6, AF10)>, /* SAI2_SD_A */
++                     <STM32_PINMUX('I', 7, AF10)>; /* SAI2_FS_A */
 +            bias-disable;
 +            drive-push-pull;
 +            slew-rate = <0>;
 +        };
-+        pins2 {
-+            pinmux = <STM32_PINMUX('G', 7, AF14)>; /* LTDC_CLK */
-+            bias-disable;
-+            drive-push-pull;
-+            slew-rate = <1>;
-+        };
-+    };
-+    rtc_pins_mx: rtc_mx-0 {
-+        pins {
-+            pinmux = <STM32_PINMUX('I', 8, ANALOG)>; /* RTC_LSCO */
-+        };
 +    };
 +    sai2b_pins_mx: sai2b_mx-0 {
 +        pins {
-+            pinmux = <STM32_PINMUX('E', 11, AF10)>, /* SAI2_SD_B */
-+                     <STM32_PINMUX('E', 12, AF10)>, /* SAI2_SCK_B */
-+                     <STM32_PINMUX('E', 13, AF10)>, /* SAI2_FS_B */
-+                     <STM32_PINMUX('E', 14, AF10)>; /* SAI2_MCLK_B */
++            pinmux = <STM32_PINMUX('C', 0, AF8)>, /* SAI2_FS_B */
++                     <STM32_PINMUX('E', 6, AF10)>, /* SAI2_MCLK_B */
++                     <STM32_PINMUX('F', 11, AF10)>, /* SAI2_SD_B */
++                     <STM32_PINMUX('H', 2, AF10)>; /* SAI2_SCK_B */
 +            bias-disable;
 +            drive-push-pull;
 +            slew-rate = <0>;
@@ -612,25 +608,56 @@ index 0000000..f980e68
 +    };
 +    sdmmc1_pins_mx: sdmmc1_mx-0 {
 +        u-boot,dm-pre-reloc;
-+        pins {
++        pins1 {
 +            u-boot,dm-pre-reloc;
 +            pinmux = <STM32_PINMUX('C', 8, AF12)>, /* SDMMC1_D0 */
 +                     <STM32_PINMUX('C', 9, AF12)>, /* SDMMC1_D1 */
 +                     <STM32_PINMUX('C', 10, AF12)>, /* SDMMC1_D2 */
 +                     <STM32_PINMUX('C', 11, AF12)>, /* SDMMC1_D3 */
-+                     <STM32_PINMUX('C', 12, AF12)>, /* SDMMC1_CK */
 +                     <STM32_PINMUX('D', 2, AF12)>; /* SDMMC1_CMD */
-+            bias-pull-up;
++            bias-disable;
++            drive-push-pull;
++            slew-rate = <1>;
++        };
++        pins2 {
++            u-boot,dm-pre-reloc;
++            pinmux = <STM32_PINMUX('C', 12, AF12)>; /* SDMMC1_CK */
++            bias-disable;
 +            drive-push-pull;
 +            slew-rate = <3>;
 +        };
 +    };
-+    
++    sdmmc2_pins_mx: sdmmc2_mx-0 {
++        u-boot,dm-pre-reloc;
++        pins1 {
++            u-boot,dm-pre-reloc;
++            pinmux = <STM32_PINMUX('A', 8, AF9)>, /* SDMMC2_D4 */
++                     <STM32_PINMUX('A', 9, AF10)>, /* SDMMC2_D5 */
++                     <STM32_PINMUX('B', 3, AF9)>, /* SDMMC2_D2 */
++                     <STM32_PINMUX('B', 4, AF9)>, /* SDMMC2_D3 */
++                     <STM32_PINMUX('B', 14, AF9)>, /* SDMMC2_D0 */
++                     <STM32_PINMUX('B', 15, AF9)>, /* SDMMC2_D1 */
++                     <STM32_PINMUX('D', 3, AF9)>, /* SDMMC2_D7 */
++                     <STM32_PINMUX('E', 5, AF9)>, /* SDMMC2_D6 */
++                     <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
++            bias-disable;
++            drive-push-pull;
++            slew-rate = <1>;
++        };
++        pins2 {
++            u-boot,dm-pre-reloc;
++            pinmux = <STM32_PINMUX('E', 3, AF9)>; /* SDMMC2_CK */
++            bias-disable;
++            drive-push-pull;
++            slew-rate = <3>;
++        };
++    };
 +    uart4_pins_mx: uart4_mx-0 {
 +        u-boot,dm-pre-reloc;
 +        pins1 {
 +            u-boot,dm-pre-reloc;
-+            pinmux = <STM32_PINMUX('G', 11, AF6)>; /* UART4_TX */
++            pinmux = <STM32_PINMUX('G', 11, AF6)>, /* UART4_TX */
++                     <STM32_PINMUX('D', 10, GPIO)>;
 +            bias-disable;
 +            drive-push-pull;
 +            slew-rate = <0>;
@@ -639,56 +666,6 @@ index 0000000..f980e68
 +            u-boot,dm-pre-reloc;
 +            pinmux = <STM32_PINMUX('B', 2, AF8)>; /* UART4_RX */
 +            bias-disable;
-+        };
-+    };
-+    usart1_pins_mx: usart1_mx-0 {
-+        u-boot,dm-pre-reloc;
-+        pins1 {
-+            u-boot,dm-pre-reloc;
-+            pinmux = <STM32_PINMUX('B', 15, AF4)>; /* USART1_RX */
-+            bias-disable;
-+        };
-+        pins2 {
-+            u-boot,dm-pre-reloc;
-+            pinmux = <STM32_PINMUX('B', 14, AF4)>; /* USART1_TX */
-+            bias-disable;
-+            drive-push-pull;
-+            slew-rate = <0>;
-+        };
-+    };
-+    usart3_pins_mx: usart3_mx-0 {
-+        u-boot,dm-pre-reloc;
-+        pins1 {
-+            u-boot,dm-pre-reloc;
-+            pinmux = <STM32_PINMUX('B', 12, AF8)>; /* USART3_RX */
-+            bias-disable;
-+        };
-+        pins2 {
-+            u-boot,dm-pre-reloc;
-+            pinmux = <STM32_PINMUX('B', 10, AF7)>; /* USART3_TX */
-+            bias-disable;
-+            drive-push-pull;
-+            slew-rate = <0>;
-+        };
-+    };
-+    usart6_pins_mx: usart6_mx-0 {
-+        u-boot,dm-pre-reloc;
-+        pins1 {
-+            u-boot,dm-pre-reloc;
-+            pinmux = <STM32_PINMUX('C', 7, AF7)>; /* USART6_RX */
-+            bias-disable;
-+        };
-+        pins2 {
-+            u-boot,dm-pre-reloc;
-+            pinmux = <STM32_PINMUX('C', 6, AF7)>; /* USART6_TX */
-+            bias-disable;
-+            drive-push-pull;
-+            slew-rate = <0>;
-+        };
-+    };
-+    usb_otg_hs_pins_mx: usb_otg_hs_mx-0 {
-+        pins {
-+            pinmux = <STM32_PINMUX('A', 10, ANALOG)>; /* USB_OTG_HS_ID */
 +        };
 +    };
 +    eth1_sleep_pins_mx: eth1_sleep_mx-0 {
@@ -700,42 +677,17 @@ index 0000000..f980e68
 +                     <STM32_PINMUX('C', 1, ANALOG)>, /* ETH1_MDC */
 +                     <STM32_PINMUX('C', 4, ANALOG)>, /* ETH1_RXD0 */
 +                     <STM32_PINMUX('C', 5, ANALOG)>, /* ETH1_RXD1 */
++                     <STM32_PINMUX('G', 8, ANALOG)>, /* ETH1_PPS_OUT */
 +                     <STM32_PINMUX('G', 13, ANALOG)>, /* ETH1_TXD0 */
 +                     <STM32_PINMUX('G', 14, ANALOG)>; /* ETH1_TXD1 */
 +        };
 +    };
 +    fdcan1_sleep_pins_mx: fdcan1_sleep_mx-0 {
 +        pins {
-+            pinmux = <STM32_PINMUX('B', 9, ANALOG)>, /* FDCAN1_TX */
-+                     <STM32_PINMUX('I', 9, ANALOG)>; /* FDCAN1_RX */
++            pinmux = <STM32_PINMUX('H', 13, ANALOG)>, /* FDCAN1_TX */
++                     <STM32_PINMUX('H', 14, ANALOG)>; /* FDCAN1_RX */
 +        };
 +    };
-+    
-+    fmc_pins_a: fmc-0 {
-+        pins1 {
-+            pinmux = <STM32_PINMUX('D', 4, AF12)>, /* FMC_NOE */
-+                    <STM32_PINMUX('D', 5, AF12)>, /* FMC_NWE */
-+                    <STM32_PINMUX('D', 11, AF12)>, /* FMC_A16_FMC_CLE */
-+                    <STM32_PINMUX('D', 12, AF12)>, /* FMC_A17_FMC_ALE */
-+                    <STM32_PINMUX('D', 14, AF12)>, /* FMC_D0 */
-+                    <STM32_PINMUX('D', 15, AF12)>, /* FMC_D1 */
-+                    <STM32_PINMUX('D', 0, AF12)>, /* FMC_D2 */
-+                    <STM32_PINMUX('D', 1, AF12)>, /* FMC_D3 */
-+                    <STM32_PINMUX('E', 7, AF12)>, /* FMC_D4 */
-+                    <STM32_PINMUX('E', 8, AF12)>, /* FMC_D5 */
-+                    <STM32_PINMUX('E', 9, AF12)>, /* FMC_D6 */
-+                    <STM32_PINMUX('E', 10, AF12)>, /* FMC_D7 */
-+                    <STM32_PINMUX('G', 9, AF12)>; /* FMC_NE2_FMC_NCE */
-+            bias-disable;
-+            drive-push-pull;
-+            slew-rate = <1>;
-+        };
-+        pins2 {
-+            pinmux = <STM32_PINMUX('D', 6, AF12)>; /* FMC_NWAIT */
-+            bias-pull-up;
-+        };
-+    };
-+    
 +    fmc_sleep_pins_mx: fmc_sleep_mx-0 {
 +        u-boot,dm-pre-reloc;
 +        pins {
@@ -768,49 +720,20 @@ index 0000000..f980e68
 +                     <STM32_PINMUX('H', 12, ANALOG)>; /* I2C4_SDA */
 +        };
 +    };
-+    ltdc_sleep_pins_mx: ltdc_sleep_mx-0 {
++    sai2a_sleep_pins_mx: sai2a_sleep_mx-0 {
 +        pins {
-+            pinmux = <STM32_PINMUX('A', 3, ANALOG)>, /* LTDC_B2 */
-+                     <STM32_PINMUX('A', 4, ANALOG)>, /* LTDC_VSYNC */
-+                     <STM32_PINMUX('A', 8, ANALOG)>, /* LTDC_R6 */
-+                     <STM32_PINMUX('A', 9, ANALOG)>, /* LTDC_R5 */
-+                     <STM32_PINMUX('A', 15, ANALOG)>, /* LTDC_R1 */
-+                     <STM32_PINMUX('D', 10, ANALOG)>, /* LTDC_B3 */
-+                     <STM32_PINMUX('E', 4, ANALOG)>, /* LTDC_B0 */
-+                     <STM32_PINMUX('E', 5, ANALOG)>, /* LTDC_G0 */
-+                     <STM32_PINMUX('E', 6, ANALOG)>, /* LTDC_G1 */
-+                     <STM32_PINMUX('F', 10, ANALOG)>, /* LTDC_DE */
-+                     <STM32_PINMUX('G', 6, ANALOG)>, /* LTDC_R7 */
-+                     <STM32_PINMUX('G', 7, ANALOG)>, /* LTDC_CLK */
-+                     <STM32_PINMUX('G', 12, ANALOG)>, /* LTDC_B1 */
-+                     <STM32_PINMUX('H', 2, ANALOG)>, /* LTDC_R0 */
-+                     <STM32_PINMUX('H', 8, ANALOG)>, /* LTDC_R2 */
-+                     <STM32_PINMUX('H', 9, ANALOG)>, /* LTDC_R3 */
-+                     <STM32_PINMUX('H', 10, ANALOG)>, /* LTDC_R4 */
-+                     <STM32_PINMUX('H', 13, ANALOG)>, /* LTDC_G2 */
-+                     <STM32_PINMUX('H', 14, ANALOG)>, /* LTDC_G3 */
-+                     <STM32_PINMUX('H', 15, ANALOG)>, /* LTDC_G4 */
-+                     <STM32_PINMUX('I', 0, ANALOG)>, /* LTDC_G5 */
-+                     <STM32_PINMUX('I', 1, ANALOG)>, /* LTDC_G6 */
-+                     <STM32_PINMUX('I', 2, ANALOG)>, /* LTDC_G7 */
-+                     <STM32_PINMUX('I', 4, ANALOG)>, /* LTDC_B4 */
-+                     <STM32_PINMUX('I', 5, ANALOG)>, /* LTDC_B5 */
-+                     <STM32_PINMUX('I', 6, ANALOG)>, /* LTDC_B6 */
-+                     <STM32_PINMUX('I', 7, ANALOG)>, /* LTDC_B7 */
-+                     <STM32_PINMUX('I', 10, ANALOG)>; /* LTDC_HSYNC */
-+        };
-+    };
-+    rtc_sleep_pins_mx: rtc_sleep_mx-0 {
-+        pins {
-+            pinmux = <STM32_PINMUX('I', 8, ANALOG)>; /* RTC_LSCO */
++            pinmux = <STM32_PINMUX('E', 0, ANALOG)>, /* SAI2_MCLK_A */
++                     <STM32_PINMUX('I', 5, ANALOG)>, /* SAI2_SCK_A */
++                     <STM32_PINMUX('I', 6, ANALOG)>, /* SAI2_SD_A */
++                     <STM32_PINMUX('I', 7, ANALOG)>; /* SAI2_FS_A */
 +        };
 +    };
 +    sai2b_sleep_pins_mx: sai2b_sleep_mx-0 {
 +        pins {
-+            pinmux = <STM32_PINMUX('E', 11, ANALOG)>, /* SAI2_SD_B */
-+                     <STM32_PINMUX('E', 12, ANALOG)>, /* SAI2_SCK_B */
-+                     <STM32_PINMUX('E', 13, ANALOG)>, /* SAI2_FS_B */
-+                     <STM32_PINMUX('E', 14, ANALOG)>; /* SAI2_MCLK_B */
++            pinmux = <STM32_PINMUX('C', 0, ANALOG)>, /* SAI2_FS_B */
++                     <STM32_PINMUX('E', 6, ANALOG)>, /* SAI2_MCLK_B */
++                     <STM32_PINMUX('F', 11, ANALOG)>, /* SAI2_SD_B */
++                     <STM32_PINMUX('H', 2, ANALOG)>; /* SAI2_SCK_B */
 +        };
 +    };
 +    sdmmc1_sleep_pins_mx: sdmmc1_sleep_mx-0 {
@@ -825,16 +748,23 @@ index 0000000..f980e68
 +                     <STM32_PINMUX('D', 2, ANALOG)>; /* SDMMC1_CMD */
 +        };
 +    };
-+
-+    uart4_sleep_pins_mx: uart4_sleep_mx-0 {
++    sdmmc2_sleep_pins_mx: sdmmc2_sleep_mx-0 {
 +        u-boot,dm-pre-reloc;
 +        pins {
 +            u-boot,dm-pre-reloc;
-+            pinmux = <STM32_PINMUX('B', 2, ANALOG)>, /* UART4_RX */
-+                     <STM32_PINMUX('G', 11, ANALOG)>; /* UART4_TX */
++            pinmux = <STM32_PINMUX('A', 8, ANALOG)>, /* SDMMC2_D4 */
++                     <STM32_PINMUX('A', 9, ANALOG)>, /* SDMMC2_D5 */
++                     <STM32_PINMUX('B', 3, ANALOG)>, /* SDMMC2_D2 */
++                     <STM32_PINMUX('B', 4, ANALOG)>, /* SDMMC2_D3 */
++                     <STM32_PINMUX('B', 14, ANALOG)>, /* SDMMC2_D0 */
++                     <STM32_PINMUX('B', 15, ANALOG)>, /* SDMMC2_D1 */
++                     <STM32_PINMUX('D', 3, ANALOG)>, /* SDMMC2_D7 */
++                     <STM32_PINMUX('E', 3, ANALOG)>, /* SDMMC2_CK */
++                     <STM32_PINMUX('E', 5, ANALOG)>, /* SDMMC2_D6 */
++                     <STM32_PINMUX('G', 6, ANALOG)>; /* SDMMC2_CMD */
 +        };
 +    };
-+    usart1_sleep_pins_mx: usart1_sleep_mx-0 {
++    uart4_sleep_pins_mx: uart4_sleep_mx-0 {
 +        u-boot,dm-pre-reloc;
 +        pins {
 +            u-boot,dm-pre-reloc;
@@ -842,25 +772,22 @@ index 0000000..f980e68
 +                     <STM32_PINMUX('B', 15, ANALOG)>; /* USART1_RX */
 +        };
 +    };
-+    usart3_sleep_pins_mx: usart3_sleep_mx-0 {
-+        u-boot,dm-pre-reloc;
++};
++&pinctrl_z {
++    u-boot,dm-pre-reloc;
++    i2c6_pins_z_mx: i2c6_mx-0 {
 +        pins {
-+            u-boot,dm-pre-reloc;
-+            pinmux = <STM32_PINMUX('B', 10, ANALOG)>, /* USART3_TX */
-+                     <STM32_PINMUX('B', 12, ANALOG)>; /* USART3_RX */
++            pinmux = <STM32_PINMUX('Z', 3, AF2)>, /* I2C6_SDA */
++                     <STM32_PINMUX('Z', 4, AF2)>; /* I2C6_SCL */
++            bias-disable;
++            drive-open-drain;
++            slew-rate = <0>;
 +        };
 +    };
-+    usart6_sleep_pins_mx: usart6_sleep_mx-0 {
-+        u-boot,dm-pre-reloc;
++    i2c6_sleep_pins_z_mx: i2c6_sleep_mx-0 {
 +        pins {
-+            u-boot,dm-pre-reloc;
-+            pinmux = <STM32_PINMUX('C', 6, ANALOG)>, /* USART6_TX */
-+                     <STM32_PINMUX('C', 7, ANALOG)>; /* USART6_RX */
-+        };
-+    };
-+    usb_otg_hs_sleep_pins_mx: usb_otg_hs_sleep_mx-0 {
-+        pins {
-+            pinmux = <STM32_PINMUX('A', 10, ANALOG)>; /* USB_OTG_HS_ID */
++            pinmux = <STM32_PINMUX('Z', 3, ANALOG)>, /* I2C6_SDA */
++                     <STM32_PINMUX('Z', 4, ANALOG)>; /* I2C6_SCL */
 +        };
 +    };
 +};
@@ -880,15 +807,6 @@ index 0000000..f980e68
 +    /* USER CODE END bsec */
 +};
 +
-+&ethernet0{
-+    pinctrl-names = "default", "sleep";
-+    pinctrl-0 = <&eth1_pins_mx>;
-+    pinctrl-1 = <&eth1_sleep_pins_mx>;
-+    status = "okay";
-+
-+    /* USER CODE BEGIN ethernet0 */
-+    /* USER CODE END ethernet0 */
-+};
 +
 +&fmc{
 +    u-boot,dm-pre-reloc;
@@ -928,18 +846,19 @@ index 0000000..f980e68
 +    /* USER CODE END i2c4 */
 +};
 +
-+&iwdg2{
++&i2c6{
++    pinctrl-names = "default", "sleep";
++    pinctrl-0 = <&i2c6_pins_z_mx>;
++    pinctrl-1 = <&i2c6_sleep_pins_z_mx>;
 +    status = "okay";
 +
-+    /* USER CODE BEGIN iwdg2 */
-+    /* USER CODE END iwdg2 */
++    /* USER CODE BEGIN i2c6 */
++    /* USER CODE END i2c6 */
 +};
 +
 +&ltdc{
-+    pinctrl-names = "default", "sleep";
-+    pinctrl-0 = <&ltdc_pins_mx>;
-+    pinctrl-1 = <&ltdc_sleep_pins_mx>;
-+    status = "okay";
++    u-boot,dm-pre-reloc;
++    status = "disabled";
 +
 +    /* USER CODE BEGIN ltdc */
 +    /* USER CODE END ltdc */
@@ -964,9 +883,6 @@ index 0000000..f980e68
 +};
 +
 +&rtc{
-+    pinctrl-names = "default", "sleep";
-+    pinctrl-0 = <&rtc_pins_mx>;
-+    pinctrl-1 = <&rtc_sleep_pins_mx>;
 +    status = "okay";
 +
 +    /* USER CODE BEGIN rtc */
@@ -978,6 +894,16 @@ index 0000000..f980e68
 +
 +    /* USER CODE BEGIN sai2 */
 +    /* USER CODE END sai2 */
++
++    sai2a:audio-controller@4400b004{
++        pinctrl-names = "default", "sleep";
++        pinctrl-0 = <&sai2a_pins_mx>;
++        pinctrl-1 = <&sai2a_sleep_pins_mx>;
++        status = "okay";
++
++        /* USER CODE BEGIN sai2a */
++        /* USER CODE END sai2a */
++    };
 +
 +    sai2b:audio-controller@4400b024{
 +        pinctrl-names = "default", "sleep";
@@ -1005,6 +931,17 @@ index 0000000..f980e68
 +    /* USER CODE END sdmmc1 */
 +};
 +
++&sdmmc2{
++    u-boot,dm-pre-reloc;
++    pinctrl-names = "default", "sleep";
++    pinctrl-0 = <&sdmmc2_pins_mx>;
++    pinctrl-1 = <&sdmmc2_sleep_pins_mx>;
++    status = "okay";
++
++    /* USER CODE BEGIN sdmmc2 */
++    /* USER CODE END sdmmc2 */
++};
++
 +&uart4{
 +    u-boot,dm-pre-reloc;
 +    pinctrl-names = "default", "sleep";
@@ -1016,43 +953,13 @@ index 0000000..f980e68
 +    /* USER CODE END uart4 */
 +};
 +
-+&usart1{
-+    u-boot,dm-pre-reloc;
-+    pinctrl-names = "default", "sleep";
-+    pinctrl-0 = <&usart1_pins_mx>;
-+    pinctrl-1 = <&usart1_sleep_pins_mx>;
-+    status = "okay";
-+
-+    /* USER CODE BEGIN usart1 */
-+    /* USER CODE END usart1 */
-+};
-+
-+&usart3{
-+    u-boot,dm-pre-reloc;
-+    pinctrl-names = "default", "sleep";
-+    pinctrl-0 = <&usart3_pins_mx>;
-+    pinctrl-1 = <&usart3_sleep_pins_mx>;
-+    status = "okay";
-+
-+    /* USER CODE BEGIN usart3 */
-+    /* USER CODE END usart3 */
-+};
-+
-+&usart6{
-+    u-boot,dm-pre-reloc;
-+    pinctrl-names = "default", "sleep";
-+    pinctrl-0 = <&usart6_pins_mx>;
-+    pinctrl-1 = <&usart6_sleep_pins_mx>;
-+    status = "okay";
-+
-+    /* USER CODE BEGIN usart6 */
-+    /* USER CODE END usart6 */
-+};
-+
 +&usbh_ehci{
 +    status = "okay";
 +
 +    /* USER CODE BEGIN usbh_ehci */
++   	phy-names = "usb";
++	phys = <&usbphyc_port0>;
++
 +    /* USER CODE END usbh_ehci */
 +};
 +
@@ -1063,15 +970,6 @@ index 0000000..f980e68
 +    /* USER CODE END usbh_ohci */
 +};
 +
-+&usbotg_hs{
-+    pinctrl-names = "default", "sleep";
-+    pinctrl-0 = <&usb_otg_hs_pins_mx>;
-+    pinctrl-1 = <&usb_otg_hs_sleep_pins_mx>;
-+    status = "okay";
-+
-+    /* USER CODE BEGIN usbotg_hs */
-+    /* USER CODE END usbotg_hs */
-+};
 +
 +&usbphyc{
 +    status = "okay";
@@ -1095,6 +993,16 @@ index 0000000..f980e68
 +};
 +
 +/* USER CODE BEGIN addons */
++
++&iwdg2{
++    status = "okay";
++    secure-status = "okay";
++
++    /* USER CODE BEGIN iwdg2 */
++    instance = <2>;
++    timeout-sec = <32>;
++    /* USER CODE END iwdg2 */
++};
 +
 +&fmc {
 +	pinctrl-names = "default";
@@ -1121,64 +1029,126 @@ index 0000000..f980e68
 +	};
 +};
 +
++
++&ethernet0{
++    u-boot,dm-pre-reloc;
++    pinctrl-names = "default";
++    pinctrl-0 = <&eth1_pins_mx>;
++    status = "okay";
++ 	phy-mode = "rmii";
++	max-speed = <100>;
++	phy-handle = <&phy0>;
++	snps,ps-speed = <100>;
++    st,eth_ref_clk_sel;
++
++   clock-names = "stmmaceth",
++                "mac-clk-tx",
++                "mac-clk-rx",
++                "ethstp",
++                "syscfg-clk",
++                "eth-ck";
++
++    clocks = <&rcc ETHMAC>,
++            <&rcc ETHTX>,
++            <&rcc ETHRX>,
++            <&rcc ETHSTP>,
++            <&rcc SYSCFG>,
++            <&rcc ETHCK>;
++
++    mdio0 {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		compatible = "snps,dwmac-mdio";
++		snps,reset-gpio = <&gpiod 10 GPIO_ACTIVE_LOW>;
++		snps,reset-delays-us = <25>;
++		snps,reset-active-low;
++		phy0: ethernet-phy-0 {
++			reg = <0>;
++		};
++	};
++
++};
++
++
 +/* USER CODE END addons */
 +
+diff --git a/arch/arm/dts/stm32mp157a-ugeast-mx.dts b/arch/arm/dts/stm32mp157a-ugeast-mx.dts
+index 840f617..8089083 100644
+--- a/arch/arm/dts/stm32mp157a-ugeast-mx.dts
++++ b/arch/arm/dts/stm32mp157a-ugeast-mx.dts
+@@ -749,14 +749,14 @@
+ 
+ &ethernet0 {
+     pinctrl-names = "default";
+-    pinctrl-0 = <&eth1_pins_mx  &eth_res>;
++    pinctrl-0 = <&eth1_pins_mx>;
+ 	phy-mode = "rmii";
+ 	max-speed = <100>;
+ 	phy-handle = <&phy0>;
+ 	snps,ps-speed = <100>;
+     st,eth_ref_clk_sel;
+ 	status = "okay";
+-    
++
+     clock-names = "stmmaceth",
+                 "mac-clk-tx",
+                 "mac-clk-rx",
 diff --git a/arch/arm/mach-stm32mp/Kconfig b/arch/arm/mach-stm32mp/Kconfig
-index fbc8195..0cf65b3 100644
+index 0cf65b3..7bf0d21 100644
 --- a/arch/arm/mach-stm32mp/Kconfig
 +++ b/arch/arm/mach-stm32mp/Kconfig
-@@ -27,6 +27,27 @@ config SPL
- config SYS_SOC
- 	default "stm32mp"
+@@ -47,6 +47,26 @@ config TARGET_UGEA_STM32MP1
+ 		STMicroelectronics MPU with core ARMv7
+ 		dual core A7 for STM32MP153, monocore for STM32MP151
  
-+config TARGET_UGEA_STM32MP1
-+	bool "Support stm32mp1xx-uGea"
-+	select ARCH_SUPPORT_PSCI if !STM32MP1_TRUSTED
-+	select CPU_V7A
-+	select CPU_V7_HAS_NONSEC if !STM32MP1_TRUSTED
-+	select CPU_V7_HAS_VIRT
-+	select OF_BOARD_SETUP
-+	select PINCTRL_STM32
-+	select STM32_RCC
-+	select STM32_RESET
-+	select STM32_SERIAL
-+	imply BOOTCOUNT_LIMIT
-+	imply SYSRESET_PSCI if STM32MP1_TRUSTED
-+	imply SYSRESET_SYSCON if !STM32MP1_TRUSTED
-+	help
-+		target STMicroelectronics SOC STM32MP1 family
-+		STM32MP153 or STM32MP151
-+		STMicroelectronics MPU with core ARMv7
-+		dual core A7 for STM32MP153, monocore for STM32MP151
++config TARGET_ICORE_STM32MP1
++        bool "Support stm32mp1xx-iCore"
++        select ARCH_SUPPORT_PSCI if !STM32MP1_TRUSTED
++        select CPU_V7A
++        select CPU_V7_HAS_NONSEC if !STM32MP1_TRUSTED
++        select CPU_V7_HAS_VIRT
++        select OF_BOARD_SETUP
++        select PINCTRL_STM32
++        select STM32_RCC
++        select STM32_RESET
++        select STM32_SERIAL
++        imply BOOTCOUNT_LIMIT
++        imply SYSRESET_PSCI if STM32MP1_TRUSTED
++        imply SYSRESET_SYSCON if !STM32MP1_TRUSTED
++        help
++                target STMicroelectronics SOC STM32MP1 family
++                STM32MP153 or STM32MP151
++                STMicroelectronics MPU with core ARMv7
++                dual core A7 for STM32MP153, monocore for STM32MP151
 +
-+	
+ 	
  config TARGET_STM32MP1
  	bool "Support stm32mp1xx"
- 	select ARCH_SUPPORT_PSCI if !STM32MP1_TRUSTED
-@@ -97,6 +118,7 @@ config STM32_ETZPC
- 	  Controller (ETZPC)
+@@ -119,6 +139,7 @@ config STM32_ETZPC
  
  source "board/st/stm32mp1/Kconfig"
-+source "board/engicam-st/stm32mp1-ugea/Kconfig"
+ source "board/engicam-st/stm32mp1-ugea/Kconfig"
++source "board/engicam-st/stm32mp1-icore/Kconfig"
  
  config CMD_STM32PROG
  	bool "command stm32prog for STM32CudeProgrammer"
-diff --git a/board/engicam-st/stm32mp1-ugea/Kconfig b/board/engicam-st/stm32mp1-ugea/Kconfig
+diff --git a/board/engicam-st/stm32mp1-icore/Kconfig b/board/engicam-st/stm32mp1-icore/Kconfig
 new file mode 100644
-index 0000000..f330bc1
+index 0000000..1211087
 --- /dev/null
-+++ b/board/engicam-st/stm32mp1-ugea/Kconfig
++++ b/board/engicam-st/stm32mp1-icore/Kconfig
 @@ -0,0 +1,20 @@
-+if TARGET_UGEA_STM32MP1
++if TARGET_ICORE_STM32MP1
 +
 +config SYS_BOARD
-+	default "stm32mp1-ugea"
++	default "stm32mp1-icore"
 +
 +config SYS_VENDOR
 +	default "engicam-st"
 +
 +config SYS_CONFIG_NAME
-+	default "stm32mp1-ugea"
++	default "stm32mp1-icore"
 +
 +config CMD_STBOARD
 +	bool "stboard - command for OTP board information"
@@ -1189,11 +1159,11 @@ index 0000000..f330bc1
 +
 +endif
 + 
-diff --git a/board/engicam-st/stm32mp1-ugea/MAINTAINERS b/board/engicam-st/stm32mp1-ugea/MAINTAINERS
+diff --git a/board/engicam-st/stm32mp1-icore/MAINTAINERS b/board/engicam-st/stm32mp1-icore/MAINTAINERS
 new file mode 100644
 index 0000000..6c9710a
 --- /dev/null
-+++ b/board/engicam-st/stm32mp1-ugea/MAINTAINERS
++++ b/board/engicam-st/stm32mp1-icore/MAINTAINERS
 @@ -0,0 +1,11 @@
 +STM32MP1 BOARD
 +M:	Patrick Delaunay <patrick.delaunay@st.com>
@@ -1206,11 +1176,11 @@ index 0000000..6c9710a
 +F:	configs/stm32mp15_optee_defconfig
 +F:	configs/stm32mp15_basic_defconfig
 +F:	include/configs/stm32mp1.h
-diff --git a/board/engicam-st/stm32mp1-ugea/Makefile b/board/engicam-st/stm32mp1-ugea/Makefile
+diff --git a/board/engicam-st/stm32mp1-icore/Makefile b/board/engicam-st/stm32mp1-icore/Makefile
 new file mode 100644
 index 0000000..3c6c035
 --- /dev/null
-+++ b/board/engicam-st/stm32mp1-ugea/Makefile
++++ b/board/engicam-st/stm32mp1-icore/Makefile
 @@ -0,0 +1,13 @@
 +# SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
 +#
@@ -1225,11 +1195,11 @@ index 0000000..3c6c035
 +endif
 +
 +obj-y += board.o
-diff --git a/board/engicam-st/stm32mp1-ugea/README b/board/engicam-st/stm32mp1-ugea/README
+diff --git a/board/engicam-st/stm32mp1-icore/README b/board/engicam-st/stm32mp1-icore/README
 new file mode 100644
 index 0000000..4ebcfb4
 --- /dev/null
-+++ b/board/engicam-st/stm32mp1-ugea/README
++++ b/board/engicam-st/stm32mp1-icore/README
 @@ -0,0 +1,342 @@
 +SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
 +#
@@ -1573,11 +1543,11 @@ index 0000000..4ebcfb4
 +    the correct configuration
 +	=> stm32mp157c-ev1-m4
 +	=> stm32mp157c-dk2-m4
-diff --git a/board/engicam-st/stm32mp1-ugea/board.c b/board/engicam-st/stm32mp1-ugea/board.c
+diff --git a/board/engicam-st/stm32mp1-icore/board.c b/board/engicam-st/stm32mp1-icore/board.c
 new file mode 100644
 index 0000000..b6e5288
 --- /dev/null
-+++ b/board/engicam-st/stm32mp1-ugea/board.c
++++ b/board/engicam-st/stm32mp1-icore/board.c
 @@ -0,0 +1,177 @@
 +// SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
 +/*
@@ -1756,11 +1726,11 @@ index 0000000..b6e5288
 +	return 0;
 +}
 +#endif
-diff --git a/board/engicam-st/stm32mp1-ugea/cmd_stboard.c b/board/engicam-st/stm32mp1-ugea/cmd_stboard.c
+diff --git a/board/engicam-st/stm32mp1-icore/cmd_stboard.c b/board/engicam-st/stm32mp1-icore/cmd_stboard.c
 new file mode 100644
 index 0000000..38b1c1b
 --- /dev/null
-+++ b/board/engicam-st/stm32mp1-ugea/cmd_stboard.c
++++ b/board/engicam-st/stm32mp1-icore/cmd_stboard.c
 @@ -0,0 +1,145 @@
 +// SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
 +/*
@@ -1907,11 +1877,11 @@ index 0000000..38b1c1b
 +	   "  - Variant: 1 ... 15\n"
 +	   "  - Revision: A...O\n"
 +	   "  - BOM: 1...15\n");
-diff --git a/board/engicam-st/stm32mp1-ugea/extlinux.conf b/board/engicam-st/stm32mp1-ugea/extlinux.conf
+diff --git a/board/engicam-st/stm32mp1-icore/extlinux.conf b/board/engicam-st/stm32mp1-icore/extlinux.conf
 new file mode 100644
 index 0000000..2b46328
 --- /dev/null
-+++ b/board/engicam-st/stm32mp1-ugea/extlinux.conf
++++ b/board/engicam-st/stm32mp1-icore/extlinux.conf
 @@ -0,0 +1,20 @@
 +# Generic Distro Configuration for STM32MP157
 +menu title Select the boot mode
@@ -1933,11 +1903,11 @@ index 0000000..2b46328
 +LABEL stm32mp157c-dk2-m4
 +	KERNEL /fit_copro_kernel_dtb.itb#dk2-m4
 +	APPEND root=/dev/mmcblk0p6 rootwait rw earlyprintk console=ttyS3,115200
-diff --git a/board/engicam-st/stm32mp1-ugea/fit_copro_kernel_dtb.its b/board/engicam-st/stm32mp1-ugea/fit_copro_kernel_dtb.its
+diff --git a/board/engicam-st/stm32mp1-icore/fit_copro_kernel_dtb.its b/board/engicam-st/stm32mp1-icore/fit_copro_kernel_dtb.its
 new file mode 100644
 index 0000000..7582fc3
 --- /dev/null
-+++ b/board/engicam-st/stm32mp1-ugea/fit_copro_kernel_dtb.its
++++ b/board/engicam-st/stm32mp1-icore/fit_copro_kernel_dtb.its
 @@ -0,0 +1,103 @@
 +/*
 + * Compilation:
@@ -2042,11 +2012,11 @@ index 0000000..7582fc3
 +		};
 +	};
 +};
-diff --git a/board/engicam-st/stm32mp1-ugea/fit_kernel_dtb.its b/board/engicam-st/stm32mp1-ugea/fit_kernel_dtb.its
+diff --git a/board/engicam-st/stm32mp1-icore/fit_kernel_dtb.its b/board/engicam-st/stm32mp1-icore/fit_kernel_dtb.its
 new file mode 100644
 index 0000000..18d03eb
 --- /dev/null
-+++ b/board/engicam-st/stm32mp1-ugea/fit_kernel_dtb.its
++++ b/board/engicam-st/stm32mp1-icore/fit_kernel_dtb.its
 @@ -0,0 +1,82 @@
 +/*
 + * Compilation:
@@ -2130,11 +2100,11 @@ index 0000000..18d03eb
 +		};
 +	};
 +};
-diff --git a/board/engicam-st/stm32mp1-ugea/spl.c b/board/engicam-st/stm32mp1-ugea/spl.c
+diff --git a/board/engicam-st/stm32mp1-icore/spl.c b/board/engicam-st/stm32mp1-icore/spl.c
 new file mode 100644
 index 0000000..e65ff28
 --- /dev/null
-+++ b/board/engicam-st/stm32mp1-ugea/spl.c
++++ b/board/engicam-st/stm32mp1-icore/spl.c
 @@ -0,0 +1,45 @@
 +// SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
 +/*
@@ -2181,12 +2151,12 @@ index 0000000..e65ff28
 +	}
 +#endif
 +}
-diff --git a/board/engicam-st/stm32mp1-ugea/stm32mp1.c b/board/engicam-st/stm32mp1-ugea/stm32mp1.c
+diff --git a/board/engicam-st/stm32mp1-icore/stm32mp1.c b/board/engicam-st/stm32mp1-icore/stm32mp1.c
 new file mode 100644
-index 0000000..5dc6296
+index 0000000..17a19f8
 --- /dev/null
-+++ b/board/engicam-st/stm32mp1-ugea/stm32mp1.c
-@@ -0,0 +1,945 @@
++++ b/board/engicam-st/stm32mp1-icore/stm32mp1.c
+@@ -0,0 +1,976 @@
 +// SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
 +/*
 + * Copyright (C) 2018, STMicroelectronics - All Rights Reserved
@@ -2255,6 +2225,37 @@ index 0000000..5dc6296
 +#define USB_WARNING_LOW_THRESHOLD_UV	660000
 +#define USB_START_LOW_THRESHOLD_UV	1230000
 +#define USB_START_HIGH_THRESHOLD_UV	2100000
++
++
++#if 0
++int reset_eth_phy(void)
++{
++    ofnode node;
++    struct gpio_desc gpio;
++
++    node = ofnode_path("/config");
++    if (!ofnode_valid(node)) {
++            return -1;
++    }
++
++    if (gpio_request_by_name_nodev(node, "st,reset-phy-gpios", 0,
++				       &gpio, GPIOD_IS_OUT)) {
++        return -2;
++	}
++	
++    if (dm_gpio_set_value(&gpio,1)) {
++        return -3;
++    }
++
++   	udelay(20000);
++
++    if (dm_gpio_set_value(&gpio,0)) {
++        return -4;
++    }
++
++    return 0;
++}
++#endif
 +
 +int checkboard(void)
 +{
@@ -3132,19 +3133,19 @@ index 0000000..5dc6296
 +}
 +
 +U_BOOT_FIT_LOADABLE_HANDLER(IH_TYPE_STM32COPRO, board_stm32copro_image_process);
-diff --git a/configs/stm32mp15_ugeast_trusted_defconfig b/configs/stm32mp15_ugeast_trusted_defconfig
+diff --git a/configs/stm32mp15_icorest_trusted_defconfig b/configs/stm32mp15_icorest_trusted_defconfig
 new file mode 100644
-index 0000000..cad5205
+index 0000000..355125d
 --- /dev/null
-+++ b/configs/stm32mp15_ugeast_trusted_defconfig
++++ b/configs/stm32mp15_icorest_trusted_defconfig
 @@ -0,0 +1,104 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_STM32MP=y
 +CONFIG_SYS_MALLOC_F_LEN=0x3000
-+CONFIG_TARGET_UGEA_STM32MP1=y
++CONFIG_TARGET_ICORE_STM32MP1=y
 +CONFIG_DISTRO_DEFAULTS=y
 +CONFIG_FIT=y
-+CONFIG_SYS_PROMPT="STM32MP-uGea> "
++CONFIG_SYS_PROMPT="STM32MP-i.Core> "
 +# CONFIG_CMD_BOOTD is not set
 +# CONFIG_CMD_ELF is not set
 +# CONFIG_CMD_IMI is not set
@@ -3173,7 +3174,7 @@ index 0000000..cad5205
 +CONFIG_CMD_EXT4_WRITE=y
 +CONFIG_CMD_MTDPARTS=y
 +CONFIG_CMD_UBI=y
-+CONFIG_DEFAULT_DEVICE_TREE="stm32mp157a-ugeast-mx"
++CONFIG_DEFAULT_DEVICE_TREE="stm32mp157a-icorestm32-mx"
 +CONFIG_STM32_ADC=y
 +CONFIG_USB_FUNCTION_FASTBOOT=y
 +CONFIG_FASTBOOT_BUF_ADDR=0xC0000000
@@ -3203,10 +3204,10 @@ index 0000000..cad5205
 +CONFIG_SPI_FLASH_WINBOND=y
 +# CONFIG_SPI_FLASH_USE_4K_SECTORS is not set
 +CONFIG_SPI_FLASH_MTD=y
-+CONFIG_PHY_FIXED=y
-+CONFIG_DM_ETH=y
-+CONFIG_DWC_ETH_QOS=y
-+CONFIG_PHY=y
++CONFIG_PHY_FIXED=n
++CONFIG_DM_ETH=n
++CONFIG_DWC_ETH_QOS=n
++CONFIG_PHY=n
 +CONFIG_PHY_STM32_USBPHYC=y
 +CONFIG_PINCONF=y
 +CONFIG_PINCTRL_STMFX=y
@@ -3242,11 +3243,26 @@ index 0000000..cad5205
 +CONFIG_STM32MP_WATCHDOG=y
 +CONFIG_FDT_FIXUP_PARTITIONS=y
 +# CONFIG_EFI_LOADER is not set
-diff --git a/include/configs/stm32mp1-ugea.h b/include/configs/stm32mp1-ugea.h
+diff --git a/drivers/pinctrl/pinctrl-stmfx.c b/drivers/pinctrl/pinctrl-stmfx.c
+index 9b5009a..e3d6d29 100644
+--- a/drivers/pinctrl/pinctrl-stmfx.c
++++ b/drivers/pinctrl/pinctrl-stmfx.c
+@@ -222,9 +222,8 @@ static int stmfx_pinctrl_conf_set(struct udevice *dev, unsigned int pin,
+ {
+ 	int ret, dir;
+ 	struct stmfx_pinctrl *plat = dev_get_platdata(dev);
+-
++while(1);
+ 	dir = stmfx_gpio_get_function(plat->gpio, pin);
+-
+ 	if (dir < 0)
+ 		return dir;
+ 
+diff --git a/include/configs/stm32mp1-icore.h b/include/configs/stm32mp1-icore.h
 new file mode 100644
 index 0000000..b56dbc7
 --- /dev/null
-+++ b/include/configs/stm32mp1-ugea.h
++++ b/include/configs/stm32mp1-icore.h
 @@ -0,0 +1,190 @@
 +/* SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause */
 +/*

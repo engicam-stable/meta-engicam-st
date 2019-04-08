@@ -1,7 +1,7 @@
 From 8c3b675429586a06269866b0639108c9c1aaf667 Mon Sep 17 00:00:00 2001
 From: Matteo Lisi <matteo.lisi@engicam.com>
 Date: Mon, 11 Mar 2019 11:43:49 +0100
-Subject: [PATCH 2/3] add ethernet support
+Subject: [PATCH 2/4] add ethernet support
 
 ---
  arch/arm/dts/stm32mp157a-ugeast-mx.dts | 82 +++++++++++++++++++-------
