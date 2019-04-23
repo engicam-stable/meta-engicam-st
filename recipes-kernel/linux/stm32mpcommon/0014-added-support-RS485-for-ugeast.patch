@@ -1,0 +1,33 @@
+From f1960e057bd46031f715eadfc78be89617b8c349 Mon Sep 17 00:00:00 2001
+From: Domenico Acri <support@engicam.com>
+Date: Tue, 23 Apr 2019 16:58:53 +0200
+Subject: [PATCH] added support RS485 for ugeast
+
+---
+ arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts b/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
+index 48aae522e..ea0df8cb2 100644
+--- a/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
+@@ -389,7 +389,7 @@
+         pins2 {
+             u-boot,dm-pre-reloc;
+             pinmux = <STM32_PINMUX('D', 8, AF7)>, /* USART3_TX */
+-                     <STM32_PINMUX('B', 13, AF7)>; /* USART3_CTS */
++                     <STM32_PINMUX('G', 8, AF8)>; /* USART3_RTS */
+             bias-disable;
+             drive-push-pull;
+             slew-rate = <0>;
+@@ -619,6 +619,7 @@
+ &usart3{
+     pinctrl-names = "default";
+     pinctrl-0 = <&usart3_pins_mx>;
++    linux,rs485-enabled-at-boot-time;
+     status = "okay";
+ 
+     /* USER CODE BEGIN usart3 */
+-- 
+2.21.0
+
