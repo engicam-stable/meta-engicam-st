@@ -14,4 +14,9 @@ SRC_URI+=" \
             file://0012-add-lcd-udev-7p.patch \
             file://0013-fix-gpu-section-on-ugea.patch \
             file://0014-added-support-RS485-for-ugeast.patch \
+            file://0015-init-icorestm32-support.patch \
+            file://0016-add-icorestm-defconfig.patch \
+            file://0017-add-icorestm-makefile-dtb.patch \
+            file://0018-added-support-ppp-and-set-host-usbotg-for-modem.patch \
+            file://0019-fix-icore-defconfig-and-lcd-dtb.patch \
         "

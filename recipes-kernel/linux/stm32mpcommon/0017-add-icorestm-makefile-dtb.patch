@@ -1,0 +1,26 @@
+From 5a17db9fddee24897a4ed85a504a959e548ad19d Mon Sep 17 00:00:00 2001
+From: Matteo Lisi <matteo.lisi@engicam.com>
+Date: Wed, 24 Apr 2019 14:42:49 +0000
+Subject: [PATCH] add-icorestm-makefile-dtb
+
+---
+ arch/arm/boot/dts/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 419c28d63..4098097d4 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -931,7 +931,8 @@ dtb-$(CONFIG_ARCH_STM32) += \
+ 	stm32mp157c-ev1-a7-examples.dtb \
+ 	stm32mp157c-ev1-m4-examples.dtb \
+ 	stm32mp157a-ugeast-mx.dtb \
+-	stm32mp157a-ugeast-mx-lcd7.dtb 
++	stm32mp157a-ugeast-mx-lcd7.dtb \
++        stm32mp157a-icorestm32-mx.dtb	
+ dtb-$(CONFIG_MACH_SUN4I) += \
+ 	sun4i-a10-a1000.dtb \
+ 	sun4i-a10-ba10-tvbox.dtb \
+-- 
+2.17.1
+

@@ -33,7 +33,7 @@ MACHINE_FEATURES += "splashscreen"
 # Image
 # =========================================================================
 # Add ubi FSTYPES to default ones for nand volumes
-IMAGE_FSTYPES += "stmultiubi"
+#IMAGE_FSTYPES += "stmultiubi"
 
 # =========================================================================
 # Kernel

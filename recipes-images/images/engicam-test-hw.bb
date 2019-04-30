@@ -7,7 +7,7 @@ inherit core-image distro_features_check
 
 IMAGE_LINGUAS = "en-us"
 
-LUPO_IMAGE_FEATURES += "\
+IMAGE_FEATURES += "\
     splash \
     package-management \
     ssh-server-dropbear \
@@ -18,7 +18,7 @@ LUPO_IMAGE_FEATURES += "\
 #
 # Multimedia part addons
 #
-LUPO_IMAGE_MM_PART = " \
+IMAGE_MM_PART = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'gstreamer', 'packagegroup-gstreamer1-0', '', d)} \
     tiff \
     libv4l \
@@ -29,7 +29,7 @@ LUPO_IMAGE_MM_PART = " \
 #
 # INSTALL addons
 #
-LUPO_CORE_IMAGE_EXTRA_INSTALL += " \
+CORE_IMAGE_EXTRA_INSTALL += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd-networkd-configuration', '', d)} \
     \
     packagegroup-framework-tools-core-base      \
@@ -46,5 +46,6 @@ LUPO_CORE_IMAGE_EXTRA_INSTALL += " \
     packagegroup-framework-tools-ui             \
     packagegroup-framework-tools-python2        \
     packagegroup-framework-tools-python3        \
-    \
+    mtd-utils \
+    ppp \
     "
