@@ -4,4 +4,6 @@ SRC_URI+=" \
           file://0002-add-ethernet-support.patch \
           file://0003-fix-usb-support.patch \
           file://0004-add-icorest-preliminary-support.patch \
+          file://0005-fix-icore-defconfig.patch \
+          file://0006-fix-eth-reset-bug.patch \          
         "

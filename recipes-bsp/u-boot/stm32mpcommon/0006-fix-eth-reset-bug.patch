@@ -1,0 +1,96 @@
+From 3679ab2fa564c3f22b1996b84062a3e21acde3ad Mon Sep 17 00:00:00 2001
+From: Matteo Lisi <matteo.lisi@engicam.com>
+Date: Fri, 3 May 2019 15:10:18 +0200
+Subject: [PATCH 2/2] fix eth reset bug
+
+---
+ arch/arm/dts/stm32mp157a-icorestm32-mx.dts  | 20 +++++++++-----------
+ configs/stm32mp15_icorest_trusted_defconfig | 10 +++++-----
+ 2 files changed, 14 insertions(+), 16 deletions(-)
+
+diff --git a/arch/arm/dts/stm32mp157a-icorestm32-mx.dts b/arch/arm/dts/stm32mp157a-icorestm32-mx.dts
+index ecec359..519c103 100644
+--- a/arch/arm/dts/stm32mp157a-icorestm32-mx.dts
++++ b/arch/arm/dts/stm32mp157a-icorestm32-mx.dts
+@@ -91,7 +91,8 @@
+ 					drive-push-pull;
+ 					slew-rate = <3>;
+ 				};
+-				pins-2 {
++		
++	pins-2 {
+                     pinmux = <STM32_PINMUX('D', 10, GPIO)>;
+                     bias-pull-up;
+                     drive-push-pull;
+@@ -602,19 +603,17 @@
+ 	};
+ };
+ 
+-
+-&ethernet0{
+-    u-boot,dm-pre-reloc;
++&ethernet0 {
+     pinctrl-names = "default";
+     pinctrl-0 = <&eth1_pins_mx>;
+-    status = "okay";
+- 	phy-mode = "rmii";
++	phy-mode = "rmii";
+ 	max-speed = <100>;
+ 	phy-handle = <&phy0>;
+ 	snps,ps-speed = <100>;
+     st,eth_ref_clk_sel;
++	status = "disabled";
+ 
+-   clock-names = "stmmaceth",
++    clock-names = "stmmaceth",
+                 "mac-clk-tx",
+                 "mac-clk-rx",
+                 "ethstp",
+@@ -627,20 +626,19 @@
+             <&rcc ETHSTP>,
+             <&rcc SYSCFG>,
+             <&rcc ETHCK>;
+-
++	
+     mdio0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-
+ 		compatible = "snps,dwmac-mdio";
+-		snps,reset-gpio = <&gpiod 10 GPIO_ACTIVE_LOW>;
++		snps,reset-gpio = <&gpioa 13 0>;
+ 		snps,reset-delays-us = <25>;
+ 		snps,reset-active-low;
++
+ 		phy0: ethernet-phy-0 {
+ 			reg = <0>;
+ 		};
+ 	};
+-
+ };
+ 
+ 
+diff --git a/configs/stm32mp15_icorest_trusted_defconfig b/configs/stm32mp15_icorest_trusted_defconfig
+index 75bc7cb..535f13b 100644
+--- a/configs/stm32mp15_icorest_trusted_defconfig
++++ b/configs/stm32mp15_icorest_trusted_defconfig
+@@ -63,11 +63,11 @@ CONFIG_SPI_FLASH_STMICRO=y
+ CONFIG_SPI_FLASH_WINBOND=y
+ # CONFIG_SPI_FLASH_USE_4K_SECTORS is not set
+ CONFIG_SPI_FLASH_MTD=y
+-CONFIG_PHY_FIXED=y
+-CONFIG_DM_ETH=y
+-CONFIG_DWC_ETH_QOS=y
+-CONFIG_PHY=y
+-CONFIG_PHY_STM32_USBPHYC=y
++CONFIG_PHY_FIXED=n
++CONFIG_DM_ETH=n
++CONFIG_DWC_ETH_QOS=n
++CONFIG_PHY=n
++CONFIG_PHY_STM32_USBPHYC=n
+ CONFIG_PINCONF=y
+ CONFIG_PINCTRL_STMFX=y
+ CONFIG_DM_PMIC=y
+-- 
+2.17.1
+
