@@ -1,0 +1,290 @@
+From 85d585646e16957458fa41ba2f24f8435c99e94c Mon Sep 17 00:00:00 2001
+From: Domenico Acri <support@engicam.com>
+Date: Tue, 7 May 2019 13:58:40 +0200
+Subject: [PATCH] added support wifi and bluetooth ugeast on microdev
+
+---
+ arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts | 73 ++++++++++++++++++++-
+ arch/arm/boot/dts/stm32mp157c.dtsi          | 30 ++++-----
+ arch/arm/configs/stm32mp1ugea_defconfig     | 30 ++++-----
+ 3 files changed, 101 insertions(+), 32 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts b/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
+index 456b6cc0f..e0c75612f 100644
+--- a/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
+@@ -8,6 +8,7 @@
+ #include "stm32mp157c.dtsi"
+ #include "stm32mp157c-m4-srm.dtsi"
+ #include "stm32mp157cac-pinctrl.dtsi"
++#include <dt-bindings/rtc/rtc-stm32.h>
+ 
+ /* USER CODE BEGIN includes */
+ /* USER CODE END includes */
+@@ -192,6 +193,28 @@
+ 		enable-active-high;
+ 		regulator-always-on;
+ 	};
++
++	reg_wifi: regulator-wifi {
++		compatible = "regulator-fixed";
++		regulator-name = "wifi";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&gpiob 4 1>;
++		startup-delay-us = <100>;
++        enable-active-high;
++        regulator-always-on;
++	};
++
++	reg_bl: regulator-bt {
++		compatible = "regulator-fixed";
++		regulator-name = "bt";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&gpioa 0 1>;
++		startup-delay-us = <100>;
++        enable-active-high;
++        regulator-always-on;
++	};
+ 	
+ 	/* USER CODE BEGIN root */
+ 	
+@@ -355,11 +378,33 @@
+                             <STM32_PINMUX('D', 2, AF12)>; /* SDMMC1_CMD */
+                 slew-rate = <3>;
+                 drive-push-pull;
++                bias-pull-up;
+         };
+         pins2 {
+                 pinmux = <STM32_PINMUX('C', 12, AF12)>; /* SDMMC1_CK */
+                 slew-rate = <3>;
+                 drive-push-pull;
++                bias-pull-down;
++        };
++    };
++
++    sdmmc3_pins_mx: sdmmc3_mx-0 {
++        u-boot,dm-pre-reloc;
++        pins1 {
++                pinmux = <STM32_PINMUX('F', 0, AF9)>, /* SDMMC2_D0 */
++                            <STM32_PINMUX('F', 4, AF9)>, /* SDMMC2_D1 */
++                            <STM32_PINMUX('F', 5, AF9)>, /* SDMMC2_D2 */
++                            <STM32_PINMUX('D', 7, AF10)>, /* SDMMC2_D3 */
++                            <STM32_PINMUX('F', 1, AF9)>; /* SDMMC2_CMD */
++                slew-rate = <0>;
++			    drive-push-pull;
++                bias-pull-up;
++        };
++        pins2 {
++                pinmux = <STM32_PINMUX('G', 15, AF10)>; /* SDMMC2_CK */
++                slew-rate = <0>;
++                drive-push-pull;
++                bias-pull-down;
+         };
+     };
+ 
+@@ -574,6 +619,13 @@
+ 
+ };
+ 
++&rtc {
++	pinctrl-names = "default";
++    pinctrl-0 = <&rtc_out2_rmp_pins_a>;
++    st,lsco = <RTC_OUT2_RMP>;
++    status = "okay";
++};
++
+ &iwdg2{
+     status = "okay";
+ 
+@@ -581,7 +633,6 @@
+     /* USER CODE END iwdg2 */
+ };
+ 
+-
+ &rcc{
+     u-boot,dm-pre-reloc;
+     status = "okay";
+@@ -605,6 +656,23 @@
+     /* USER CODE END sdmmc1 */
+ };
+ 
++&sdmmc3{
++    u-boot,dm-pre-reloc;
++    pinctrl-names = "default";
++    pinctrl-0 = <&sdmmc3_pins_mx>;
++    status = "okay";
++
++    /* USER CODE BEGIN sdmmc3 */
++    non-removable;
++	st,neg-edge;
++	bus-width = <4>;
++	max-frequency = <25000000>;
++	vmmc-supply = <&v3v3>;
++    vmmc-supply = <&reg_wifi>;
++    keep-power-in-suspend;
++    /* USER CODE END sdmmc3 */
++};
++
+ /* expansion connector */
+ &usart1{
+     pinctrl-names = "default";
+@@ -640,8 +708,9 @@
+ &uart7{
+     pinctrl-names = "default";
+     pinctrl-0 = <&uart7_pins_mx>;
++    vmmc-supply = <&reg_bl>;
++    st,hw-flow-ctrl;
+     status = "okay";
+-	st,hw-flow-ctrl;
+ 	
+     /* USER CODE BEGIN uart7 */
+     /* USER CODE END uart7 */
+diff --git a/arch/arm/boot/dts/stm32mp157c.dtsi b/arch/arm/boot/dts/stm32mp157c.dtsi
+index e449d3993..cc44a6d44 100644
+--- a/arch/arm/boot/dts/stm32mp157c.dtsi
++++ b/arch/arm/boot/dts/stm32mp157c.dtsi
+@@ -1206,21 +1206,6 @@
+ 			};
+ 		};
+ 
+-		sdmmc3: sdmmc@48004000 {
+-			compatible = "arm,pl18x", "arm,primecell";
+-			arm,primecell-periphid = <0x00253180>;
+-			reg = <0x48004000 0x400>, <0x48005000 0x400>;
+-			interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
+-			interrupt-names = "cmd_irq";
+-			clocks = <&rcc SDMMC3_K>;
+-			clock-names = "apb_pclk";
+-			resets = <&rcc SDMMC3_R>;
+-			cap-sd-highspeed;
+-			cap-mmc-highspeed;
+-			max-frequency = <120000000>;
+-			status = "disabled";
+-		};
+-
+ 		usbotg_hs: usb-otg@49000000 {
+ 			compatible = "st,stm32mp1-hsotg", "snps,dwc2";
+ 			reg = <0x49000000 0x10000>;
+@@ -1723,6 +1708,21 @@
+ 			status = "disabled";
+ 		};
+ 
++		sdmmc3: sdmmc@48004000 {
++			compatible = "arm,pl18x", "arm,primecell";
++			arm,primecell-periphid = <0x00253180>;
++			reg = <0x48004000 0x400>, <0x48005000 0x400>;
++			interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "cmd_irq";
++			clocks = <&rcc SDMMC3_K>;
++			clock-names = "apb_pclk";
++			resets = <&rcc SDMMC3_R>;
++			cap-sd-highspeed;
++			cap-mmc-highspeed;
++			max-frequency = <120000000>;
++			status = "disabled";
++		};
++
+ 		crc1: crc@58009000 {
+ 			compatible = "st,stm32f7-crc";
+ 			reg = <0x58009000 0x400>;
+diff --git a/arch/arm/configs/stm32mp1ugea_defconfig b/arch/arm/configs/stm32mp1ugea_defconfig
+index 48fd84316..419be6ffa 100644
+--- a/arch/arm/configs/stm32mp1ugea_defconfig
++++ b/arch/arm/configs/stm32mp1ugea_defconfig
+@@ -1273,7 +1273,7 @@ CONFIG_CAN_MCP251X=y
+ # CONFIG_CAN_PEAK_USB is not set
+ # CONFIG_CAN_UCAN is not set
+ # CONFIG_CAN_DEBUG_DEVICES is not set
+-CONFIG_BT=m
++CONFIG_BT=y
+ CONFIG_BT_BREDR=y
+ # CONFIG_BT_RFCOMM is not set
+ # CONFIG_BT_BNEP is not set
+@@ -1287,10 +1287,10 @@ CONFIG_BT_DEBUGFS=y
+ #
+ # Bluetooth device drivers
+ #
+-CONFIG_BT_BCM=m
++CONFIG_BT_BCM=y
+ # CONFIG_BT_HCIBTUSB is not set
+ # CONFIG_BT_HCIBTSDIO is not set
+-CONFIG_BT_HCIUART=m
++CONFIG_BT_HCIUART=y
+ CONFIG_BT_HCIUART_SERDEV=y
+ CONFIG_BT_HCIUART_H4=y
+ # CONFIG_BT_HCIUART_NOKIA is not set
+@@ -1315,7 +1315,7 @@ CONFIG_BT_MRVL_SDIO=m
+ # CONFIG_AF_KCM is not set
+ CONFIG_FIB_RULES=y
+ CONFIG_WIRELESS=y
+-CONFIG_CFG80211=y
++CONFIG_CFG80211=m
+ # CONFIG_NL80211_TESTMODE is not set
+ # CONFIG_CFG80211_DEVELOPER_WARNINGS is not set
+ # CONFIG_CFG80211_CERTIFICATION_ONUS is not set
+@@ -2307,9 +2307,9 @@ CONFIG_WLAN_VENDOR_ATMEL=y
+ CONFIG_WLAN_VENDOR_BROADCOM=y
+ # CONFIG_B43 is not set
+ # CONFIG_B43LEGACY is not set
+-CONFIG_BRCMUTIL=y
++CONFIG_BRCMUTIL=m
+ # CONFIG_BRCMSMAC is not set
+-CONFIG_BRCMFMAC=y
++CONFIG_BRCMFMAC=m
+ CONFIG_BRCMFMAC_PROTO_BCDC=y
+ CONFIG_BRCMFMAC_SDIO=y
+ # CONFIG_BRCMFMAC_USB is not set
+@@ -7091,17 +7091,17 @@ CONFIG_CRYPTO_BLKCIPHER=y
+ CONFIG_CRYPTO_BLKCIPHER2=y
+ CONFIG_CRYPTO_HASH=y
+ CONFIG_CRYPTO_HASH2=y
+-CONFIG_CRYPTO_RNG=m
++CONFIG_CRYPTO_RNG=y
+ CONFIG_CRYPTO_RNG2=y
+-CONFIG_CRYPTO_RNG_DEFAULT=m
++CONFIG_CRYPTO_RNG_DEFAULT=y
+ CONFIG_CRYPTO_AKCIPHER2=y
+ CONFIG_CRYPTO_AKCIPHER=y
+ CONFIG_CRYPTO_KPP2=y
+-CONFIG_CRYPTO_KPP=m
++CONFIG_CRYPTO_KPP=y
+ CONFIG_CRYPTO_ACOMP2=y
+ CONFIG_CRYPTO_RSA=y
+ # CONFIG_CRYPTO_DH is not set
+-CONFIG_CRYPTO_ECDH=m
++CONFIG_CRYPTO_ECDH=y
+ CONFIG_CRYPTO_MANAGER=y
+ CONFIG_CRYPTO_MANAGER2=y
+ CONFIG_CRYPTO_USER=m
+@@ -7148,8 +7148,8 @@ CONFIG_CRYPTO_ECB=y
+ #
+ # Hash modes
+ #
+-CONFIG_CRYPTO_CMAC=m
+-CONFIG_CRYPTO_HMAC=m
++CONFIG_CRYPTO_CMAC=y
++CONFIG_CRYPTO_HMAC=y
+ # CONFIG_CRYPTO_XCBC is not set
+ # CONFIG_CRYPTO_VMAC is not set
+ 
+@@ -7212,12 +7212,12 @@ CONFIG_CRYPTO_LZO=y
+ # Random Number Generation
+ #
+ # CONFIG_CRYPTO_ANSI_CPRNG is not set
+-CONFIG_CRYPTO_DRBG_MENU=m
++CONFIG_CRYPTO_DRBG_MENU=y
+ CONFIG_CRYPTO_DRBG_HMAC=y
+ # CONFIG_CRYPTO_DRBG_HASH is not set
+ # CONFIG_CRYPTO_DRBG_CTR is not set
+-CONFIG_CRYPTO_DRBG=m
+-CONFIG_CRYPTO_JITTERENTROPY=m
++CONFIG_CRYPTO_DRBG=y
++CONFIG_CRYPTO_JITTERENTROPY=y
+ CONFIG_CRYPTO_USER_API=m
+ CONFIG_CRYPTO_USER_API_HASH=m
+ CONFIG_CRYPTO_USER_API_SKCIPHER=m
+-- 
+2.21.0
+

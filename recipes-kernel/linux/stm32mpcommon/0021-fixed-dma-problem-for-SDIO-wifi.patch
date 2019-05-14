@@ -1,0 +1,28 @@
+From 3f71de2d72490fc356c22c18967d37aa0af930ab Mon Sep 17 00:00:00 2001
+From: Domenico Acri <support@engicam.com>
+Date: Tue, 7 May 2019 17:38:24 +0200
+Subject: [PATCH] fixed dma problem for SDIO wifi
+
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+index cd3651069..12d301c6c 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+@@ -453,6 +453,11 @@ struct brcmf_mp_device *brcmf_get_module_param(struct device *dev,
+ 		/* No platform data for this device, try OF (Open Firwmare) */
+ 		brcmf_of_probe(dev, bus_type, settings);
+ 	}
++
++        settings->bus.sdio.broken_sg_support = true;
++        settings->bus.sdio.oob_irq_supported = false;
++        settings->bus.sdio.sd_head_align = 4;
++        settings->bus.sdio.sd_sgentry_align = 512;
+ 	return settings;
+ }
+ 
+-- 
+2.21.0
+

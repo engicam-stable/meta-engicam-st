@@ -100,6 +100,12 @@ USERFS_PARTITION_SIZE = "131072"
 # New value proposed for vendorfs is 16MB
 VENDORFS_PARTITION_SIZE = "16384"
 
+
+########## BOOTFS_PARTITION_SIZE = "16384"
+########## ROOTFS_PARTITION_SIZE = "359600"
+########## USERFS_PARTITION_SIZE = "71680"
+########## VENDORFS_PARTITION_SIZE = "16384"
+
 # Define volume list for multivolume UBIFS
 STM32MP_UBI_VOLUME += "${STM32MP_BOOTFS_IMAGE}-${DISTRO}-${MACHINE}:${BOOTFS_PARTITION_SIZE}"
 STM32MP_UBI_VOLUME += "${IMAGE_LINK_NAME}:${ROOTFS_PARTITION_SIZE}"
@@ -141,6 +147,7 @@ EXTRA_IMAGECMD_ext4 = "-i 4096 -L ${@d.getVar('IMAGE_NAME_SUFFIX').replace('.', 
 
 # Default FSTYPES requested
 IMAGE_FSTYPES = "tar.xz ext4"
+IMAGE_FSTYPES += "stmultiubi"
 
 # Allow debug on the platform with gdb and openocd tools
 EXTRA_IMAGEDEPENDS_append = " \

@@ -48,4 +48,7 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     packagegroup-framework-tools-python3        \
     mtd-utils \
     ppp \
+    brcm-patchram-plus \
+    lwb-bcm4343w-fw \
+    obexftp \
     "

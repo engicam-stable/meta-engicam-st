@@ -1,0 +1,38 @@
+From 2f2120659bca7f0d1f74bf398d6dc3d61d75b396 Mon Sep 17 00:00:00 2001
+From: Matteo Lisi <matteo.lisi@engicam.com>
+Date: Tue, 14 May 2019 17:57:20 +0200
+Subject: [PATCH] fix st1232 driver for weston
+
+---
+ drivers/input/touchscreen/st1232.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/input/touchscreen/st1232.c b/drivers/input/touchscreen/st1232.c
+index d5dfa4053..7fdc3b493 100644
+--- a/drivers/input/touchscreen/st1232.c
++++ b/drivers/input/touchscreen/st1232.c
+@@ -116,7 +116,6 @@ static irqreturn_t st1232_ts_irq_handler(int irq, void *dev_id)
+ 		if (!finger[i].is_valid)
+ 			continue;
+ 
+-		input_report_abs(input_dev, ABS_MT_TOUCH_MAJOR, finger[i].t);
+ 		input_report_abs(input_dev, ABS_MT_POSITION_X, finger[i].x);
+ 		input_report_abs(input_dev, ABS_MT_POSITION_Y, finger[i].y);
+ 		input_mt_sync(input_dev);
+@@ -195,11 +194,12 @@ static int st1232_ts_probe(struct i2c_client *client,
+ 	input_dev->id.bustype = BUS_I2C;
+ 	input_dev->dev.parent = &client->dev;
+ 
++	__set_bit(INPUT_PROP_DIRECT, input_dev->propbit);
+ 	__set_bit(EV_SYN, input_dev->evbit);
+ 	__set_bit(EV_KEY, input_dev->evbit);
+ 	__set_bit(EV_ABS, input_dev->evbit);
+ 
+-	input_set_abs_params(input_dev, ABS_MT_TOUCH_MAJOR, 0, MAX_AREA, 0, 0);
++	
+ 	input_set_abs_params(input_dev, ABS_MT_POSITION_X, MIN_X, MAX_X, 0, 0);
+ 	input_set_abs_params(input_dev, ABS_MT_POSITION_Y, MIN_Y, MAX_Y, 0, 0);
+ 
+-- 
+2.17.1
+

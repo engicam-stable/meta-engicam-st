@@ -1,0 +1,180 @@
+From 1bb24e7a1103e489a1dfc5e4c5c2f33c6178173f Mon Sep 17 00:00:00 2001
+From: Matteo Lisi <matteo.lisi@engicam.com>
+Date: Tue, 14 May 2019 11:47:15 +0200
+Subject: [PATCH] change clock from internal to external
+
+---
+ fdts/stm32mp15-icore-mx.h          | 30 +++++++++++++-------------
+ fdts/stm32mp157a-icorestm32-mx.dts | 34 +++++++++++++++++-------------
+ 2 files changed, 34 insertions(+), 30 deletions(-)
+
+diff --git a/fdts/stm32mp15-icore-mx.h b/fdts/stm32mp15-icore-mx.h
+index 50f287f..905ee9b 100644
+--- a/fdts/stm32mp15-icore-mx.h
++++ b/fdts/stm32mp15-icore-mx.h
+@@ -10,15 +10,15 @@
+  * DDR type: DDR3 / DDR3L
+  * DDR width: 32bits
+  * DDR density: 4Gb
+- * System frequency: 480000Khz
++ * System frequency: 528000Khz
+  * Relaxed Timing Mode: false
+  * Address mapping type: RBC
+  *
+- * Save Date: 2019.03.25, save Time: 11:12:22
++ * Save Date: 2019.05.14, save Time: 11:25:16
+  */
+ 
+-#define DDR_MEM_NAME	"DDR3-DDR3L 32bits 480000Khz"
+-#define DDR_MEM_SPEED	480000
++#define DDR_MEM_NAME	"DDR3-DDR3L 32bits 528000Khz"
++#define DDR_MEM_SPEED	528000
+ #define DDR_MEM_SIZE	0x20000000
+ 
+ #define DDR_MSTR 0x00040401
+@@ -31,14 +31,14 @@
+ #define DDR_HWLPCTL 0x00000000
+ #define DDR_RFSHCTL0 0x00210000
+ #define DDR_RFSHCTL3 0x00000000
+-#define DDR_RFSHTMG 0x0075007D
++#define DDR_RFSHTMG 0x0080008A
+ #define DDR_CRCPARCTL0 0x00000000
+-#define DDR_DRAMTMG0 0x12182012
+-#define DDR_DRAMTMG1 0x000A0419
++#define DDR_DRAMTMG0 0x121B2414
++#define DDR_DRAMTMG1 0x000A041B
+ #define DDR_DRAMTMG2 0x0607080F
+ #define DDR_DRAMTMG3 0x0050400C
+-#define DDR_DRAMTMG4 0x07040507
+-#define DDR_DRAMTMG5 0x05050403
++#define DDR_DRAMTMG4 0x07040607
++#define DDR_DRAMTMG5 0x06060403
+ #define DDR_DRAMTMG6 0x02020002
+ #define DDR_DRAMTMG7 0x00000202
+ #define DDR_DRAMTMG8 0x00001005
+@@ -85,16 +85,16 @@
+ #define DDR_ADDRMAP10 0x00000000
+ #define DDR_ADDRMAP11 0x00000000
+ #define DDR_PGCR 0x01442E02
+-#define DDR_PTR0 0x00226698
+-#define DDR_PTR1 0x0413A980
+-#define DDR_PTR2 0x042D7700
++#define DDR_PTR0 0x0022A41B
++#define DDR_PTR1 0x047C0740
++#define DDR_PTR2 0x042D9C80
+ #define DDR_ACIOCR 0x10400812
+ #define DDR_DXCCR 0x00000C40
+ #define DDR_DSGCR 0xF200001F
+ #define DDR_DCR 0x0000000B
+-#define DDR_DTPR0 0x32B277D0
+-#define DDR_DTPR1 0x097D00C0
+-#define DDR_DTPR2 0x10023200
++#define DDR_DTPR0 0x36D477D0
++#define DDR_DTPR1 0x098A00D8
++#define DDR_DTPR2 0x10023600
+ #define DDR_MR0 0x00000830
+ #define DDR_MR1 0x00000000
+ #define DDR_MR2 0x00000208
+diff --git a/fdts/stm32mp157a-icorestm32-mx.dts b/fdts/stm32mp157a-icorestm32-mx.dts
+index 6954ff9..deeaaa7 100644
+--- a/fdts/stm32mp157a-icorestm32-mx.dts
++++ b/fdts/stm32mp157a-icorestm32-mx.dts
+@@ -146,39 +146,41 @@ clocks {
+     };
+ };
+ 
++
+ &rcc {
+     st,hsi-cal;
+     st,csi-cal;
+     st,cal-sec = <60>;
+     st,clksrc = <
+         CLK_MPU_PLL1P
+-        CLK_AXI_HSI
++        CLK_AXI_PLL2P
+         CLK_MCU_PLL3P
+         CLK_PLL12_HSI
+-        CLK_PLL3_HSI
+-        CLK_PLL4_HSI
+-        CLK_RTC_LSI
++        CLK_PLL3_HSE
++        CLK_PLL4_HSE
++        CLK_RTC_LSE
+         CLK_MCO1_DISABLED
+         CLK_MCO2_DISABLED
+     >;
+     st,clkdiv = <
+         1         /*MPU*/
+-        0         /*AXI*/
++        1         /*AXI*/
+         0         /*MCU*/
+         1         /*APB1*/
+         1         /*APB2*/
+         1         /*APB3*/
+         0         /*APB4*/
+-        0         /*APB5*/
++        1         /*APB5*/
+         0         /*RTC*/
+         0         /*MCO1*/
+         0         /*MCO2*/
+     >;
+     st,pkcs = <
+-        CLK_CKPER_HSI
++        CLK_CKPER_DISABLED
+         CLK_FMC_ACLK
+         CLK_ETH_PLL3Q
+-        CLK_SDMMC12_HCLK6
++        CLK_SDMMC12_HSI
++        CLK_DSI_DSIPLL
+         CLK_STGEN_HSI
+         CLK_USBPHY_HSE
+         CLK_SPI2S1_DISABLED
+@@ -188,19 +190,19 @@ clocks {
+         CLK_I2C46_CSI
+         CLK_SDMMC3_DISABLED
+         CLK_USBO_USBPHY
+-        CLK_ADC_DISABLED
++        CLK_ADC_PLL4R
+         CLK_CEC_DISABLED
+         CLK_I2C12_PCLK1
+         CLK_I2C35_DISABLED
+         CLK_UART1_DISABLED
+-        CLK_UART24_PCLK1
++        CLK_UART24_HSE
+         CLK_UART35_DISABLED
+         CLK_UART6_DISABLED
+         CLK_UART78_DISABLED
+         CLK_SPDIF_DISABLED
+         CLK_FDCAN_HSE
+-        CLK_SAI1_DISABLED
+-        CLK_SAI2_CKPER
++        CLK_SAI1_PLL4Q
++        CLK_SAI2_PLL3Q
+         CLK_SAI3_DISABLED
+         CLK_SAI4_DISABLED
+         CLK_LPTIM1_DISABLED
+@@ -211,16 +213,18 @@ clocks {
+         cfg = < 3 39 0 1 1 1>;
+     };
+     pll2:st,pll@1 {
+-        cfg = < 3 29 1 0 0 6>;
++        cfg = < 3 32 1 0 0 7>;
+     };
+     pll3:st,pll@2 {
+-        cfg = < 3 24 1 7 1 3>;
++        cfg = < 1 49 2 11 1 3>;
+     };
+     pll4:st,pll@3 {
+-        cfg = < 3 24 1 4 0 2>;
++        cfg = < 1 32 3 4 3 2>;
++        frac = < 2731 >;
+     };
+ };
+ 
++
+ &bsec{
+     status = "okay";
+     secure-status = "okay";
+-- 
+2.17.1
+

@@ -19,4 +19,12 @@ SRC_URI+=" \
             file://0017-add-icorestm-makefile-dtb.patch \
             file://0018-added-support-ppp-and-set-host-usbotg-for-modem.patch \
             file://0019-fix-icore-defconfig-and-lcd-dtb.patch \
+            file://0020-added-support-wifi-and-bluetooth-ugeast-on-microdev.patch \
+      	    file://0021-fixed-dma-problem-for-SDIO-wifi.patch \
+      	    file://0022-Fix-unnecessary-error-message-for-HCI-request-comple.patch \
+            file://0023-sn65dsi83-running-on-7-inches-starterkit.patch \
+            file://0024-linux-added-sgtl5000-support-for-i.core-stm32mp1.patch \
+            file://0025-fix-sgtl5000-dts-entries.patch \
+            file://0026-fix-touch-interrupt-line.patch \
+            file://0027-fix-st1232-driver-for-weston.patch \
         "

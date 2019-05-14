@@ -1,0 +1,166 @@
+From f215ca63a0aa369930523356d21b18a4f829b945 Mon Sep 17 00:00:00 2001
+From: Matteo Lisi <matteo.lisi@engicam.com>
+Date: Tue, 14 May 2019 11:45:24 +0200
+Subject: [PATCH] add sgtl5000 support on i.core
+
+---
+ .../boot/dts/stm32mp157a-icorestm32-mx.dts    | 17 ++++-----
+ arch/arm/configs/stm32mp1icore_defconfig      | 35 +++++++++----------
+ 2 files changed, 26 insertions(+), 26 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-icorestm32-mx.dts b/arch/arm/boot/dts/stm32mp157a-icorestm32-mx.dts
+index ed9b65a76..bfd770db4 100644
+--- a/arch/arm/boot/dts/stm32mp157a-icorestm32-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-icorestm32-mx.dts
+@@ -543,13 +543,13 @@
+                      <STM32_PINMUX('G', 11, ANALOG)>; /* UART4_TX */
+         };
+     };
+-
+-    pinctrl_edt_ft5x26: pinctrl_edt_ft5x26-0 {
++/*
++    pinctrl_st1232_ts: pinctrl_st1232_ts-0 {
+             pins {
+ 			pinmux = <STM32_PINMUX('H', 10, GPIO)>;
+ 		};
+ 	};	
+-	 
++*/		 
+     lcd_pins_icore: lcd-0 {
+         pins {
+             pinmux = <STM32_PINMUX('I', 12,  AF14)>,/* LCD_HSYNC */
+@@ -650,11 +650,12 @@
+ 	/delete-property/dmas;
+ 	/delete-property/dma-names;
+ 
+-	polytouch: edt-ft5x26@38 {
+-		compatible = "edt,edt-ft5526";
+-		reg = <0x38>;
+-		pinctrl-names = "default";		
+-		pinctrl-0 = <&pinctrl_edt_ft5x26>;
++	
++	polytouch: st1232_ts@55 {
++		compatible = "sitronix,st1232-ts";
++		reg = <0x55>;
++//		pinctrl-names = "default";		
++//		pinctrl-0 = <&pinctrl_st1232_ts>;
+ 		interrupt-parent = <&gpioh>;
+ 		interrupts = <10 0>;	
+     };
+diff --git a/arch/arm/configs/stm32mp1icore_defconfig b/arch/arm/configs/stm32mp1icore_defconfig
+index 2ada4c861..4c36ec1e9 100644
+--- a/arch/arm/configs/stm32mp1icore_defconfig
++++ b/arch/arm/configs/stm32mp1icore_defconfig
+@@ -4174,7 +4174,6 @@ CONFIG_DRM_TTM=m
+ CONFIG_DRM_GEM_CMA_HELPER=y
+ CONFIG_DRM_KMS_CMA_HELPER=y
+ CONFIG_DRM_VM=y
+-CONFIG_DRM_SCHED=m
+ 
+ #
+ # I2C encoder or helper chips
+@@ -4330,12 +4329,12 @@ CONFIG_DRM_DW_HDMI=m
+ # CONFIG_DRM_DW_HDMI_AHB_AUDIO is not set
+ # CONFIG_DRM_DW_HDMI_I2S_AUDIO is not set
+ # CONFIG_DRM_DW_HDMI_CEC is not set
++CONFIG_DRM_I2C_SN65DSI83=y
+ CONFIG_DRM_STI=m
+ # CONFIG_DRM_V3D is not set
+ CONFIG_DRM_VC4=m
+ # CONFIG_DRM_VC4_HDMI_CEC is not set
+ # CONFIG_DRM_ETNAVIV is not set
+-# CONFIG_DRM_ETNAVIV_THERMAL  is not set
+ # CONFIG_DRM_ARCPGU is not set
+ # CONFIG_DRM_HISI_HIBMC is not set
+ # CONFIG_DRM_MEDIATEK is not set
+@@ -4466,13 +4465,13 @@ CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
+ CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=y
+ # CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER is not set
+ # CONFIG_LOGO is not set
+-CONFIG_SOUND=m
+-CONFIG_SND=m
+-CONFIG_SND_TIMER=m
+-CONFIG_SND_PCM=m
++CONFIG_SOUND=y
++CONFIG_SND=y
++CONFIG_SND_TIMER=y
++CONFIG_SND_PCM=y
+ CONFIG_SND_PCM_ELD=y
+ CONFIG_SND_PCM_IEC958=y
+-CONFIG_SND_DMAENGINE_PCM=m
++CONFIG_SND_DMAENGINE_PCM=y
+ CONFIG_SND_HWDEP=m
+ CONFIG_SND_RAWMIDI=m
+ CONFIG_SND_JACK=y
+@@ -4605,7 +4604,7 @@ CONFIG_SND_USB_AUDIO=m
+ # CONFIG_SND_USB_PODHD is not set
+ # CONFIG_SND_USB_TONEPORT is not set
+ # CONFIG_SND_USB_VARIAX is not set
+-CONFIG_SND_SOC=m
++CONFIG_SND_SOC=y
+ CONFIG_SND_SOC_AC97_BUS=y
+ CONFIG_SND_SOC_GENERIC_DMAENGINE_PCM=y
+ # CONFIG_SND_SOC_ADI is not set
+@@ -4689,9 +4688,9 @@ CONFIG_SND_SOC_STI=m
+ #
+ # STMicroelectronics STM32 SOC audio support
+ #
+-# CONFIG_SND_SOC_STM32_SAI is not set
+-# CONFIG_SND_SOC_STM32_I2S is not set
+-# CONFIG_SND_SOC_STM32_SPDIFRX is not set
++CONFIG_SND_SOC_STM32_SAI=y
++CONFIG_SND_SOC_STM32_I2S=y
++CONFIG_SND_SOC_STM32_SPDIFRX=y
+ 
+ #
+ # Allwinner SoC Audio support
+@@ -4721,7 +4720,7 @@ CONFIG_SND_SOC_TEGRA_MAX98090=m
+ # CONFIG_SND_SOC_UX500 is not set
+ # CONFIG_SND_SOC_XTFPGA_I2S is not set
+ # CONFIG_ZX_TDM is not set
+-CONFIG_SND_SOC_I2C_AND_SPI=m
++CONFIG_SND_SOC_I2C_AND_SPI=y
+ 
+ #
+ # CODEC drivers
+@@ -4762,7 +4761,7 @@ CONFIG_SND_SOC_CPCAP=m
+ # CONFIG_SND_SOC_CS4349 is not set
+ # CONFIG_SND_SOC_CS53L30 is not set
+ # CONFIG_SND_SOC_DMIC is not set
+-CONFIG_SND_SOC_HDMI_CODEC=m
++CONFIG_SND_SOC_HDMI_CODEC=y
+ # CONFIG_SND_SOC_ES7134 is not set
+ # CONFIG_SND_SOC_ES7241 is not set
+ # CONFIG_SND_SOC_ES8316 is not set
+@@ -4794,10 +4793,10 @@ CONFIG_SND_SOC_RL6231=m
+ # CONFIG_SND_SOC_RT5631 is not set
+ CONFIG_SND_SOC_RT5640=m
+ CONFIG_SND_SOC_RT5645=m
+-CONFIG_SND_SOC_SGTL5000=m
++CONFIG_SND_SOC_SGTL5000=y
+ # CONFIG_SND_SOC_SIMPLE_AMPLIFIER is not set
+ # CONFIG_SND_SOC_SIRF_AUDIO_CODEC is not set
+-CONFIG_SND_SOC_SPDIF=m
++CONFIG_SND_SOC_SPDIF=y
+ # CONFIG_SND_SOC_SSM2305 is not set
+ # CONFIG_SND_SOC_SSM2602_SPI is not set
+ # CONFIG_SND_SOC_SSM2602_I2C is not set
+@@ -4854,12 +4853,12 @@ CONFIG_SND_SOC_WM9712=m
+ # CONFIG_SND_SOC_NAU8810 is not set
+ # CONFIG_SND_SOC_NAU8824 is not set
+ # CONFIG_SND_SOC_TPA6130A2 is not set
+-CONFIG_SND_SIMPLE_CARD_UTILS=m
++CONFIG_SND_SIMPLE_CARD_UTILS=y
+ CONFIG_SND_SIMPLE_CARD=m
+ CONFIG_SND_SIMPLE_SCU_CARD=m
+-# CONFIG_SND_AUDIO_GRAPH_CARD is not set
++CONFIG_SND_AUDIO_GRAPH_CARD=y
+ # CONFIG_SND_AUDIO_GRAPH_SCU_CARD is not set
+-CONFIG_AC97_BUS=m
++CONFIG_AC97_BUS=y
+ 
+ #
+ # HID support
+-- 
+2.17.1
+

@@ -7,5 +7,5 @@ SRC_URI+=" \
             file://0005-enable-ADC-clock.patch \
             file://0006-add-icorest-preliminary-support.patch \
             file://0007-unlock-sdmmc3-for-wifi-microdev.patch \
-            file://0008-fix-eth.patch \
+            file://0008-change-clock-from-internal-to-external.patch \
         "
