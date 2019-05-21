@@ -5,5 +5,6 @@ SRC_URI+=" \
           file://0003-fix-usb-support.patch \
           file://0004-add-icorest-preliminary-support.patch \
           file://0005-fix-icore-defconfig.patch \
-          file://0006-fix-eth-reset-bug.patch \          
+          file://0006-fix-eth-reset-bug.patch \
+          file://0007-added-emmc-boot-on-icore-stm32mp1.patch \
         "

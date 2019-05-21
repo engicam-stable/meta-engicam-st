@@ -33,7 +33,7 @@ MACHINE_FEATURES += "splashscreen"
 # Image
 # =========================================================================
 # Add ubi FSTYPES to default ones for nand volumes
-#IMAGE_FSTYPES += "stmultiubi"
+# IMAGE_FSTYPES += "stmultiubi"
 
 # =========================================================================
 # Kernel
@@ -49,7 +49,7 @@ ST_KERNEL_LOADADDR   = "0xC2000040"
 # flashlayout
 # =========================================================================
 # Define the config labels to use to generate flashlayout file
-#FLASHLAYOUT_CONFIG_LABELS += "emmc"
+FLASHLAYOUT_CONFIG_LABELS += "emmc"
 #FLASHLAYOUT_CONFIG_LABELS += "nand-4-256"
 #FLASHLAYOUT_CONFIG_LABELS += "nor-sdcard"
 #FLASHLAYOUT_CONFIG_LABELS += "nor-emmc"

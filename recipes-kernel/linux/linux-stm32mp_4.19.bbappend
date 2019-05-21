@@ -27,4 +27,5 @@ SRC_URI+=" \
             file://0025-fix-sgtl5000-dts-entries.patch \
             file://0026-fix-touch-interrupt-line.patch \
             file://0027-fix-st1232-driver-for-weston.patch \
+            file://0028-fix-dtb-mmc1-pin-redefinition.patch \
         "
