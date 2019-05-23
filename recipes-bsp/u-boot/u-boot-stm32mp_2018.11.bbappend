@@ -7,4 +7,5 @@ SRC_URI+=" \
           file://0005-fix-icore-defconfig.patch \
           file://0006-fix-eth-reset-bug.patch \
           file://0007-added-emmc-boot-on-icore-stm32mp1.patch \
+          file://0008-fix-ram-values.patch \
         "
