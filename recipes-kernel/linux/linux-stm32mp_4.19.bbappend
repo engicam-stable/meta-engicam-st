@@ -28,4 +28,5 @@ SRC_URI+=" \
             file://0026-fix-touch-interrupt-line.patch \
             file://0027-fix-st1232-driver-for-weston.patch \
             file://0028-fix-dtb-mmc1-pin-redefinition.patch \
+            file://0029-fixed-problem-drm-mode-lvds.patch \
         "
