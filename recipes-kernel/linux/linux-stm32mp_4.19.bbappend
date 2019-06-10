@@ -29,4 +29,5 @@ SRC_URI+=" \
             file://0027-fix-st1232-driver-for-weston.patch \
             file://0028-fix-dtb-mmc1-pin-redefinition.patch \
             file://0029-fixed-problem-drm-mode-lvds.patch \
+            file://0030-fixed-lvds-icorestm32-starterkit-2.0.patch \
         "
