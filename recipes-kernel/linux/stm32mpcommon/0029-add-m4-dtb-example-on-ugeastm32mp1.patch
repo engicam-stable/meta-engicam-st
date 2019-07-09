@@ -1,0 +1,252 @@
+From 4b87486ff18b69371897e2b6bfc8fb63057d06be Mon Sep 17 00:00:00 2001
+From: Matteo Lisi <matteo.lisi@engicam.com>
+Date: Tue, 9 Jul 2019 11:37:43 +0200
+Subject: [PATCH] add m4 dtb example on ugeastm32mp1
+
+---
+ arch/arm/boot/dts/Makefile                    |  1 +
+ .../arm/boot/dts/stm32mp157a-ugeast-mx-m4.dts | 45 ++++++++++++++++
+ arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts   | 17 ++++++
+ arch/arm/configs/stm32mp1ugea_defconfig       | 54 +++++++++++++------
+ 4 files changed, 101 insertions(+), 16 deletions(-)
+ create mode 100644 arch/arm/boot/dts/stm32mp157a-ugeast-mx-m4.dts
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 4098097d4..23917c2a0 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -931,6 +931,7 @@ dtb-$(CONFIG_ARCH_STM32) += \
+ 	stm32mp157c-ev1-a7-examples.dtb \
+ 	stm32mp157c-ev1-m4-examples.dtb \
+ 	stm32mp157a-ugeast-mx.dtb \
++	stm32mp157a-ugeast-mx-m4.dtb \
+ 	stm32mp157a-ugeast-mx-lcd7.dtb \
+         stm32mp157a-icorestm32-mx.dtb	
+ dtb-$(CONFIG_MACH_SUN4I) += \
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugeast-mx-m4.dts b/arch/arm/boot/dts/stm32mp157a-ugeast-mx-m4.dts
+new file mode 100644
+index 000000000..74f9cf11b
+--- /dev/null
++++ b/arch/arm/boot/dts/stm32mp157a-ugeast-mx-m4.dts
+@@ -0,0 +1,45 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
++/*
++ * Copyright (C) STMicroelectronics 2017 - All Rights Reserved
++ * Author: Alexandre Torgue <alexandre.torgue@st.com> for STMicroelectronics.
++ */
++
++/dts-v1/;
++
++#include "stm32mp157a-ugeast-mx-lcd7.dts"
++
++/ {
++	model = "STMicroelectronics STM32MP157A-UGEAST configured to run M4 examples";
++	compatible = "st,stm32mp157a-ugeast-mx", "st,stm32mp157";
++};
++
++&adc {
++	status = "disabled";
++};
++
++&dac {
++	status = "disabled";
++};
++
++&dma2 {
++	status = "disabled";
++};
++
++&dmamux1 {
++	dma-masters = <&dma1>;
++	dma-channels = <8>;
++};
++
++&m4_rng2 {
++	status = "okay";
++};
++
++&m4_rproc {
++	m4_system_resources {
++		status = "okay";
++	};
++};
++
++&timers1 {
++	status = "disabled";
++};
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts b/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
+index e0c75612f..7ecb5271a 100644
+--- a/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
+@@ -882,5 +882,22 @@
+ 	sram = <&dma_pool>;
+ };
+ 
++&ipcc{
++    status = "okay";
++};
++
++&m4_rproc {
++    memory-region = <&retram>, <&mcuram>, <&mcuram2>, <&vdev0vring0>,
++			<&vdev0vring1>, <&vdev0buffer>;
++	mboxes = <&ipcc 0>, <&ipcc 1>, <&ipcc 2>;
++	mbox-names = "vq0", "vq1", "shutdown";
++	interrupt-parent = <&exti>;
++	interrupts = <68 1>;
++	interrupt-names = "wdg";
++	recovery;
++	status = "okay";
++};
++
++
+ /* USER CODE END addons */
+ 
+diff --git a/arch/arm/configs/stm32mp1ugea_defconfig b/arch/arm/configs/stm32mp1ugea_defconfig
+index 419be6ffa..ebdc0a32f 100644
+--- a/arch/arm/configs/stm32mp1ugea_defconfig
++++ b/arch/arm/configs/stm32mp1ugea_defconfig
+@@ -34,9 +34,10 @@ CONFIG_DEFAULT_HOSTNAME="(none)"
+ CONFIG_SWAP=y
+ CONFIG_SYSVIPC=y
+ CONFIG_SYSVIPC_SYSCTL=y
+-# CONFIG_POSIX_MQUEUE is not set
++CONFIG_POSIX_MQUEUE=y
++CONFIG_POSIX_MQUEUE_SYSCTL=y
+ CONFIG_CROSS_MEMORY_ATTACH=y
+-# CONFIG_USELIB is not set
++CONFIG_USELIB=y
+ # CONFIG_AUDIT is not set
+ CONFIG_HAVE_ARCH_AUDITSYSCALL=y
+ 
+@@ -99,7 +100,9 @@ CONFIG_TREE_SRCU=y
+ CONFIG_TASKS_RCU=y
+ CONFIG_RCU_STALL_COMMON=y
+ CONFIG_RCU_NEED_SEGCBLIST=y
+-# CONFIG_IKCONFIG is not set
++CONFIG_BUILD_BIN2C=y
++CONFIG_IKCONFIG=y
++CONFIG_IKCONFIG_PROC=y
+ CONFIG_LOG_BUF_SHIFT=17
+ CONFIG_LOG_CPU_MAX_BUF_SHIFT=12
+ CONFIG_PRINTK_SAFE_LOG_BUF_SHIFT=13
+@@ -187,7 +190,7 @@ CONFIG_SLAB_MERGE_DEFAULT=y
+ # CONFIG_SLAB_FREELIST_HARDENED is not set
+ CONFIG_SLUB_CPU_PARTIAL=y
+ CONFIG_SYSTEM_DATA_VERIFICATION=y
+-# CONFIG_PROFILING is not set
++CONFIG_PROFILING=y
+ CONFIG_TRACEPOINTS=y
+ CONFIG_ARM=y
+ CONFIG_ARM_HAS_SG_CHAIN=y
+@@ -926,6 +929,7 @@ CONFIG_CRYPTO_CHACHA20_NEON=m
+ #
+ CONFIG_CRASH_CORE=y
+ CONFIG_KEXEC_CORE=y
++CONFIG_OPROFILE=y
+ CONFIG_HAVE_OPROFILE=y
+ # CONFIG_KPROBES is not set
+ # CONFIG_JUMP_LABEL is not set
+@@ -4340,6 +4344,7 @@ CONFIG_DRM_DW_HDMI=m
+ # CONFIG_DRM_DW_HDMI_AHB_AUDIO is not set
+ # CONFIG_DRM_DW_HDMI_I2S_AUDIO is not set
+ # CONFIG_DRM_DW_HDMI_CEC is not set
++CONFIG_DRM_I2C_SN65DSI83=y
+ CONFIG_DRM_STI=m
+ # CONFIG_DRM_V3D is not set
+ CONFIG_DRM_VC4=m
+@@ -6073,7 +6078,7 @@ CONFIG_PL320_MBOX=y
+ # CONFIG_ROCKCHIP_MBOX is not set
+ # CONFIG_ALTERA_MBOX is not set
+ CONFIG_BCM2835_MBOX=y
+-CONFIG_STI_MBOX=m
++CONFIG_STI_MBOX=y
+ # CONFIG_TI_MESSAGE_MANAGER is not set
+ CONFIG_HI3660_MBOX=y
+ CONFIG_HI6220_MBOX=y
+@@ -6081,7 +6086,7 @@ CONFIG_HI6220_MBOX=y
+ # CONFIG_QCOM_APCS_IPC is not set
+ # CONFIG_TEGRA_HSP_MBOX is not set
+ # CONFIG_BCM_PDC_MBOX is not set
+-# CONFIG_STM32_IPCC is not set
++CONFIG_STM32_IPCC=y
+ # CONFIG_MTK_CMDQ_MBOX is not set
+ CONFIG_IOMMU_API=y
+ CONFIG_IOMMU_SUPPORT=y
+@@ -6110,24 +6115,25 @@ CONFIG_TEGRA_IOMMU_SMMU=y
+ #
+ # Remoteproc drivers
+ #
+-CONFIG_REMOTEPROC=m
+-# CONFIG_REMOTEPROC_SRM_CORE is not set
++CONFIG_REMOTEPROC=y
++CONFIG_REMOTEPROC_SRM_CORE=y
++CONFIG_REMOTEPROC_SRM_DEV=y
+ # CONFIG_IMX_REMOTEPROC is not set
+ # CONFIG_WKUP_M3_RPROC is not set
+ # CONFIG_KEYSTONE_REMOTEPROC is not set
+ # CONFIG_QCOM_SYSMON is not set
+-CONFIG_ST_REMOTEPROC=m
++CONFIG_ST_REMOTEPROC=y
+ CONFIG_ST_SLIM_REMOTEPROC=m
+-# CONFIG_STM32_RPROC is not set
++CONFIG_STM32_RPROC=y
+ 
+ #
+ # Rpmsg drivers
+ #
+-CONFIG_RPMSG=m
+-# CONFIG_RPMSG_CHAR is not set
++CONFIG_RPMSG=y
++CONFIG_RPMSG_CHAR=y
+ # CONFIG_RPMSG_QCOM_GLINK_RPM is not set
+-CONFIG_RPMSG_VIRTIO=m
+-# CONFIG_RPMSG_TTY is not set
++CONFIG_RPMSG_VIRTIO=y
++CONFIG_RPMSG_TTY=y
+ # CONFIG_SOUNDWIRE is not set
+ 
+ #
+@@ -6884,7 +6890,12 @@ CONFIG_INOTIFY_USER=y
+ CONFIG_AUTOFS4_FS=y
+ CONFIG_AUTOFS_FS=y
+ # CONFIG_FUSE_FS is not set
+-# CONFIG_OVERLAY_FS is not set
++CONFIG_OVERLAY_FS=y
++# CONFIG_OVERLAY_FS_REDIRECT_DIR is not set
++CONFIG_OVERLAY_FS_REDIRECT_ALWAYS_FOLLOW=y
++# CONFIG_OVERLAY_FS_INDEX is not set
++# CONFIG_OVERLAY_FS_XINO_AUTO is not set
++# CONFIG_OVERLAY_FS_METACOPY is not set
+ 
+ #
+ # Caches
+@@ -7487,6 +7498,7 @@ CONFIG_TRACE_CLOCK=y
+ CONFIG_RING_BUFFER=y
+ CONFIG_EVENT_TRACING=y
+ CONFIG_CONTEXT_SWITCH_TRACER=y
++CONFIG_RING_BUFFER_ALLOW_SWAP=y
+ CONFIG_TRACING=y
+ CONFIG_TRACING_SUPPORT=y
+ CONFIG_FTRACE=y
+@@ -7544,7 +7556,17 @@ CONFIG_RUNTIME_TESTING_MENU=y
+ # CONFIG_TEST_KMOD is not set
+ # CONFIG_MEMTEST is not set
+ # CONFIG_BUG_ON_DATA_CORRUPTION is not set
+-# CONFIG_SAMPLES is not set
++CONFIG_SAMPLES=y
++# CONFIG_SAMPLE_TRACE_EVENTS is not set
++# CONFIG_SAMPLE_TRACE_PRINTK is not set
++# CONFIG_SAMPLE_KOBJECT is not set
++# CONFIG_SAMPLE_HW_BREAKPOINT is not set
++# CONFIG_SAMPLE_KFIFO is not set
++# CONFIG_SAMPLE_QMI_CLIENT is not set
++CONFIG_SAMPLE_RPMSG_CLIENT=m
++# CONFIG_SAMPLE_CONFIGFS is not set
++# CONFIG_SAMPLE_SECCOMP is not set
++# CONFIG_SAMPLE_VFIO_MDEV_MDPY_FB is not set
+ CONFIG_HAVE_ARCH_KGDB=y
+ # CONFIG_KGDB is not set
+ # CONFIG_UBSAN is not set
+-- 
+2.17.1
+

@@ -34,7 +34,7 @@ MACHINE_FEATURES += "splashscreen"
 # Image
 # =========================================================================
 # Add ubi FSTYPES to default ones for nand volumes
-IMAGE_FSTYPES += "stmultiubi"
+# IMAGE_FSTYPES += "stmultiubi"
 
 # =========================================================================
 # Kernel
@@ -56,13 +56,3 @@ ST_KERNEL_LOADADDR   = "0xC2000040"
 #FLASHLAYOUT_CONFIG_LABELS += "nor-emmc"
 #FLASHLAYOUT_CONFIG_LABELS += "nor-nand-4-256"
 FLASHLAYOUT_CONFIG_LABELS += "sdcard"
-
-# =========================================================================
-# M4 copro
-# =========================================================================
-# Define the devicetree for M4 example
-#M4_DEVICETREE += "stm32mp157c-dk2-m4-examples"
-M4_DEVICETREE += "stm32mp157c-ev1-m4-examples"
-
-# Define specific board reference to use
-M4_BOARDS = "STM32MP157C-EV1"
