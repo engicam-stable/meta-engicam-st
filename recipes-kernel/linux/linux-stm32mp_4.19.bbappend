@@ -30,5 +30,5 @@ SRC_URI+=" \
             file://0028-fix-dtb-mmc1-pin-redefinition.patch \
             file://0029-fixed-problem-drm-mode-lvds.patch \
             file://0030-fixed-lvds-icorestm32-starterkit-2.0.patch \
-            file://031-add-m4-dtb-example-on-ugeastm32mp1.patch \
+            file://0031-add-m4-dtb-example-on-ugeastm32mp1.patch \
         "
