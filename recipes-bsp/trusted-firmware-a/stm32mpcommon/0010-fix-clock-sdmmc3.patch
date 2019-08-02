@@ -1,0 +1,25 @@
+From ced088b45799a112a33d0eab9315b568bf20513d Mon Sep 17 00:00:00 2001
+From: Domenico Acri <domenico.acri@engicam.com>
+Date: Fri, 2 Aug 2019 11:02:00 +0200
+Subject: [PATCH] fix clock sdmmc3
+
+---
+ fdts/stm32mp157a-ugeast-mx.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fdts/stm32mp157a-ugeast-mx.dts b/fdts/stm32mp157a-ugeast-mx.dts
+index 4623239..071f28a 100644
+--- a/fdts/stm32mp157a-ugeast-mx.dts
++++ b/fdts/stm32mp157a-ugeast-mx.dts
+@@ -187,7 +187,7 @@ clocks {
+         CLK_SPI45_DISABLED
+         CLK_SPI6_DISABLED
+         CLK_I2C46_CSI
+-        CLK_SDMMC3_DISABLED
++        CLK_SDMMC3_HCLK2
+         CLK_USBO_USBPHY
+         CLK_ADC_PLL3Q
+         CLK_CEC_DISABLED
+-- 
+2.17.1
+
