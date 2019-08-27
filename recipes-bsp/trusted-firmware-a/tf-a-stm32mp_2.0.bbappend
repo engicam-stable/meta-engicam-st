@@ -9,5 +9,6 @@ SRC_URI+=" \
             file://0007-unlock-sdmmc3-for-wifi-microdev.patch \
             file://0008-change-clock-from-internal-to-external.patch \
             file://0009-change-clock-from-internal-to-external-on-ugea.patch \
-	    file://0010-fix-clock-sdmmc3.patch \
+            file://0010-fix-clock-sdmmc3.patch \
+            file://0011-Added-ugea-stm32-512MB-support.patch \            
         "

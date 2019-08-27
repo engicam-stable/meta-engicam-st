@@ -1,0 +1,30 @@
+From 5929ea557de9a7032b3617b291851dc947f30635 Mon Sep 17 00:00:00 2001
+From: Mirko Ardinghi <mirko.ardinghi@engicam.com>
+Date: Tue, 27 Aug 2019 16:13:34 +0200
+Subject: [PATCH] Removed memory indication
+
+---
+ arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts b/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
+index 7ecb5271a..3fd0a6e72 100644
+--- a/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
+@@ -17,13 +17,6 @@
+ 	model = "Engicam MicroGEA STM32MP1 starterkit";
+ 	compatible = "st,stm32mp157a-ugeast-mx", "st,stm32mp157";
+ 
+-    memory@c0000000 {
+-        reg = <0xc0000000 0x10000000>;
+-
+-        /* USER CODE BEGIN memory */
+-        /* USER CODE END memory */
+-    };
+-
+ 	reserved-memory {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+-- 
+2.20.1
+

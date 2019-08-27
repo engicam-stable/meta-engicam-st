@@ -32,4 +32,5 @@ SRC_URI+=" \
             file://0030-fixed-lvds-icorestm32-starterkit-2.0.patch \
             file://0031-add-m4-dtb-example-on-ugeastm32mp1.patch \
             file://0032-add-lcd10-yes-support-on-microdev.patch \
+            file://0033-Removed-memory-settings.patch \
         "
