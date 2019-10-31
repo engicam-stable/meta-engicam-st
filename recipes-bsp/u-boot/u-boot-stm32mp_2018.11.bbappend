@@ -9,4 +9,6 @@ SRC_URI+=" \
           file://0007-added-emmc-boot-on-icore-stm32mp1.patch \
           file://0008-fix-ram-values.patch \
           file://0011-Added-ugea-stm32-512MB-support.patch \      
+          file://0012-change-eth-pll-ugea.patch \
+          file://0012-change-eth-pll-ugea-512MB.patch \
         "

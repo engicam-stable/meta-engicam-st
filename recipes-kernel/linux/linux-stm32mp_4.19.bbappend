@@ -33,4 +33,5 @@ SRC_URI+=" \
             file://0031-add-m4-dtb-example-on-ugeastm32mp1.patch \
             file://0032-add-lcd10-yes-support-on-microdev.patch \
             file://0033-Removed-memory-settings.patch \
+            file://0034-change-eth-pll-ugea.patch \
         "

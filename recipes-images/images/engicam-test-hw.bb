@@ -51,4 +51,5 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     brcm-patchram-plus \
     lwb-bcm4343w-fw \
     obexftp \
+    devmem2 \
     "

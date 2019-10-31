@@ -18,6 +18,7 @@ IMAGE_FEATURES += "\
     eclipse-debug \
     "
 
+
 #
 # Multimedia part addons
 #
@@ -77,6 +78,7 @@ IMAGE_X11_XWAYLAND_DISPLAY_PART = " \
     qttools \
     qtsystems \
     sqlite \
+    devmem2 \
 "
 
 PACKAGECONFIG_remove_pn-qtwayland = " xcomposite-glx "
