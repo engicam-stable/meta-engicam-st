@@ -1,0 +1,48 @@
+From 57240ef096c5d544c5abb779f4aaedcff8979492 Mon Sep 17 00:00:00 2001
+From: engicam <support@engicam.com>
+Date: Fri, 8 Nov 2019 14:18:02 +0100
+Subject: [PATCH] fix mmc1 boot issue
+
+---
+ arch/arm/boot/dts/stm32mp157a-icorestm32-mx.dts | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-icorestm32-mx.dts b/arch/arm/boot/dts/stm32mp157a-icorestm32-mx.dts
+index b79fdc64e..51adc0455 100644
+--- a/arch/arm/boot/dts/stm32mp157a-icorestm32-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-icorestm32-mx.dts
+@@ -389,15 +389,16 @@
+                      <STM32_PINMUX('C', 9, AF12)>, /* SDMMC1_D1 */
+                      <STM32_PINMUX('C', 10, AF12)>, /* SDMMC1_D2 */
+                      <STM32_PINMUX('C', 11, AF12)>, /* SDMMC1_D3 */
+-                     <STM32_PINMUX('D', 2, AF12)>; /* SDMMC1_CMD */
+-            bias-disable;
++                     <STM32_PINMUX('D', 2, AF12)>, /* SDMMC1_CMD */
++                     <STM32_PINMUX('G', 1, GPIO)>; /* SDMMC1_CD */
++            bias-pull-up;
+             drive-push-pull;
+             slew-rate = <1>;
+         };
+         pins2 {
+             u-boot,dm-pre-reloc;
+             pinmux = <STM32_PINMUX('C', 12, AF12)>; /* SDMMC1_CK */
+-            bias-disable;
++            bias-pull-up;
+             drive-push-pull;
+             slew-rate = <3>;
+         };
+@@ -808,10 +809,9 @@
+     status = "okay";
+ 
+     /* USER CODE BEGIN sdmmc1 */
+-    broken-cd;
++    	broken-cd;
+ 	st,neg-edge;
+ 	bus-width = <4>;
+-	max-frequency = <10000000>;
+ 	vmmc-supply = <&v3v3>;
+     /* USER CODE END sdmmc1 */
+ };
+-- 
+2.17.1
+
