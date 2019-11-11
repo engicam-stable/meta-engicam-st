@@ -35,4 +35,5 @@ SRC_URI+=" \
             file://0033-Removed-memory-settings.patch \
             file://0034-change-eth-pll-ugea.patch \
             file://0035-fix-mmc1-boot-issue.patch \
+            file://0036-add-usart1-on-icore-module.patch \
         "

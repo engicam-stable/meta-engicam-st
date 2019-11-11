@@ -10,7 +10,8 @@ SRC_URI+=" \
             file://0008-change-clock-from-internal-to-external.patch \
             file://0009-change-clock-from-internal-to-external-on-ugea.patch \
             file://0010-fix-clock-sdmmc3.patch \
-            file://0011-Added-ugea-stm32-512MB-support.patch \      
+            file://0011-Added-ugea-stm32-512MB-support.patch \
             file://0012-change-eth-pll-ugea.patch \
             file://0012-change-eth-pll-ugea-512MB.patch \
+            file://0013-enable-uart1.patch \
         "
