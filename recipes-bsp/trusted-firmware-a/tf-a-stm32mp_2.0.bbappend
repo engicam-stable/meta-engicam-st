@@ -14,4 +14,5 @@ SRC_URI+=" \
             file://0012-change-eth-pll-ugea.patch \
             file://0012-change-eth-pll-ugea-512MB.patch \
             file://0013-enable-uart1.patch \
+            file://0014-added-new-memory-size-and-mpu-800.patch \
         "
