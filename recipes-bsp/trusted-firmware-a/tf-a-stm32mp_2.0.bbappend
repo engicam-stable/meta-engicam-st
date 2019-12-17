@@ -13,10 +13,7 @@ SRC_URI+=" \
             file://0011-Added-ugea-stm32-512MB-support.patch \
             file://0012-change-eth-pll-ugea.patch \
             file://0012-change-eth-pll-ugea-512MB.patch \
-            file://0013-enable-uart1.patch \
-<<<<<<< HEAD
-	    file://0014-ported-capacitive-touch-ofcap2-10.patch \
-=======
+            file://0013-enable-uart1.patch \	 
             file://0014-added-new-memory-size-and-mpu-800.patch \
->>>>>>> 4624df8afd5ef5803399a37bf37c1b7450971461
+	    file://0015-ported-capacitive-touch-ofcap2-10.patch \
         "
