@@ -1,0 +1,53 @@
+From 4d72237502e082b0765e1c9bc3cb2759f36788eb Mon Sep 17 00:00:00 2001
+From: Francesco_Utel <francesco.utel@engicam.com>
+Date: Thu, 12 Dec 2019 11:41:45 +0100
+Subject: [PATCH] ported capacitive touch - ofcap2-10
+
+---
+ fdts/stm32mp157a-icorestm32-mx.dts | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/fdts/stm32mp157a-icorestm32-mx.dts b/fdts/stm32mp157a-icorestm32-mx.dts
+index 1dc727c..f4e05a1 100644
+--- a/fdts/stm32mp157a-icorestm32-mx.dts
++++ b/fdts/stm32mp157a-icorestm32-mx.dts
+@@ -26,8 +26,8 @@
+ 
+ 	aliases {
+ 		serial0 = &uart4;
+-		serial1 = &usart3;
+-		serial2 = &uart7;
++		serial1 = &usart1;
++		serial2 = &usart3;
+ 	};
+ 
+ 	chosen {
+@@ -188,7 +188,7 @@ clocks {
+         CLK_SPI45_DISABLED
+         CLK_SPI6_DISABLED
+         CLK_I2C46_CSI
+-        CLK_SDMMC3_DISABLED
++        CLK_SDMMC3_HCLK2
+         CLK_USBO_USBPHY
+         CLK_ADC_PLL4R
+         CLK_CEC_DISABLED
+@@ -196,7 +196,7 @@ clocks {
+         CLK_I2C35_DISABLED
+         CLK_UART1_HSI
+         CLK_UART24_HSE
+-        CLK_UART35_DISABLED
++        CLK_UART35_PCLK1
+         CLK_UART6_DISABLED
+         CLK_UART78_DISABLED
+         CLK_SPDIF_DISABLED
+@@ -250,6 +250,7 @@ clocks {
+     DECPROT(STM32MP1_ETZPC_I2C4_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+     DECPROT(STM32MP1_ETZPC_I2C6_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+     DECPROT(STM32MP1_ETZPC_FMC_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++    DECPROT(STM32MP1_ETZPC_SDMMC3_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 
+     /*Restriction: following IDs are not managed - please to use User-Section if needed:
+      STM32MP1_ETZPC_DMA1_ID, STM32MP1_ETZPC_DMA2_ID, STM32MP1_ETZPC_DMAMUX_ID,
+-- 
+2.7.4
+
