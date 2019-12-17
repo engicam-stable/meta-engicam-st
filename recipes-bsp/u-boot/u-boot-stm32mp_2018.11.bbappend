@@ -13,4 +13,5 @@ SRC_URI+=" \
           file://0012-change-eth-pll-ugea-512MB.patch \
           file://0013-fix-mmc1-pads-slew-rate.patch \
           file://0014-add-pullup-to-mmc1-data.patch \
+          file://0015-added-new-memory-size-and-mpu-800.patch \
         "
