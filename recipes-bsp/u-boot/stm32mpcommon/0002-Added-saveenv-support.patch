@@ -1,0 +1,2292 @@
+From c992bc62925aa844a53a9753269794fe8519d0ed Mon Sep 17 00:00:00 2001
+From: Mirko Ardinghi <mirko.ardinghi@engicam.com>
+Date: Thu, 2 Jan 2020 16:44:27 +0100
+Subject: [PATCH] bbbb
+
+---
+ board/engicam-st/stm32mp1-icore/MAINTAINERS   |  15 +-
+ board/engicam-st/stm32mp1-icore/board.c       |   4 +-
+ board/engicam-st/stm32mp1-icore/cmd_stboard.c |   2 +-
+ board/engicam-st/stm32mp1-icore/stm32mp1.c    | 652 +++++++++++-------
+ board/engicam-st/stm32mp1-ugea/MAINTAINERS    |  15 +-
+ board/engicam-st/stm32mp1-ugea/board.c        |   4 +-
+ board/engicam-st/stm32mp1-ugea/cmd_stboard.c  |   2 +-
+ board/engicam-st/stm32mp1-ugea/stm32mp1.c     | 621 +++++++++++------
+ configs/stm32mp15_icorest_trusted_defconfig   |  13 +
+ .../stm32mp15_ugeast_512M_trusted_defconfig   |  13 +
+ ...stm32mp15_ugeast_800M_1G_trusted_defconfig |  13 +
+ ...m32mp15_ugeast_800M_512M_trusted_defconfig |  13 +
+ configs/stm32mp15_ugeast_trusted_defconfig    |  13 +
+ include/configs/stm32mp1-icore.h              | 105 ++-
+ include/configs/stm32mp1-ugea.h               | 105 ++-
+ 15 files changed, 1089 insertions(+), 501 deletions(-)
+
+diff --git a/board/engicam-st/stm32mp1-icore/MAINTAINERS b/board/engicam-st/stm32mp1-icore/MAINTAINERS
+index 6c9710a..48a8a03 100644
+--- a/board/engicam-st/stm32mp1-icore/MAINTAINERS
++++ b/board/engicam-st/stm32mp1-icore/MAINTAINERS
+@@ -1,11 +1,8 @@
+-STM32MP1 BOARD
+-M:	Patrick Delaunay <patrick.delaunay@st.com>
+-M:	Christophe Kerello <christophe.kerello@st.com>
++STM32MP1-ICORE BOARD
++M:	Engicam
+ L:	uboot-stm32@st-md-mailman.stormreply.com (moderated for non-subscribers)
+ S:	Maintained
+-F:	arch/arm/dts/stm32mp157*
+-F:	board/st/stm32mp1
+-F:	configs/stm32mp15_trusted_defconfig
+-F:	configs/stm32mp15_optee_defconfig
+-F:	configs/stm32mp15_basic_defconfig
+-F:	include/configs/stm32mp1.h
++F:	arch/arm/dts/stm32mp157a-icore*
++F:	board/engicam-st/stm32mp1-icore
++F:	configs/stm32mp15_icore*
++F:	include/configs/stm32mp1-icore.h
+diff --git a/board/engicam-st/stm32mp1-icore/board.c b/board/engicam-st/stm32mp1-icore/board.c
+index b6e5288..c3d832f 100644
+--- a/board/engicam-st/stm32mp1-icore/board.c
++++ b/board/engicam-st/stm32mp1-icore/board.c
+@@ -47,7 +47,7 @@ int board_ddr_power_init(enum ddr_type ddr_type)
+ 	ret = uclass_get_device_by_driver(UCLASS_PMIC,
+ 					  DM_GET_DRIVER(pmic_stpmic1), &dev);
+ 	if (ret)
+-		/* No PMIC on power discrete board */
++		/* No PMIC on board */
+ 		return 0;
+ 
+ 	switch (ddr_type) {
+@@ -149,7 +149,7 @@ int board_ddr_power_init(enum ddr_type ddr_type)
+ 
+ 		mdelay(STPMIC1_DEFAULT_START_UP_DELAY_MS);
+ 
+-		/* Enable VDD_DDR22 =BUCK2 */
++		/* Enable VDD_DDR2 =BUCK2 */
+ 		ret = pmic_clrsetbits(dev,
+ 				      STPMIC1_BUCKX_MAIN_CR(STPMIC1_BUCK2),
+ 				      STPMIC1_BUCK_ENA, STPMIC1_BUCK_ENA);
+diff --git a/board/engicam-st/stm32mp1-icore/cmd_stboard.c b/board/engicam-st/stm32mp1-icore/cmd_stboard.c
+index 38b1c1b..03d4b52 100644
+--- a/board/engicam-st/stm32mp1-icore/cmd_stboard.c
++++ b/board/engicam-st/stm32mp1-icore/cmd_stboard.c
+@@ -11,7 +11,7 @@
+ 
+ static bool check_stboard(u16 board)
+ {
+-	int i;
++	unsigned int i;
+ 	const u16 st_board_id[] = {
+ 		0x1272,
+ 		0x1263,
+diff --git a/board/engicam-st/stm32mp1-icore/stm32mp1.c b/board/engicam-st/stm32mp1-icore/stm32mp1.c
+index 17a19f8..f852b1e 100644
+--- a/board/engicam-st/stm32mp1-icore/stm32mp1.c
++++ b/board/engicam-st/stm32mp1-icore/stm32mp1.c
+@@ -2,28 +2,34 @@
+ /*
+  * Copyright (C) 2018, STMicroelectronics - All Rights Reserved
+  */
+-
+ #include <config.h>
+ #include <common.h>
+ #include <adc.h>
++#include <bootm.h>
+ #include <dm.h>
+ #include <clk.h>
+ #include <console.h>
++#include <environment.h>
+ #include <fdt_support.h>
+ #include <generic-phy.h>
++#include <g_dnl.h>
+ #include <i2c.h>
+ #include <led.h>
+ #include <misc.h>
++#include <mtd.h>
+ #include <mtd_node.h>
++#include <netdev.h>
+ #include <phy.h>
+ #include <remoteproc.h>
+ #include <reset.h>
+ #include <syscon.h>
+ #include <usb.h>
++#include <watchdog.h>
+ #include <asm/io.h>
+ #include <asm/gpio.h>
+ #include <asm/arch/stm32.h>
+ #include <asm/arch/stm32mp1_smc.h>
++#include <asm/arch/sys_proto.h>
+ #include <jffs2/load_kernel.h>
+ #include <power/regulator.h>
+ #include <usb/dwc2_udc.h>
+@@ -37,6 +43,9 @@
+ #define SYSCFG_CMPENSETR	0x24
+ #define SYSCFG_PMCCLRR		0x44
+ 
++#define SYSCFG_BOOTR_BOOT_MASK		GENMASK(2, 0)
++#define SYSCFG_BOOTR_BOOTPD_SHIFT	4
++
+ #define SYSCFG_IOCTRLSETR_HSLVEN_TRACE		BIT(0)
+ #define SYSCFG_IOCTRLSETR_HSLVEN_QUADSPI	BIT(1)
+ #define SYSCFG_IOCTRLSETR_HSLVEN_ETH		BIT(2)
+@@ -63,40 +72,10 @@
+  */
+ DECLARE_GLOBAL_DATA_PTR;
+ 
++#define USB_LOW_THRESHOLD_UV		200000
+ #define USB_WARNING_LOW_THRESHOLD_UV	660000
+ #define USB_START_LOW_THRESHOLD_UV	1230000
+-#define USB_START_HIGH_THRESHOLD_UV	2100000
+-
+-
+-#if 0
+-int reset_eth_phy(void)
+-{
+-    ofnode node;
+-    struct gpio_desc gpio;
+-
+-    node = ofnode_path("/config");
+-    if (!ofnode_valid(node)) {
+-            return -1;
+-    }
+-
+-    if (gpio_request_by_name_nodev(node, "st,reset-phy-gpios", 0,
+-				       &gpio, GPIOD_IS_OUT)) {
+-        return -2;
+-	}
+-	
+-    if (dm_gpio_set_value(&gpio,1)) {
+-        return -3;
+-    }
+-
+-   	udelay(20000);
+-
+-    if (dm_gpio_set_value(&gpio,0)) {
+-        return -4;
+-    }
+-
+-    return 0;
+-}
+-#endif
++#define USB_START_HIGH_THRESHOLD_UV	2150000
+ 
+ int checkboard(void)
+ {
+@@ -107,7 +86,9 @@ int checkboard(void)
+ 	const char *fdt_compat;
+ 	int fdt_compat_len;
+ 
+-	if (IS_ENABLED(CONFIG_STM32MP1_TRUSTED))
++	if (IS_ENABLED(CONFIG_STM32MP1_OPTEE))
++		mode = "op-tee";
++	else if (IS_ENABLED(CONFIG_STM32MP1_TRUSTED))
+ 		mode = "trusted";
+ 	else
+ 		mode = "basic";
+@@ -186,47 +167,6 @@ static void board_key_check(void)
+ #endif
+ }
+ 
+-bool board_is_dk2(void)
+-{
+-	if (of_machine_is_compatible("st,stm32mp157c-dk2"))
+-		return true;
+-
+-	return false;
+-}
+-
+-int board_late_init(void)
+-{
+-#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+-	const void *fdt_compat;
+-	int fdt_compat_len;
+-
+-	fdt_compat = fdt_getprop(gd->fdt_blob, 0, "compatible",
+-				 &fdt_compat_len);
+-	if (fdt_compat && fdt_compat_len) {
+-		if (strncmp(fdt_compat, "st,", 3) != 0)
+-			env_set("board_name", fdt_compat);
+-		else
+-			env_set("board_name", fdt_compat + 3);
+-	}
+-#endif
+-
+-	return 0;
+-}
+-
+-#ifdef CONFIG_STM32_SDMMC2
+-/* this is a weak define that we are overriding */
+-int board_mmc_init(void)
+-{
+-	return 0;
+-}
+-#endif
+-
+-#ifdef CONFIG_STM32_QSPI
+-void board_qspi_init(void)
+-{
+-}
+-#endif /* CONFIG_STM32_QSPI */
+-
+ #if defined(CONFIG_USB_GADGET) && defined(CONFIG_USB_GADGET_DWC2_OTG)
+ 
+ /*
+@@ -261,19 +201,12 @@ static struct reset_ctl usbotg_reset;
+ /* STUSB1600_CC_CONNECTION_STATUS bitfields */
+ #define STUSB1600_CC_ATTACH			BIT(0)
+ 
+-static int stusb1600_init(void)
++static int stusb1600_init(ofnode node)
+ {
+ 	struct udevice *dev, *bus;
+-	ofnode node;
+ 	int ret;
+ 	u32 chip_addr;
+ 
+-	node = ofnode_by_compatible(ofnode_null(), "st,stusb1600");
+-	if (!ofnode_valid(node)) {
+-		printf("stusb1600 not found\n");
+-		return -ENODEV;
+-	}
+-
+ 	ret = ofnode_read_u32(node, "reg", &chip_addr);
+ 	if (ret)
+ 		return -EINVAL;
+@@ -305,9 +238,11 @@ static int stusb1600_cable_connected(void)
+ 	return status & STUSB1600_CC_ATTACH;
+ }
+ 
+-void board_usbotg_init(void)
++static void board_usbotg_init(void)
+ {
++	ofnode usb1600_node;
+ 	int node;
++	int count;
+ 	struct fdtdec_phandle_args args;
+ 	struct udevice *dev;
+ 	const void *blob = gd->fdt_blob;
+@@ -384,11 +319,18 @@ void board_usbotg_init(void)
+ 						     "g-rx-fifo-size", 0);
+ 	stm32mp_otg_data.np_tx_fifo_sz = fdtdec_get_int(blob, node,
+ 							"g-np-tx-fifo-size", 0);
+-	stm32mp_otg_data.tx_fifo_sz = fdtdec_get_int(blob, node,
+-						     "g-tx-fifo-size", 0);
+ 
+-	if (fdtdec_get_bool(blob, node, "usb1600")) {
+-		stusb1600_init();
++	count = fdtdec_get_int_array_count(blob, node, "g-tx-fifo-size",
++			&stm32mp_otg_data.tx_fifo_sz_array[DWC2_SIZE_OFFS],
++			ARRAY_SIZE(stm32mp_otg_data.tx_fifo_sz_array));
++
++	if (count != -FDT_ERR_NOTFOUND)
++		stm32mp_otg_data.tx_fifo_sz_array[DWC2_SIZE_NB_OFFS] = count;
++
++	/* if node stusb1600 is present, means DK1 or DK2 board */
++	usb1600_node = ofnode_by_compatible(ofnode_null(), "st,stusb1600");
++	if (ofnode_valid(usb1600_node)) {
++		stusb1600_init(usb1600_node);
+ 		return;
+ 	}
+ 
+@@ -457,107 +399,6 @@ int g_dnl_bind_fixup(struct usb_device_descriptor *dev, const char *name)
+ }
+ #endif /* CONFIG_USB_GADGET */
+ 
+-static void sysconf_init(void)
+-{
+-	u8 *syscfg;
+-#ifdef CONFIG_DM_REGULATOR
+-	struct udevice *pwr_dev;
+-	struct udevice *pwr_reg;
+-	struct udevice *dev;
+-	int ret;
+-	u32 otp = 0;
+-#endif
+-	u32 bootr;
+-
+-	syscfg = (u8 *)syscon_get_first_range(STM32MP_SYSCON_SYSCFG);
+-	debug("SYSCFG: init @0x%p\n", syscfg);
+-
+-	/* interconnect update : select master using the port 1 */
+-	/* LTDC = AXI_M9 */
+-	/* GPU  = AXI_M8 */
+-	/* today information is hardcoded in U-Boot */
+-	writel(BIT(9), syscfg + SYSCFG_ICNR);
+-	debug("[0x%x] SYSCFG.icnr = 0x%08x (LTDC and GPU)\n",
+-	      (u32)syscfg + SYSCFG_ICNR, readl(syscfg + SYSCFG_ICNR));
+-
+-	/* disable Pull-Down for boot pin connected to VDD */
+-	bootr = readl(syscfg + SYSCFG_BOOTR);
+-	bootr |= (bootr & 0x7 << 4);
+-	writel(bootr, syscfg + SYSCFG_BOOTR);
+-	debug("[0x%x] SYSCFG.bootr = 0x%08x\n",
+-	      (u32)syscfg + SYSCFG_BOOTR, readl(syscfg + SYSCFG_BOOTR));
+-
+-#ifdef CONFIG_DM_REGULATOR
+-	/* High Speed Low Voltage Pad mode Enable for SPI, SDMMC, ETH, QSPI
+-	 * and TRACE. Needed above ~50MHz and conditioned by AFMUX selection.
+-	 * The customer will have to disable this for low frequencies
+-	 * or if AFMUX is selected but the function not used, typically for
+-	 * TRACE. Otherwise, impact on power consumption.
+-	 *
+-	 * WARNING:
+-	 *   enabling High Speed mode while VDD>2.7V
+-	 *   with the OTP product_below_2v5 (OTP 18, BIT 13)
+-	 *   erroneously set to 1 can damage the IC!
+-	 *   => U-Boot set the register only if VDD < 2.7V (in DT)
+-	 *      but this value need to be consistent with board design
+-	 */
+-	ret = syscon_get_by_driver_data(STM32MP_SYSCON_PWR, &pwr_dev);
+-	if (!ret) {
+-
+-		ret = uclass_get_device_by_driver(UCLASS_MISC,
+-						  DM_GET_DRIVER(stm32mp_bsec),
+-						  &dev);
+-		if (ret) {
+-			pr_err("Can't find stm32mp_bsec driver\n");
+-			return;
+-		}
+-
+-		ret = misc_read(dev, STM32_BSEC_SHADOW(18), &otp, 4);
+-		if (!ret)
+-			otp = otp & BIT(13);
+-
+-		/* get VDD = pwr-supply */
+-		ret = device_get_supply_regulator(pwr_dev, "pwr-supply",
+-						  &pwr_reg);
+-
+-		/* check if VDD is Low Voltage */
+-		if (!ret) {
+-			if (regulator_get_value(pwr_reg) < 2700000) {
+-				writel(SYSCFG_IOCTRLSETR_HSLVEN_TRACE |
+-				       SYSCFG_IOCTRLSETR_HSLVEN_QUADSPI |
+-				       SYSCFG_IOCTRLSETR_HSLVEN_ETH |
+-				       SYSCFG_IOCTRLSETR_HSLVEN_SDMMC |
+-				       SYSCFG_IOCTRLSETR_HSLVEN_SPI,
+-				       syscfg + SYSCFG_IOCTRLSETR);
+-
+-				if (!otp)
+-					pr_err("product_below_2v5=0: HSLVEN protected by HW\n");
+-			} else {
+-				if (otp)
+-					pr_err("product_below_2v5=1: HSLVEN update is destructive, no update as VDD>2.7V\n");
+-			}
+-		} else {
+-			debug("VDD unknown");
+-		}
+-	}
+-#endif
+-	debug("[0x%x] SYSCFG.IOCTRLSETR = 0x%08x\n",
+-	      (u32)syscfg + SYSCFG_IOCTRLSETR,
+-	      readl(syscfg + SYSCFG_IOCTRLSETR));
+-
+-	/* activate automatic I/O compensation
+-	 * warning: need to ensure CSI enabled and ready in clock driver
+-	 */
+-	writel(SYSCFG_CMPENSETR_MPU_EN, syscfg + SYSCFG_CMPENSETR);
+-
+-	while (!(readl(syscfg + SYSCFG_CMPCR) & SYSCFG_CMPCR_READY))
+-		;
+-	clrbits_le32(syscfg + SYSCFG_CMPCR, SYSCFG_CMPCR_SW_CTRL);
+-
+-	debug("[0x%x] SYSCFG.cmpcr = 0x%08x\n",
+-	      (u32)syscfg + SYSCFG_CMPCR, readl(syscfg + SYSCFG_CMPCR));
+-}
+-
+ /* board interface eth init */
+ /* this is a weak define that we are overriding */
+ int board_interface_eth_init(int interface_type, bool eth_clk_sel_reg,
+@@ -594,6 +435,9 @@ int board_interface_eth_init(int interface_type, bool eth_clk_sel_reg,
+ 		debug("%s: PHY_INTERFACE_MODE_RMII\n", __func__);
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
+ 		if (eth_clk_sel_reg)
+ 			value = SYSCFG_PMCSETR_ETH_SEL_RGMII |
+ 				SYSCFG_PMCSETR_ETH_CLK_SEL;
+@@ -652,18 +496,47 @@ static int setup_led(enum led_state_t cmd)
+ }
+ #endif /* CONFIG_LED */
+ 
++static void __maybe_unused led_error_blink(u32 nb_blink)
++{
++#ifdef CONFIG_LED
++	int ret;
++	struct udevice *led;
++	u32 i;
++#endif
++
++	if (!nb_blink)
++		return;
++
++#ifdef CONFIG_LED
++	ret = get_led(&led, "u-boot,error-led");
++	if (!ret) {
++		/* make u-boot,error-led blinking */
++		/* if U32_MAX and 125ms interval, for 17.02 years */
++		for (i = 0; i < 2 * nb_blink; i++) {
++			led_set_state(led, LEDST_TOGGLE);
++			mdelay(125);
++			WATCHDOG_RESET();
++		}
++	}
++#endif
++
++	/* infinite: the boot process must be stopped */
++	if (nb_blink == U32_MAX)
++		hang();
++}
++
+ #ifdef CONFIG_ADC
+ static int board_check_usb_power(void)
+ {
+ 	struct ofnode_phandle_args adc_args;
+ 	struct udevice *adc;
+-	struct udevice *led;
+ 	ofnode node;
+ 	unsigned int raw;
+ 	int max_uV = 0;
++	int min_uV = USB_START_HIGH_THRESHOLD_UV;
+ 	int ret, uV, adc_count;
+-	u8 i, nb_blink;
+-
++	u32 nb_blink;
++	u8 i;
+ 	node = ofnode_path("/config");
+ 	if (!ofnode_valid(node)) {
+ 		debug("%s: no /config node?\n", __func__);
+@@ -715,6 +588,8 @@ static int board_check_usb_power(void)
+ 		if (!adc_raw_to_uV(adc, raw, &uV)) {
+ 			if (uV > max_uV)
+ 				max_uV = uV;
++			if (uV < min_uV)
++				min_uV = uV;
+ 			pr_debug("%s: %s[%02d] = %u, %d uV\n", __func__,
+ 				 adc->name, adc_args.args[0], raw, uV);
+ 		} else {
+@@ -729,37 +604,169 @@ static int board_check_usb_power(void)
+ 	 * continue.
+ 	 */
+ 	if (max_uV > USB_START_LOW_THRESHOLD_UV &&
+-	    max_uV < USB_START_HIGH_THRESHOLD_UV)
++	    max_uV <= USB_START_HIGH_THRESHOLD_UV &&
++	    min_uV <= USB_LOW_THRESHOLD_UV)
+ 		return 0;
+ 
+-	/* Stop boot process and make u-boot,error-led blinking */
+-	pr_err("\n*******************************************\n");
++	pr_err("****************************************************\n");
+ 
+-	if (max_uV < USB_WARNING_LOW_THRESHOLD_UV) {
+-		pr_err("*   WARNING 500mA power supply detected   *\n");
+-		nb_blink = 2;
+-	} else {
+-		pr_err("* WARNING 1.5A power supply detected      *\n");
+-		nb_blink = 3;
++	/*
++	 * If highest and lowest value are either both below
++	 * USB_LOW_THRESHOLD_UV or both above USB_LOW_THRESHOLD_UV, that
++	 * means USB TYPE-C is in unattached mode, this is an issue, make
++	 * u-boot,error-led blinking and stop boot process.
++	 */
++	if ((max_uV > USB_LOW_THRESHOLD_UV &&
++	     min_uV > USB_LOW_THRESHOLD_UV) ||
++	     (max_uV <= USB_LOW_THRESHOLD_UV &&
++	     min_uV <= USB_LOW_THRESHOLD_UV)) {
++		pr_err("* ERROR USB TYPE-C connection in unattached mode   *\n");
++		pr_err("* Check that USB TYPE-C cable is correctly plugged *\n");
++		/* with 125ms interval, led will blink for 17.02 years ....*/
++		nb_blink = U32_MAX;
+ 	}
+ 
+-	pr_err("* Current too low, use a 3A power supply! *\n");
+-	pr_err("*******************************************\n\n");
++	if (max_uV > USB_LOW_THRESHOLD_UV &&
++	    max_uV <= USB_WARNING_LOW_THRESHOLD_UV &&
++	    min_uV <= USB_LOW_THRESHOLD_UV) {
++		pr_err("*        WARNING 500mA power supply detected       *\n");
++		nb_blink = 2;
++	}
+ 
+-	ret = get_led(&led, "u-boot,error-led");
+-	if (ret)
+-		return ret;
++	if (max_uV > USB_WARNING_LOW_THRESHOLD_UV &&
++	    max_uV <= USB_START_LOW_THRESHOLD_UV &&
++	    min_uV <= USB_LOW_THRESHOLD_UV) {
++		pr_err("*       WARNING 1.5mA power supply detected        *\n");
++		nb_blink = 3;
++	}
+ 
+-	for (i = 0; i < nb_blink * 2; i++) {
+-		led_set_state(led, LEDST_TOGGLE);
+-		mdelay(125);
++	/*
++	 * If highest value is above 2.15 Volts that means that the USB TypeC
++	 * supplies more than 3 Amp, this is not compliant with TypeC specification
++	 */
++	if (max_uV > USB_START_HIGH_THRESHOLD_UV) {
++		pr_err("*      USB TYPE-C charger not compliant with       *\n");
++		pr_err("*                   specification                  *\n");
++		pr_err("****************************************************\n\n");
++		/* with 125ms interval, led will blink for 17.02 years ....*/
++		nb_blink = U32_MAX;
++	} else {
++		pr_err("*     Current too low, use a 3A power supply!      *\n");
++		pr_err("****************************************************\n\n");
+ 	}
+-	led_set_state(led, LEDST_ON);
++
++	led_error_blink(nb_blink);
+ 
+ 	return 0;
+ }
+ #endif /* CONFIG_ADC */
+ 
++static void sysconf_init(void)
++{
++#ifndef CONFIG_STM32MP1_TRUSTED
++	u8 *syscfg;
++#ifdef CONFIG_DM_REGULATOR
++	struct udevice *pwr_dev;
++	struct udevice *pwr_reg;
++	struct udevice *dev;
++	int ret;
++	u32 otp = 0;
++#endif
++	u32 bootr;
++
++	syscfg = (u8 *)syscon_get_first_range(STM32MP_SYSCON_SYSCFG);
++	debug("SYSCFG: init @0x%p\n", syscfg);
++
++	/* interconnect update : select master using the port 1 */
++	/* LTDC = AXI_M9 */
++	/* GPU  = AXI_M8 */
++	/* today information is hardcoded in U-Boot */
++	writel(BIT(9), syscfg + SYSCFG_ICNR);
++	debug("[0x%x] SYSCFG.icnr = 0x%08x (LTDC and GPU)\n",
++	      (u32)syscfg + SYSCFG_ICNR, readl(syscfg + SYSCFG_ICNR));
++
++	/* disable Pull-Down for boot pin connected to VDD */
++	bootr = readl(syscfg + SYSCFG_BOOTR);
++	bootr &= ~(SYSCFG_BOOTR_BOOT_MASK << SYSCFG_BOOTR_BOOTPD_SHIFT);
++	bootr |= (bootr & SYSCFG_BOOTR_BOOT_MASK) << SYSCFG_BOOTR_BOOTPD_SHIFT;
++	writel(bootr, syscfg + SYSCFG_BOOTR);
++	debug("[0x%x] SYSCFG.bootr = 0x%08x\n",
++	      (u32)syscfg + SYSCFG_BOOTR, readl(syscfg + SYSCFG_BOOTR));
++
++#ifdef CONFIG_DM_REGULATOR
++	/* High Speed Low Voltage Pad mode Enable for SPI, SDMMC, ETH, QSPI
++	 * and TRACE. Needed above ~50MHz and conditioned by AFMUX selection.
++	 * The customer will have to disable this for low frequencies
++	 * or if AFMUX is selected but the function not used, typically for
++	 * TRACE. Otherwise, impact on power consumption.
++	 *
++	 * WARNING:
++	 *   enabling High Speed mode while VDD>2.7V
++	 *   with the OTP product_below_2v5 (OTP 18, BIT 13)
++	 *   erroneously set to 1 can damage the IC!
++	 *   => U-Boot set the register only if VDD < 2.7V (in DT)
++	 *      but this value need to be consistent with board design
++	 */
++	ret = syscon_get_by_driver_data(STM32MP_SYSCON_PWR, &pwr_dev);
++	if (!ret) {
++		ret = uclass_get_device_by_driver(UCLASS_MISC,
++						  DM_GET_DRIVER(stm32mp_bsec),
++						  &dev);
++		if (ret) {
++			pr_err("Can't find stm32mp_bsec driver\n");
++			return;
++		}
++
++		ret = misc_read(dev, STM32_BSEC_SHADOW(18), &otp, 4);
++		if (!ret)
++			otp = otp & BIT(13);
++
++		ret = uclass_get_device_by_driver(UCLASS_PMIC,
++						  DM_GET_DRIVER(stm32mp_pwr_pmic),
++						  &dev);
++
++		/* get VDD = vdd-supply */
++		ret = device_get_supply_regulator(dev, "vdd-supply", &pwr_reg);
++
++		/* check if VDD is Low Voltage */
++		if (!ret) {
++			if (regulator_get_value(pwr_reg) < 2700000) {
++				writel(SYSCFG_IOCTRLSETR_HSLVEN_TRACE |
++				       SYSCFG_IOCTRLSETR_HSLVEN_QUADSPI |
++				       SYSCFG_IOCTRLSETR_HSLVEN_ETH |
++				       SYSCFG_IOCTRLSETR_HSLVEN_SDMMC |
++				       SYSCFG_IOCTRLSETR_HSLVEN_SPI,
++				       syscfg + SYSCFG_IOCTRLSETR);
++
++				if (!otp)
++					pr_err("product_below_2v5=0: HSLVEN protected by HW\n");
++			} else {
++				if (otp)
++					pr_err("product_below_2v5=1: HSLVEN update is destructive, no update as VDD>2.7V\n");
++			}
++		} else {
++			debug("VDD unknown");
++		}
++	}
++#endif
++	debug("[0x%x] SYSCFG.IOCTRLSETR = 0x%08x\n",
++	      (u32)syscfg + SYSCFG_IOCTRLSETR,
++	      readl(syscfg + SYSCFG_IOCTRLSETR));
++
++	/* activate automatic I/O compensation
++	 * warning: need to ensure CSI enabled and ready in clock driver
++	 */
++	writel(SYSCFG_CMPENSETR_MPU_EN, syscfg + SYSCFG_CMPENSETR);
++
++	while (!(readl(syscfg + SYSCFG_CMPCR) & SYSCFG_CMPCR_READY))
++		;
++	clrbits_le32(syscfg + SYSCFG_CMPCR, SYSCFG_CMPCR_SW_CTRL);
++
++	debug("[0x%x] SYSCFG.cmpcr = 0x%08x\n",
++	      (u32)syscfg + SYSCFG_CMPCR, readl(syscfg + SYSCFG_CMPCR));
++#endif
++}
++
+ #ifdef CONFIG_DM_REGULATOR
+ /* Fix to make I2C1 usable on DK2 for touchscreen usage in kernel */
+ static int dk2_i2c1_fix(void)
+@@ -818,6 +825,63 @@ error:
+ }
+ #endif
+ 
++enum env_location env_get_location(enum env_operation op, int prio)
++{
++	u32 bootmode = get_bootmode();
++
++	if (prio)
++		return ENVL_UNKNOWN;
++
++	switch (bootmode & TAMP_BOOT_DEVICE_MASK) {
++#ifdef CONFIG_ENV_IS_IN_EXT4
++	case BOOT_FLASH_SD:
++	case BOOT_FLASH_EMMC:
++		return ENVL_EXT4;
++#endif
++#ifdef CONFIG_ENV_IS_IN_UBI
++	case BOOT_FLASH_NAND:
++		return ENVL_UBI;
++#endif
++#ifdef CONFIG_ENV_IS_IN_SPI_FLASH
++	case BOOT_FLASH_NOR:
++		return ENVL_SPI_FLASH;
++#endif
++	default:
++		return ENVL_NOWHERE;
++	}
++}
++
++#if defined(CONFIG_ENV_IS_IN_EXT4)
++const char *env_ext4_get_intf(void)
++{
++	u32 bootmode = get_bootmode();
++
++	switch (bootmode & TAMP_BOOT_DEVICE_MASK) {
++	case BOOT_FLASH_SD:
++	case BOOT_FLASH_EMMC:
++		return "mmc";
++	default:
++		return "";
++	}
++}
++
++const char *env_ext4_get_dev_part(void)
++{
++	static char *const dev_part[] = {"0:auto", "1:auto", "2:auto"};
++	u32 bootmode = get_bootmode();
++
++	return dev_part[(bootmode & TAMP_BOOT_INSTANCE_MASK) - 1];
++}
++#endif
++
++static __maybe_unused bool board_is_dk2(void)
++{
++	if (of_machine_is_compatible("st,stm32mp157c-dk2"))
++		return true;
++
++	return false;
++}
++
+ /* board dependent setup after realloc */
+ int board_init(void)
+ {
+@@ -851,14 +915,6 @@ int board_init(void)
+ 
+ 	sysconf_init();
+ 
+-#ifdef CONFIG_STM32_SDMMC2
+-	board_mmc_init();
+-#endif /* CONFIG_STM32_SDMMC2 */
+-
+-#ifdef CONFIG_STM32_QSPI
+-	board_qspi_init();
+-#endif /* CONFIG_STM32_QSPI */
+-
+ #if defined(CONFIG_USB_GADGET) && defined(CONFIG_USB_GADGET_DWC2_OTG)
+ 	board_usbotg_init();
+ #endif
+@@ -866,6 +922,51 @@ int board_init(void)
+ 	return 0;
+ }
+ 
++int board_late_init(void)
++{
++
++	char *boot_device;
++#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
++	const void *fdt_compat;
++	int fdt_compat_len;
++	int ret;
++	u32 otp;
++	struct udevice *dev;
++	char buf[10];
++
++	fdt_compat = fdt_getprop(gd->fdt_blob, 0, "compatible",
++				 &fdt_compat_len);
++	if (fdt_compat && fdt_compat_len) {
++		if (strncmp(fdt_compat, "st,", 3) != 0)
++			env_set("board_name", fdt_compat);
++		else
++			env_set("board_name", fdt_compat + 3);
++	}
++	ret = uclass_get_device_by_driver(UCLASS_MISC,
++					  DM_GET_DRIVER(stm32mp_bsec),
++					  &dev);
++
++	if (!ret)
++		ret = misc_read(dev, STM32_BSEC_SHADOW(BSEC_OTP_BOARD),
++				&otp, sizeof(otp));
++	if (!ret && otp) {
++		snprintf(buf, sizeof(buf), "0x%04x", otp >> 16);
++		env_set("board_id", buf);
++
++		snprintf(buf, sizeof(buf), "0x%04x",
++			 ((otp >> 8) & 0xF) - 1 + 0xA);
++		env_set("board_rev", buf);
++	}
++#endif
++
++	/* Check the boot-source to disable bootdelay */
++	boot_device = env_get("boot_device");
++	if (!strcmp(boot_device, "serial") || !strcmp(boot_device, "usb"))
++		env_set("bootdelay", "0");
++
++	return 0;
++}
++
+ void board_quiesce_devices(void)
+ {
+ #ifdef CONFIG_LED
+@@ -874,32 +975,101 @@ void board_quiesce_devices(void)
+ }
+ 
+ #ifdef CONFIG_SYS_MTDPARTS_RUNTIME
++
++#define MTDPARTS_LEN		256
++#define MTDIDS_LEN		128
++
++/**
++ * The mtdparts_nand0 and mtdparts_nor0 variable tends to be long.
++ * If we need to access it before the env is relocated, then we need
++ * to use our own stack buffer. gd->env_buf will be too small.
++ *
++ * @param buf temporary buffer pointer MTDPARTS_LEN long
++ * @return mtdparts variable string, NULL if not found
++ */
++static const char *env_get_mtdparts(const char *str, char *buf)
++{
++	if (gd->flags & GD_FLG_ENV_READY)
++		return env_get(str);
++	if (env_get_f(str, buf, MTDPARTS_LEN) != -1)
++		return buf;
++	return NULL;
++}
++
++/**
++ * update the variables "mtdids" and "mtdparts" with content of mtdparts_<dev>
++ */
++static void board_get_mtdparts(const char *dev,
++			       char *mtdids,
++			       char *mtdparts)
++{
++	char env_name[32] = "mtdparts_";
++	char tmp_mtdparts[MTDPARTS_LEN];
++	const char *tmp;
++
++	/* name of env variable to read = mtdparts_<dev> */
++	strcat(env_name, dev);
++	tmp = env_get_mtdparts(env_name, tmp_mtdparts);
++	if (tmp) {
++		/* mtdids: "<dev>=<dev>, ...." */
++		if (mtdids[0] != '\0')
++			strcat(mtdids, ",");
++		strcat(mtdids, dev);
++		strcat(mtdids, "=");
++		strcat(mtdids, dev);
++
++		/* mtdparts: "mtdparts=<dev>:<mtdparts_<dev>>;..." */
++		if (mtdparts[0] != '\0')
++			strncat(mtdparts, ";", MTDPARTS_LEN);
++		else
++			strcat(mtdparts, "mtdparts=");
++		strncat(mtdparts, dev, MTDPARTS_LEN);
++		strncat(mtdparts, ":", MTDPARTS_LEN);
++		strncat(mtdparts, tmp, MTDPARTS_LEN);
++	}
++}
++
+ void board_mtdparts_default(const char **mtdids, const char **mtdparts)
+ {
++	struct mtd_info *mtd;
+ 	struct udevice *dev;
+-	char *s_nand0 = NULL, *s_nor0 = NULL;
+-	static char parts[256];
+-	static char ids[22];
+-
+-	if (!uclass_get_device(UCLASS_MTD, 0, &dev))
+-		s_nand0 = env_get("mtdparts_nand0");
+-
+-	if (!uclass_get_device(UCLASS_SPI_FLASH, 0, &dev))
+-		s_nor0 = env_get("mtdparts_nor0");
+-
+-	strcpy(ids, "");
+-	strcpy(parts, "");
+-	if (s_nand0 && s_nor0) {
+-		snprintf(ids, sizeof(ids), "nor0=nor0,nand0=nand0");
+-		snprintf(parts, sizeof(parts),
+-			 "mtdparts=nor0:%s;nand0:%s", s_nor0, s_nand0);
+-	} else if (s_nand0) {
+-		snprintf(ids, sizeof(ids), "nand0=nand0");
+-		snprintf(parts, sizeof(parts), "mtdparts=nand0:%s", s_nand0);
+-	} else if (s_nor0) {
+-		snprintf(ids, sizeof(ids), "nor0=nor0");
+-		snprintf(parts, sizeof(parts), "mtdparts=nor0:%s", s_nor0);
++	static char parts[3 * MTDPARTS_LEN + 1];
++	static char ids[MTDIDS_LEN + 1];
++	static bool mtd_initialized;
++
++	if (mtd_initialized) {
++		*mtdids = ids;
++		*mtdparts = parts;
++		return;
+ 	}
++
++	memset(parts, 0, sizeof(parts));
++	memset(ids, 0, sizeof(ids));
++
++	/* probe all MTD devices */
++	for (uclass_first_device(UCLASS_MTD, &dev);
++	     dev;
++	     uclass_next_device(&dev)) {
++		pr_debug("mtd device = %s\n", dev->name);
++	}
++
++	mtd = get_mtd_device_nm("nand0");
++	if (!IS_ERR_OR_NULL(mtd)) {
++		board_get_mtdparts("nand0", ids, parts);
++		put_mtd_device(mtd);
++	}
++
++	mtd = get_mtd_device_nm("spi-nand0");
++	if (!IS_ERR_OR_NULL(mtd)) {
++		board_get_mtdparts("spi-nand0", ids, parts);
++		put_mtd_device(mtd);
++	}
++
++	if (!uclass_get_device(UCLASS_SPI_FLASH, 0, &dev)) {
++		board_get_mtdparts("nor0", ids, parts);
++	}
++
++	mtd_initialized = true;
+ 	*mtdids = ids;
+ 	*mtdparts = parts;
+ 	debug("%s:mtdids=%s & mtdparts=%s\n", __func__, ids, parts);
+@@ -944,7 +1114,7 @@ int ft_board_setup(void *blob, bd_t *bd)
+ }
+ #endif
+ 
+-void board_stm32copro_image_process(ulong fw_image, size_t fw_size)
++static void board_stm32copro_image_process(ulong fw_image, size_t fw_size)
+ {
+ 	int ret, id = 0; /* Copro id fixed to 0 as only one coproc on mp1 */
+ 	unsigned int rsc_size;
+diff --git a/board/engicam-st/stm32mp1-ugea/MAINTAINERS b/board/engicam-st/stm32mp1-ugea/MAINTAINERS
+index 6c9710a..bb6fc90 100644
+--- a/board/engicam-st/stm32mp1-ugea/MAINTAINERS
++++ b/board/engicam-st/stm32mp1-ugea/MAINTAINERS
+@@ -1,11 +1,8 @@
+-STM32MP1 BOARD
+-M:	Patrick Delaunay <patrick.delaunay@st.com>
+-M:	Christophe Kerello <christophe.kerello@st.com>
++STM32MP1-UGEA BOARD
++M:	Engicam
+ L:	uboot-stm32@st-md-mailman.stormreply.com (moderated for non-subscribers)
+ S:	Maintained
+-F:	arch/arm/dts/stm32mp157*
+-F:	board/st/stm32mp1
+-F:	configs/stm32mp15_trusted_defconfig
+-F:	configs/stm32mp15_optee_defconfig
+-F:	configs/stm32mp15_basic_defconfig
+-F:	include/configs/stm32mp1.h
++F:	arch/arm/dts/stm32mp157a-ugeast*
++F:	board/engicam-st/stm32mp1-ugea
++F:	configs/stm32mp15_ugeast_*
++F:	include/configs/stm32mp1-ugea.h
+diff --git a/board/engicam-st/stm32mp1-ugea/board.c b/board/engicam-st/stm32mp1-ugea/board.c
+index b6e5288..c3d832f 100644
+--- a/board/engicam-st/stm32mp1-ugea/board.c
++++ b/board/engicam-st/stm32mp1-ugea/board.c
+@@ -47,7 +47,7 @@ int board_ddr_power_init(enum ddr_type ddr_type)
+ 	ret = uclass_get_device_by_driver(UCLASS_PMIC,
+ 					  DM_GET_DRIVER(pmic_stpmic1), &dev);
+ 	if (ret)
+-		/* No PMIC on power discrete board */
++		/* No PMIC on board */
+ 		return 0;
+ 
+ 	switch (ddr_type) {
+@@ -149,7 +149,7 @@ int board_ddr_power_init(enum ddr_type ddr_type)
+ 
+ 		mdelay(STPMIC1_DEFAULT_START_UP_DELAY_MS);
+ 
+-		/* Enable VDD_DDR22 =BUCK2 */
++		/* Enable VDD_DDR2 =BUCK2 */
+ 		ret = pmic_clrsetbits(dev,
+ 				      STPMIC1_BUCKX_MAIN_CR(STPMIC1_BUCK2),
+ 				      STPMIC1_BUCK_ENA, STPMIC1_BUCK_ENA);
+diff --git a/board/engicam-st/stm32mp1-ugea/cmd_stboard.c b/board/engicam-st/stm32mp1-ugea/cmd_stboard.c
+index 38b1c1b..03d4b52 100644
+--- a/board/engicam-st/stm32mp1-ugea/cmd_stboard.c
++++ b/board/engicam-st/stm32mp1-ugea/cmd_stboard.c
+@@ -11,7 +11,7 @@
+ 
+ static bool check_stboard(u16 board)
+ {
+-	int i;
++	unsigned int i;
+ 	const u16 st_board_id[] = {
+ 		0x1272,
+ 		0x1263,
+diff --git a/board/engicam-st/stm32mp1-ugea/stm32mp1.c b/board/engicam-st/stm32mp1-ugea/stm32mp1.c
+index 5dc6296..f852b1e 100644
+--- a/board/engicam-st/stm32mp1-ugea/stm32mp1.c
++++ b/board/engicam-st/stm32mp1-ugea/stm32mp1.c
+@@ -2,28 +2,34 @@
+ /*
+  * Copyright (C) 2018, STMicroelectronics - All Rights Reserved
+  */
+-
+ #include <config.h>
+ #include <common.h>
+ #include <adc.h>
++#include <bootm.h>
+ #include <dm.h>
+ #include <clk.h>
+ #include <console.h>
++#include <environment.h>
+ #include <fdt_support.h>
+ #include <generic-phy.h>
++#include <g_dnl.h>
+ #include <i2c.h>
+ #include <led.h>
+ #include <misc.h>
++#include <mtd.h>
+ #include <mtd_node.h>
++#include <netdev.h>
+ #include <phy.h>
+ #include <remoteproc.h>
+ #include <reset.h>
+ #include <syscon.h>
+ #include <usb.h>
++#include <watchdog.h>
+ #include <asm/io.h>
+ #include <asm/gpio.h>
+ #include <asm/arch/stm32.h>
+ #include <asm/arch/stm32mp1_smc.h>
++#include <asm/arch/sys_proto.h>
+ #include <jffs2/load_kernel.h>
+ #include <power/regulator.h>
+ #include <usb/dwc2_udc.h>
+@@ -37,6 +43,9 @@
+ #define SYSCFG_CMPENSETR	0x24
+ #define SYSCFG_PMCCLRR		0x44
+ 
++#define SYSCFG_BOOTR_BOOT_MASK		GENMASK(2, 0)
++#define SYSCFG_BOOTR_BOOTPD_SHIFT	4
++
+ #define SYSCFG_IOCTRLSETR_HSLVEN_TRACE		BIT(0)
+ #define SYSCFG_IOCTRLSETR_HSLVEN_QUADSPI	BIT(1)
+ #define SYSCFG_IOCTRLSETR_HSLVEN_ETH		BIT(2)
+@@ -63,9 +72,10 @@
+  */
+ DECLARE_GLOBAL_DATA_PTR;
+ 
++#define USB_LOW_THRESHOLD_UV		200000
+ #define USB_WARNING_LOW_THRESHOLD_UV	660000
+ #define USB_START_LOW_THRESHOLD_UV	1230000
+-#define USB_START_HIGH_THRESHOLD_UV	2100000
++#define USB_START_HIGH_THRESHOLD_UV	2150000
+ 
+ int checkboard(void)
+ {
+@@ -76,7 +86,9 @@ int checkboard(void)
+ 	const char *fdt_compat;
+ 	int fdt_compat_len;
+ 
+-	if (IS_ENABLED(CONFIG_STM32MP1_TRUSTED))
++	if (IS_ENABLED(CONFIG_STM32MP1_OPTEE))
++		mode = "op-tee";
++	else if (IS_ENABLED(CONFIG_STM32MP1_TRUSTED))
+ 		mode = "trusted";
+ 	else
+ 		mode = "basic";
+@@ -155,47 +167,6 @@ static void board_key_check(void)
+ #endif
+ }
+ 
+-bool board_is_dk2(void)
+-{
+-	if (of_machine_is_compatible("st,stm32mp157c-dk2"))
+-		return true;
+-
+-	return false;
+-}
+-
+-int board_late_init(void)
+-{
+-#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+-	const void *fdt_compat;
+-	int fdt_compat_len;
+-
+-	fdt_compat = fdt_getprop(gd->fdt_blob, 0, "compatible",
+-				 &fdt_compat_len);
+-	if (fdt_compat && fdt_compat_len) {
+-		if (strncmp(fdt_compat, "st,", 3) != 0)
+-			env_set("board_name", fdt_compat);
+-		else
+-			env_set("board_name", fdt_compat + 3);
+-	}
+-#endif
+-
+-	return 0;
+-}
+-
+-#ifdef CONFIG_STM32_SDMMC2
+-/* this is a weak define that we are overriding */
+-int board_mmc_init(void)
+-{
+-	return 0;
+-}
+-#endif
+-
+-#ifdef CONFIG_STM32_QSPI
+-void board_qspi_init(void)
+-{
+-}
+-#endif /* CONFIG_STM32_QSPI */
+-
+ #if defined(CONFIG_USB_GADGET) && defined(CONFIG_USB_GADGET_DWC2_OTG)
+ 
+ /*
+@@ -230,19 +201,12 @@ static struct reset_ctl usbotg_reset;
+ /* STUSB1600_CC_CONNECTION_STATUS bitfields */
+ #define STUSB1600_CC_ATTACH			BIT(0)
+ 
+-static int stusb1600_init(void)
++static int stusb1600_init(ofnode node)
+ {
+ 	struct udevice *dev, *bus;
+-	ofnode node;
+ 	int ret;
+ 	u32 chip_addr;
+ 
+-	node = ofnode_by_compatible(ofnode_null(), "st,stusb1600");
+-	if (!ofnode_valid(node)) {
+-		printf("stusb1600 not found\n");
+-		return -ENODEV;
+-	}
+-
+ 	ret = ofnode_read_u32(node, "reg", &chip_addr);
+ 	if (ret)
+ 		return -EINVAL;
+@@ -274,9 +238,11 @@ static int stusb1600_cable_connected(void)
+ 	return status & STUSB1600_CC_ATTACH;
+ }
+ 
+-void board_usbotg_init(void)
++static void board_usbotg_init(void)
+ {
++	ofnode usb1600_node;
+ 	int node;
++	int count;
+ 	struct fdtdec_phandle_args args;
+ 	struct udevice *dev;
+ 	const void *blob = gd->fdt_blob;
+@@ -353,11 +319,18 @@ void board_usbotg_init(void)
+ 						     "g-rx-fifo-size", 0);
+ 	stm32mp_otg_data.np_tx_fifo_sz = fdtdec_get_int(blob, node,
+ 							"g-np-tx-fifo-size", 0);
+-	stm32mp_otg_data.tx_fifo_sz = fdtdec_get_int(blob, node,
+-						     "g-tx-fifo-size", 0);
+ 
+-	if (fdtdec_get_bool(blob, node, "usb1600")) {
+-		stusb1600_init();
++	count = fdtdec_get_int_array_count(blob, node, "g-tx-fifo-size",
++			&stm32mp_otg_data.tx_fifo_sz_array[DWC2_SIZE_OFFS],
++			ARRAY_SIZE(stm32mp_otg_data.tx_fifo_sz_array));
++
++	if (count != -FDT_ERR_NOTFOUND)
++		stm32mp_otg_data.tx_fifo_sz_array[DWC2_SIZE_NB_OFFS] = count;
++
++	/* if node stusb1600 is present, means DK1 or DK2 board */
++	usb1600_node = ofnode_by_compatible(ofnode_null(), "st,stusb1600");
++	if (ofnode_valid(usb1600_node)) {
++		stusb1600_init(usb1600_node);
+ 		return;
+ 	}
+ 
+@@ -426,107 +399,6 @@ int g_dnl_bind_fixup(struct usb_device_descriptor *dev, const char *name)
+ }
+ #endif /* CONFIG_USB_GADGET */
+ 
+-static void sysconf_init(void)
+-{
+-	u8 *syscfg;
+-#ifdef CONFIG_DM_REGULATOR
+-	struct udevice *pwr_dev;
+-	struct udevice *pwr_reg;
+-	struct udevice *dev;
+-	int ret;
+-	u32 otp = 0;
+-#endif
+-	u32 bootr;
+-
+-	syscfg = (u8 *)syscon_get_first_range(STM32MP_SYSCON_SYSCFG);
+-	debug("SYSCFG: init @0x%p\n", syscfg);
+-
+-	/* interconnect update : select master using the port 1 */
+-	/* LTDC = AXI_M9 */
+-	/* GPU  = AXI_M8 */
+-	/* today information is hardcoded in U-Boot */
+-	writel(BIT(9), syscfg + SYSCFG_ICNR);
+-	debug("[0x%x] SYSCFG.icnr = 0x%08x (LTDC and GPU)\n",
+-	      (u32)syscfg + SYSCFG_ICNR, readl(syscfg + SYSCFG_ICNR));
+-
+-	/* disable Pull-Down for boot pin connected to VDD */
+-	bootr = readl(syscfg + SYSCFG_BOOTR);
+-	bootr |= (bootr & 0x7 << 4);
+-	writel(bootr, syscfg + SYSCFG_BOOTR);
+-	debug("[0x%x] SYSCFG.bootr = 0x%08x\n",
+-	      (u32)syscfg + SYSCFG_BOOTR, readl(syscfg + SYSCFG_BOOTR));
+-
+-#ifdef CONFIG_DM_REGULATOR
+-	/* High Speed Low Voltage Pad mode Enable for SPI, SDMMC, ETH, QSPI
+-	 * and TRACE. Needed above ~50MHz and conditioned by AFMUX selection.
+-	 * The customer will have to disable this for low frequencies
+-	 * or if AFMUX is selected but the function not used, typically for
+-	 * TRACE. Otherwise, impact on power consumption.
+-	 *
+-	 * WARNING:
+-	 *   enabling High Speed mode while VDD>2.7V
+-	 *   with the OTP product_below_2v5 (OTP 18, BIT 13)
+-	 *   erroneously set to 1 can damage the IC!
+-	 *   => U-Boot set the register only if VDD < 2.7V (in DT)
+-	 *      but this value need to be consistent with board design
+-	 */
+-	ret = syscon_get_by_driver_data(STM32MP_SYSCON_PWR, &pwr_dev);
+-	if (!ret) {
+-
+-		ret = uclass_get_device_by_driver(UCLASS_MISC,
+-						  DM_GET_DRIVER(stm32mp_bsec),
+-						  &dev);
+-		if (ret) {
+-			pr_err("Can't find stm32mp_bsec driver\n");
+-			return;
+-		}
+-
+-		ret = misc_read(dev, STM32_BSEC_SHADOW(18), &otp, 4);
+-		if (!ret)
+-			otp = otp & BIT(13);
+-
+-		/* get VDD = pwr-supply */
+-		ret = device_get_supply_regulator(pwr_dev, "pwr-supply",
+-						  &pwr_reg);
+-
+-		/* check if VDD is Low Voltage */
+-		if (!ret) {
+-			if (regulator_get_value(pwr_reg) < 2700000) {
+-				writel(SYSCFG_IOCTRLSETR_HSLVEN_TRACE |
+-				       SYSCFG_IOCTRLSETR_HSLVEN_QUADSPI |
+-				       SYSCFG_IOCTRLSETR_HSLVEN_ETH |
+-				       SYSCFG_IOCTRLSETR_HSLVEN_SDMMC |
+-				       SYSCFG_IOCTRLSETR_HSLVEN_SPI,
+-				       syscfg + SYSCFG_IOCTRLSETR);
+-
+-				if (!otp)
+-					pr_err("product_below_2v5=0: HSLVEN protected by HW\n");
+-			} else {
+-				if (otp)
+-					pr_err("product_below_2v5=1: HSLVEN update is destructive, no update as VDD>2.7V\n");
+-			}
+-		} else {
+-			debug("VDD unknown");
+-		}
+-	}
+-#endif
+-	debug("[0x%x] SYSCFG.IOCTRLSETR = 0x%08x\n",
+-	      (u32)syscfg + SYSCFG_IOCTRLSETR,
+-	      readl(syscfg + SYSCFG_IOCTRLSETR));
+-
+-	/* activate automatic I/O compensation
+-	 * warning: need to ensure CSI enabled and ready in clock driver
+-	 */
+-	writel(SYSCFG_CMPENSETR_MPU_EN, syscfg + SYSCFG_CMPENSETR);
+-
+-	while (!(readl(syscfg + SYSCFG_CMPCR) & SYSCFG_CMPCR_READY))
+-		;
+-	clrbits_le32(syscfg + SYSCFG_CMPCR, SYSCFG_CMPCR_SW_CTRL);
+-
+-	debug("[0x%x] SYSCFG.cmpcr = 0x%08x\n",
+-	      (u32)syscfg + SYSCFG_CMPCR, readl(syscfg + SYSCFG_CMPCR));
+-}
+-
+ /* board interface eth init */
+ /* this is a weak define that we are overriding */
+ int board_interface_eth_init(int interface_type, bool eth_clk_sel_reg,
+@@ -563,6 +435,9 @@ int board_interface_eth_init(int interface_type, bool eth_clk_sel_reg,
+ 		debug("%s: PHY_INTERFACE_MODE_RMII\n", __func__);
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
+ 		if (eth_clk_sel_reg)
+ 			value = SYSCFG_PMCSETR_ETH_SEL_RGMII |
+ 				SYSCFG_PMCSETR_ETH_CLK_SEL;
+@@ -621,18 +496,47 @@ static int setup_led(enum led_state_t cmd)
+ }
+ #endif /* CONFIG_LED */
+ 
++static void __maybe_unused led_error_blink(u32 nb_blink)
++{
++#ifdef CONFIG_LED
++	int ret;
++	struct udevice *led;
++	u32 i;
++#endif
++
++	if (!nb_blink)
++		return;
++
++#ifdef CONFIG_LED
++	ret = get_led(&led, "u-boot,error-led");
++	if (!ret) {
++		/* make u-boot,error-led blinking */
++		/* if U32_MAX and 125ms interval, for 17.02 years */
++		for (i = 0; i < 2 * nb_blink; i++) {
++			led_set_state(led, LEDST_TOGGLE);
++			mdelay(125);
++			WATCHDOG_RESET();
++		}
++	}
++#endif
++
++	/* infinite: the boot process must be stopped */
++	if (nb_blink == U32_MAX)
++		hang();
++}
++
+ #ifdef CONFIG_ADC
+ static int board_check_usb_power(void)
+ {
+ 	struct ofnode_phandle_args adc_args;
+ 	struct udevice *adc;
+-	struct udevice *led;
+ 	ofnode node;
+ 	unsigned int raw;
+ 	int max_uV = 0;
++	int min_uV = USB_START_HIGH_THRESHOLD_UV;
+ 	int ret, uV, adc_count;
+-	u8 i, nb_blink;
+-
++	u32 nb_blink;
++	u8 i;
+ 	node = ofnode_path("/config");
+ 	if (!ofnode_valid(node)) {
+ 		debug("%s: no /config node?\n", __func__);
+@@ -684,6 +588,8 @@ static int board_check_usb_power(void)
+ 		if (!adc_raw_to_uV(adc, raw, &uV)) {
+ 			if (uV > max_uV)
+ 				max_uV = uV;
++			if (uV < min_uV)
++				min_uV = uV;
+ 			pr_debug("%s: %s[%02d] = %u, %d uV\n", __func__,
+ 				 adc->name, adc_args.args[0], raw, uV);
+ 		} else {
+@@ -698,37 +604,169 @@ static int board_check_usb_power(void)
+ 	 * continue.
+ 	 */
+ 	if (max_uV > USB_START_LOW_THRESHOLD_UV &&
+-	    max_uV < USB_START_HIGH_THRESHOLD_UV)
++	    max_uV <= USB_START_HIGH_THRESHOLD_UV &&
++	    min_uV <= USB_LOW_THRESHOLD_UV)
+ 		return 0;
+ 
+-	/* Stop boot process and make u-boot,error-led blinking */
+-	pr_err("\n*******************************************\n");
++	pr_err("****************************************************\n");
+ 
+-	if (max_uV < USB_WARNING_LOW_THRESHOLD_UV) {
+-		pr_err("*   WARNING 500mA power supply detected   *\n");
+-		nb_blink = 2;
+-	} else {
+-		pr_err("* WARNING 1.5A power supply detected      *\n");
+-		nb_blink = 3;
++	/*
++	 * If highest and lowest value are either both below
++	 * USB_LOW_THRESHOLD_UV or both above USB_LOW_THRESHOLD_UV, that
++	 * means USB TYPE-C is in unattached mode, this is an issue, make
++	 * u-boot,error-led blinking and stop boot process.
++	 */
++	if ((max_uV > USB_LOW_THRESHOLD_UV &&
++	     min_uV > USB_LOW_THRESHOLD_UV) ||
++	     (max_uV <= USB_LOW_THRESHOLD_UV &&
++	     min_uV <= USB_LOW_THRESHOLD_UV)) {
++		pr_err("* ERROR USB TYPE-C connection in unattached mode   *\n");
++		pr_err("* Check that USB TYPE-C cable is correctly plugged *\n");
++		/* with 125ms interval, led will blink for 17.02 years ....*/
++		nb_blink = U32_MAX;
+ 	}
+ 
+-	pr_err("* Current too low, use a 3A power supply! *\n");
+-	pr_err("*******************************************\n\n");
++	if (max_uV > USB_LOW_THRESHOLD_UV &&
++	    max_uV <= USB_WARNING_LOW_THRESHOLD_UV &&
++	    min_uV <= USB_LOW_THRESHOLD_UV) {
++		pr_err("*        WARNING 500mA power supply detected       *\n");
++		nb_blink = 2;
++	}
+ 
+-	ret = get_led(&led, "u-boot,error-led");
+-	if (ret)
+-		return ret;
++	if (max_uV > USB_WARNING_LOW_THRESHOLD_UV &&
++	    max_uV <= USB_START_LOW_THRESHOLD_UV &&
++	    min_uV <= USB_LOW_THRESHOLD_UV) {
++		pr_err("*       WARNING 1.5mA power supply detected        *\n");
++		nb_blink = 3;
++	}
+ 
+-	for (i = 0; i < nb_blink * 2; i++) {
+-		led_set_state(led, LEDST_TOGGLE);
+-		mdelay(125);
++	/*
++	 * If highest value is above 2.15 Volts that means that the USB TypeC
++	 * supplies more than 3 Amp, this is not compliant with TypeC specification
++	 */
++	if (max_uV > USB_START_HIGH_THRESHOLD_UV) {
++		pr_err("*      USB TYPE-C charger not compliant with       *\n");
++		pr_err("*                   specification                  *\n");
++		pr_err("****************************************************\n\n");
++		/* with 125ms interval, led will blink for 17.02 years ....*/
++		nb_blink = U32_MAX;
++	} else {
++		pr_err("*     Current too low, use a 3A power supply!      *\n");
++		pr_err("****************************************************\n\n");
+ 	}
+-	led_set_state(led, LEDST_ON);
++
++	led_error_blink(nb_blink);
+ 
+ 	return 0;
+ }
+ #endif /* CONFIG_ADC */
+ 
++static void sysconf_init(void)
++{
++#ifndef CONFIG_STM32MP1_TRUSTED
++	u8 *syscfg;
++#ifdef CONFIG_DM_REGULATOR
++	struct udevice *pwr_dev;
++	struct udevice *pwr_reg;
++	struct udevice *dev;
++	int ret;
++	u32 otp = 0;
++#endif
++	u32 bootr;
++
++	syscfg = (u8 *)syscon_get_first_range(STM32MP_SYSCON_SYSCFG);
++	debug("SYSCFG: init @0x%p\n", syscfg);
++
++	/* interconnect update : select master using the port 1 */
++	/* LTDC = AXI_M9 */
++	/* GPU  = AXI_M8 */
++	/* today information is hardcoded in U-Boot */
++	writel(BIT(9), syscfg + SYSCFG_ICNR);
++	debug("[0x%x] SYSCFG.icnr = 0x%08x (LTDC and GPU)\n",
++	      (u32)syscfg + SYSCFG_ICNR, readl(syscfg + SYSCFG_ICNR));
++
++	/* disable Pull-Down for boot pin connected to VDD */
++	bootr = readl(syscfg + SYSCFG_BOOTR);
++	bootr &= ~(SYSCFG_BOOTR_BOOT_MASK << SYSCFG_BOOTR_BOOTPD_SHIFT);
++	bootr |= (bootr & SYSCFG_BOOTR_BOOT_MASK) << SYSCFG_BOOTR_BOOTPD_SHIFT;
++	writel(bootr, syscfg + SYSCFG_BOOTR);
++	debug("[0x%x] SYSCFG.bootr = 0x%08x\n",
++	      (u32)syscfg + SYSCFG_BOOTR, readl(syscfg + SYSCFG_BOOTR));
++
++#ifdef CONFIG_DM_REGULATOR
++	/* High Speed Low Voltage Pad mode Enable for SPI, SDMMC, ETH, QSPI
++	 * and TRACE. Needed above ~50MHz and conditioned by AFMUX selection.
++	 * The customer will have to disable this for low frequencies
++	 * or if AFMUX is selected but the function not used, typically for
++	 * TRACE. Otherwise, impact on power consumption.
++	 *
++	 * WARNING:
++	 *   enabling High Speed mode while VDD>2.7V
++	 *   with the OTP product_below_2v5 (OTP 18, BIT 13)
++	 *   erroneously set to 1 can damage the IC!
++	 *   => U-Boot set the register only if VDD < 2.7V (in DT)
++	 *      but this value need to be consistent with board design
++	 */
++	ret = syscon_get_by_driver_data(STM32MP_SYSCON_PWR, &pwr_dev);
++	if (!ret) {
++		ret = uclass_get_device_by_driver(UCLASS_MISC,
++						  DM_GET_DRIVER(stm32mp_bsec),
++						  &dev);
++		if (ret) {
++			pr_err("Can't find stm32mp_bsec driver\n");
++			return;
++		}
++
++		ret = misc_read(dev, STM32_BSEC_SHADOW(18), &otp, 4);
++		if (!ret)
++			otp = otp & BIT(13);
++
++		ret = uclass_get_device_by_driver(UCLASS_PMIC,
++						  DM_GET_DRIVER(stm32mp_pwr_pmic),
++						  &dev);
++
++		/* get VDD = vdd-supply */
++		ret = device_get_supply_regulator(dev, "vdd-supply", &pwr_reg);
++
++		/* check if VDD is Low Voltage */
++		if (!ret) {
++			if (regulator_get_value(pwr_reg) < 2700000) {
++				writel(SYSCFG_IOCTRLSETR_HSLVEN_TRACE |
++				       SYSCFG_IOCTRLSETR_HSLVEN_QUADSPI |
++				       SYSCFG_IOCTRLSETR_HSLVEN_ETH |
++				       SYSCFG_IOCTRLSETR_HSLVEN_SDMMC |
++				       SYSCFG_IOCTRLSETR_HSLVEN_SPI,
++				       syscfg + SYSCFG_IOCTRLSETR);
++
++				if (!otp)
++					pr_err("product_below_2v5=0: HSLVEN protected by HW\n");
++			} else {
++				if (otp)
++					pr_err("product_below_2v5=1: HSLVEN update is destructive, no update as VDD>2.7V\n");
++			}
++		} else {
++			debug("VDD unknown");
++		}
++	}
++#endif
++	debug("[0x%x] SYSCFG.IOCTRLSETR = 0x%08x\n",
++	      (u32)syscfg + SYSCFG_IOCTRLSETR,
++	      readl(syscfg + SYSCFG_IOCTRLSETR));
++
++	/* activate automatic I/O compensation
++	 * warning: need to ensure CSI enabled and ready in clock driver
++	 */
++	writel(SYSCFG_CMPENSETR_MPU_EN, syscfg + SYSCFG_CMPENSETR);
++
++	while (!(readl(syscfg + SYSCFG_CMPCR) & SYSCFG_CMPCR_READY))
++		;
++	clrbits_le32(syscfg + SYSCFG_CMPCR, SYSCFG_CMPCR_SW_CTRL);
++
++	debug("[0x%x] SYSCFG.cmpcr = 0x%08x\n",
++	      (u32)syscfg + SYSCFG_CMPCR, readl(syscfg + SYSCFG_CMPCR));
++#endif
++}
++
+ #ifdef CONFIG_DM_REGULATOR
+ /* Fix to make I2C1 usable on DK2 for touchscreen usage in kernel */
+ static int dk2_i2c1_fix(void)
+@@ -787,6 +825,63 @@ error:
+ }
+ #endif
+ 
++enum env_location env_get_location(enum env_operation op, int prio)
++{
++	u32 bootmode = get_bootmode();
++
++	if (prio)
++		return ENVL_UNKNOWN;
++
++	switch (bootmode & TAMP_BOOT_DEVICE_MASK) {
++#ifdef CONFIG_ENV_IS_IN_EXT4
++	case BOOT_FLASH_SD:
++	case BOOT_FLASH_EMMC:
++		return ENVL_EXT4;
++#endif
++#ifdef CONFIG_ENV_IS_IN_UBI
++	case BOOT_FLASH_NAND:
++		return ENVL_UBI;
++#endif
++#ifdef CONFIG_ENV_IS_IN_SPI_FLASH
++	case BOOT_FLASH_NOR:
++		return ENVL_SPI_FLASH;
++#endif
++	default:
++		return ENVL_NOWHERE;
++	}
++}
++
++#if defined(CONFIG_ENV_IS_IN_EXT4)
++const char *env_ext4_get_intf(void)
++{
++	u32 bootmode = get_bootmode();
++
++	switch (bootmode & TAMP_BOOT_DEVICE_MASK) {
++	case BOOT_FLASH_SD:
++	case BOOT_FLASH_EMMC:
++		return "mmc";
++	default:
++		return "";
++	}
++}
++
++const char *env_ext4_get_dev_part(void)
++{
++	static char *const dev_part[] = {"0:auto", "1:auto", "2:auto"};
++	u32 bootmode = get_bootmode();
++
++	return dev_part[(bootmode & TAMP_BOOT_INSTANCE_MASK) - 1];
++}
++#endif
++
++static __maybe_unused bool board_is_dk2(void)
++{
++	if (of_machine_is_compatible("st,stm32mp157c-dk2"))
++		return true;
++
++	return false;
++}
++
+ /* board dependent setup after realloc */
+ int board_init(void)
+ {
+@@ -820,14 +915,6 @@ int board_init(void)
+ 
+ 	sysconf_init();
+ 
+-#ifdef CONFIG_STM32_SDMMC2
+-	board_mmc_init();
+-#endif /* CONFIG_STM32_SDMMC2 */
+-
+-#ifdef CONFIG_STM32_QSPI
+-	board_qspi_init();
+-#endif /* CONFIG_STM32_QSPI */
+-
+ #if defined(CONFIG_USB_GADGET) && defined(CONFIG_USB_GADGET_DWC2_OTG)
+ 	board_usbotg_init();
+ #endif
+@@ -835,6 +922,51 @@ int board_init(void)
+ 	return 0;
+ }
+ 
++int board_late_init(void)
++{
++
++	char *boot_device;
++#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
++	const void *fdt_compat;
++	int fdt_compat_len;
++	int ret;
++	u32 otp;
++	struct udevice *dev;
++	char buf[10];
++
++	fdt_compat = fdt_getprop(gd->fdt_blob, 0, "compatible",
++				 &fdt_compat_len);
++	if (fdt_compat && fdt_compat_len) {
++		if (strncmp(fdt_compat, "st,", 3) != 0)
++			env_set("board_name", fdt_compat);
++		else
++			env_set("board_name", fdt_compat + 3);
++	}
++	ret = uclass_get_device_by_driver(UCLASS_MISC,
++					  DM_GET_DRIVER(stm32mp_bsec),
++					  &dev);
++
++	if (!ret)
++		ret = misc_read(dev, STM32_BSEC_SHADOW(BSEC_OTP_BOARD),
++				&otp, sizeof(otp));
++	if (!ret && otp) {
++		snprintf(buf, sizeof(buf), "0x%04x", otp >> 16);
++		env_set("board_id", buf);
++
++		snprintf(buf, sizeof(buf), "0x%04x",
++			 ((otp >> 8) & 0xF) - 1 + 0xA);
++		env_set("board_rev", buf);
++	}
++#endif
++
++	/* Check the boot-source to disable bootdelay */
++	boot_device = env_get("boot_device");
++	if (!strcmp(boot_device, "serial") || !strcmp(boot_device, "usb"))
++		env_set("bootdelay", "0");
++
++	return 0;
++}
++
+ void board_quiesce_devices(void)
+ {
+ #ifdef CONFIG_LED
+@@ -843,32 +975,101 @@ void board_quiesce_devices(void)
+ }
+ 
+ #ifdef CONFIG_SYS_MTDPARTS_RUNTIME
++
++#define MTDPARTS_LEN		256
++#define MTDIDS_LEN		128
++
++/**
++ * The mtdparts_nand0 and mtdparts_nor0 variable tends to be long.
++ * If we need to access it before the env is relocated, then we need
++ * to use our own stack buffer. gd->env_buf will be too small.
++ *
++ * @param buf temporary buffer pointer MTDPARTS_LEN long
++ * @return mtdparts variable string, NULL if not found
++ */
++static const char *env_get_mtdparts(const char *str, char *buf)
++{
++	if (gd->flags & GD_FLG_ENV_READY)
++		return env_get(str);
++	if (env_get_f(str, buf, MTDPARTS_LEN) != -1)
++		return buf;
++	return NULL;
++}
++
++/**
++ * update the variables "mtdids" and "mtdparts" with content of mtdparts_<dev>
++ */
++static void board_get_mtdparts(const char *dev,
++			       char *mtdids,
++			       char *mtdparts)
++{
++	char env_name[32] = "mtdparts_";
++	char tmp_mtdparts[MTDPARTS_LEN];
++	const char *tmp;
++
++	/* name of env variable to read = mtdparts_<dev> */
++	strcat(env_name, dev);
++	tmp = env_get_mtdparts(env_name, tmp_mtdparts);
++	if (tmp) {
++		/* mtdids: "<dev>=<dev>, ...." */
++		if (mtdids[0] != '\0')
++			strcat(mtdids, ",");
++		strcat(mtdids, dev);
++		strcat(mtdids, "=");
++		strcat(mtdids, dev);
++
++		/* mtdparts: "mtdparts=<dev>:<mtdparts_<dev>>;..." */
++		if (mtdparts[0] != '\0')
++			strncat(mtdparts, ";", MTDPARTS_LEN);
++		else
++			strcat(mtdparts, "mtdparts=");
++		strncat(mtdparts, dev, MTDPARTS_LEN);
++		strncat(mtdparts, ":", MTDPARTS_LEN);
++		strncat(mtdparts, tmp, MTDPARTS_LEN);
++	}
++}
++
+ void board_mtdparts_default(const char **mtdids, const char **mtdparts)
+ {
++	struct mtd_info *mtd;
+ 	struct udevice *dev;
+-	char *s_nand0 = NULL, *s_nor0 = NULL;
+-	static char parts[256];
+-	static char ids[22];
+-
+-	if (!uclass_get_device(UCLASS_MTD, 0, &dev))
+-		s_nand0 = env_get("mtdparts_nand0");
+-
+-	if (!uclass_get_device(UCLASS_SPI_FLASH, 0, &dev))
+-		s_nor0 = env_get("mtdparts_nor0");
+-
+-	strcpy(ids, "");
+-	strcpy(parts, "");
+-	if (s_nand0 && s_nor0) {
+-		snprintf(ids, sizeof(ids), "nor0=nor0,nand0=nand0");
+-		snprintf(parts, sizeof(parts),
+-			 "mtdparts=nor0:%s;nand0:%s", s_nor0, s_nand0);
+-	} else if (s_nand0) {
+-		snprintf(ids, sizeof(ids), "nand0=nand0");
+-		snprintf(parts, sizeof(parts), "mtdparts=nand0:%s", s_nand0);
+-	} else if (s_nor0) {
+-		snprintf(ids, sizeof(ids), "nor0=nor0");
+-		snprintf(parts, sizeof(parts), "mtdparts=nor0:%s", s_nor0);
++	static char parts[3 * MTDPARTS_LEN + 1];
++	static char ids[MTDIDS_LEN + 1];
++	static bool mtd_initialized;
++
++	if (mtd_initialized) {
++		*mtdids = ids;
++		*mtdparts = parts;
++		return;
++	}
++
++	memset(parts, 0, sizeof(parts));
++	memset(ids, 0, sizeof(ids));
++
++	/* probe all MTD devices */
++	for (uclass_first_device(UCLASS_MTD, &dev);
++	     dev;
++	     uclass_next_device(&dev)) {
++		pr_debug("mtd device = %s\n", dev->name);
++	}
++
++	mtd = get_mtd_device_nm("nand0");
++	if (!IS_ERR_OR_NULL(mtd)) {
++		board_get_mtdparts("nand0", ids, parts);
++		put_mtd_device(mtd);
+ 	}
++
++	mtd = get_mtd_device_nm("spi-nand0");
++	if (!IS_ERR_OR_NULL(mtd)) {
++		board_get_mtdparts("spi-nand0", ids, parts);
++		put_mtd_device(mtd);
++	}
++
++	if (!uclass_get_device(UCLASS_SPI_FLASH, 0, &dev)) {
++		board_get_mtdparts("nor0", ids, parts);
++	}
++
++	mtd_initialized = true;
+ 	*mtdids = ids;
+ 	*mtdparts = parts;
+ 	debug("%s:mtdids=%s & mtdparts=%s\n", __func__, ids, parts);
+@@ -913,7 +1114,7 @@ int ft_board_setup(void *blob, bd_t *bd)
+ }
+ #endif
+ 
+-void board_stm32copro_image_process(ulong fw_image, size_t fw_size)
++static void board_stm32copro_image_process(ulong fw_image, size_t fw_size)
+ {
+ 	int ret, id = 0; /* Copro id fixed to 0 as only one coproc on mp1 */
+ 	unsigned int rsc_size;
+diff --git a/configs/stm32mp15_icorest_trusted_defconfig b/configs/stm32mp15_icorest_trusted_defconfig
+index f1c4b10..05bc18a 100644
+--- a/configs/stm32mp15_icorest_trusted_defconfig
++++ b/configs/stm32mp15_icorest_trusted_defconfig
+@@ -4,8 +4,10 @@ CONFIG_SYS_MALLOC_F_LEN=0x3000
+ CONFIG_TARGET_ICORE_STM32MP1=y
+ CONFIG_DISTRO_DEFAULTS=y
+ CONFIG_FIT=y
++CONFIG_BOOTCOMMAND="run distro_bootcmd"
+ CONFIG_SYS_PROMPT="STM32MP-i.Core> "
+ # CONFIG_CMD_BOOTD is not set
++CONFIG_CMD_DTIMG=y
+ # CONFIG_CMD_ELF is not set
+ # CONFIG_CMD_IMI is not set
+ # CONFIG_CMD_XIMG is not set
+@@ -22,6 +24,7 @@ CONFIG_CMD_I2C=y
+ CONFIG_CMD_MMC=y
+ CONFIG_CMD_REMOTEPROC=y
+ CONFIG_CMD_SF=y
++CONFIG_CMD_SPI=y
+ CONFIG_CMD_USB=y
+ CONFIG_CMD_USB_MASS_STORAGE=y
+ CONFIG_CMD_BMP=y
+@@ -34,6 +37,13 @@ CONFIG_CMD_EXT4_WRITE=y
+ CONFIG_CMD_MTDPARTS=y
+ CONFIG_CMD_UBI=y
+ CONFIG_DEFAULT_DEVICE_TREE="stm32mp157a-icorestm32-mx"
++CONFIG_ENV_IS_NOWHERE=y
++CONFIG_ENV_IS_IN_EXT4=y
++CONFIG_ENV_IS_IN_SPI_FLASH=y
++CONFIG_ENV_IS_IN_UBI=y
++CONFIG_ENV_EXT4_INTERFACE="mmc"
++CONFIG_ENV_EXT4_DEVICE_AND_PART="0:auto"
++CONFIG_ENV_EXT4_FILE="/uboot.env"
+ CONFIG_STM32_ADC=y
+ CONFIG_USB_FUNCTION_FASTBOOT=y
+ CONFIG_FASTBOOT_BUF_ADDR=0xC0000000
+@@ -79,10 +89,13 @@ CONFIG_DM_REGULATOR_GPIO=y
+ CONFIG_DM_REGULATOR_STM32_VREFBUF=y
+ CONFIG_DM_REGULATOR_STPMIC1=y
+ CONFIG_REMOTEPROC_STM32_COPRO=y
++CONFIG_DM_RTC=y
++CONFIG_RTC_STM32=y
+ CONFIG_SERIAL_RX_BUFFER=y
+ CONFIG_SPI=y
+ CONFIG_DM_SPI=y
+ CONFIG_STM32_QSPI=y
++CONFIG_STM32_SPI=y
+ CONFIG_USB=y
+ CONFIG_DM_USB=y
+ CONFIG_USB_EHCI_HCD=y
+diff --git a/configs/stm32mp15_ugeast_512M_trusted_defconfig b/configs/stm32mp15_ugeast_512M_trusted_defconfig
+index 28efdf9..ba7391e 100644
+--- a/configs/stm32mp15_ugeast_512M_trusted_defconfig
++++ b/configs/stm32mp15_ugeast_512M_trusted_defconfig
+@@ -4,8 +4,10 @@ CONFIG_SYS_MALLOC_F_LEN=0x3000
+ CONFIG_TARGET_UGEA_STM32MP1=y
+ CONFIG_DISTRO_DEFAULTS=y
+ CONFIG_FIT=y
++CONFIG_BOOTCOMMAND="run distro_bootcmd"
+ CONFIG_SYS_PROMPT="STM32MP-uGea> "
+ # CONFIG_CMD_BOOTD is not set
++CONFIG_CMD_DTIMG=y
+ # CONFIG_CMD_ELF is not set
+ # CONFIG_CMD_IMI is not set
+ # CONFIG_CMD_XIMG is not set
+@@ -22,6 +24,7 @@ CONFIG_CMD_I2C=y
+ CONFIG_CMD_MMC=y
+ CONFIG_CMD_REMOTEPROC=y
+ CONFIG_CMD_SF=y
++CONFIG_CMD_SPI=y
+ CONFIG_CMD_USB=y
+ CONFIG_CMD_USB_MASS_STORAGE=y
+ CONFIG_CMD_BMP=y
+@@ -34,6 +37,13 @@ CONFIG_CMD_EXT4_WRITE=y
+ CONFIG_CMD_MTDPARTS=y
+ CONFIG_CMD_UBI=y
+ CONFIG_DEFAULT_DEVICE_TREE="stm32mp157a-ugeast-512M-mx"
++CONFIG_ENV_IS_NOWHERE=y
++CONFIG_ENV_IS_IN_EXT4=y
++CONFIG_ENV_IS_IN_SPI_FLASH=y
++CONFIG_ENV_IS_IN_UBI=y
++CONFIG_ENV_EXT4_INTERFACE="mmc"
++CONFIG_ENV_EXT4_DEVICE_AND_PART="0:auto"
++CONFIG_ENV_EXT4_FILE="/uboot.env"
+ CONFIG_STM32_ADC=y
+ CONFIG_USB_FUNCTION_FASTBOOT=y
+ CONFIG_FASTBOOT_BUF_ADDR=0xC0000000
+@@ -77,10 +87,13 @@ CONFIG_DM_REGULATOR_GPIO=y
+ CONFIG_DM_REGULATOR_STM32_VREFBUF=y
+ CONFIG_DM_REGULATOR_STPMIC1=y
+ CONFIG_REMOTEPROC_STM32_COPRO=y
++CONFIG_DM_RTC=y
++CONFIG_RTC_STM32=y
+ CONFIG_SERIAL_RX_BUFFER=y
+ CONFIG_SPI=y
+ CONFIG_DM_SPI=y
+ CONFIG_STM32_QSPI=y
++CONFIG_STM32_SPI=y
+ CONFIG_USB=y
+ CONFIG_DM_USB=y
+ CONFIG_USB_EHCI_HCD=y
+diff --git a/configs/stm32mp15_ugeast_800M_1G_trusted_defconfig b/configs/stm32mp15_ugeast_800M_1G_trusted_defconfig
+index b35b477..f218de7 100644
+--- a/configs/stm32mp15_ugeast_800M_1G_trusted_defconfig
++++ b/configs/stm32mp15_ugeast_800M_1G_trusted_defconfig
+@@ -4,8 +4,10 @@ CONFIG_SYS_MALLOC_F_LEN=0x3000
+ CONFIG_TARGET_UGEA_STM32MP1=y
+ CONFIG_DISTRO_DEFAULTS=y
+ CONFIG_FIT=y
++CONFIG_BOOTCOMMAND="run distro_bootcmd"
+ CONFIG_SYS_PROMPT="STM32MP-uGea> "
+ # CONFIG_CMD_BOOTD is not set
++CONFIG_CMD_DTIMG=y
+ # CONFIG_CMD_ELF is not set
+ # CONFIG_CMD_IMI is not set
+ # CONFIG_CMD_XIMG is not set
+@@ -22,6 +24,7 @@ CONFIG_CMD_I2C=y
+ CONFIG_CMD_MMC=y
+ CONFIG_CMD_REMOTEPROC=y
+ CONFIG_CMD_SF=y
++CONFIG_CMD_SPI=y
+ CONFIG_CMD_USB=y
+ CONFIG_CMD_USB_MASS_STORAGE=y
+ CONFIG_CMD_BMP=y
+@@ -34,6 +37,13 @@ CONFIG_CMD_EXT4_WRITE=y
+ CONFIG_CMD_MTDPARTS=y
+ CONFIG_CMD_UBI=y
+ CONFIG_DEFAULT_DEVICE_TREE="stm32mp157a-ugeast-800M-1G-mx"
++CONFIG_ENV_IS_NOWHERE=y
++CONFIG_ENV_IS_IN_EXT4=y
++CONFIG_ENV_IS_IN_SPI_FLASH=y
++CONFIG_ENV_IS_IN_UBI=y
++CONFIG_ENV_EXT4_INTERFACE="mmc"
++CONFIG_ENV_EXT4_DEVICE_AND_PART="0:auto"
++CONFIG_ENV_EXT4_FILE="/uboot.env"
+ CONFIG_STM32_ADC=y
+ CONFIG_USB_FUNCTION_FASTBOOT=y
+ CONFIG_FASTBOOT_BUF_ADDR=0xC0000000
+@@ -77,10 +87,13 @@ CONFIG_DM_REGULATOR_GPIO=y
+ CONFIG_DM_REGULATOR_STM32_VREFBUF=y
+ CONFIG_DM_REGULATOR_STPMIC1=y
+ CONFIG_REMOTEPROC_STM32_COPRO=y
++CONFIG_DM_RTC=y
++CONFIG_RTC_STM32=y
+ CONFIG_SERIAL_RX_BUFFER=y
+ CONFIG_SPI=y
+ CONFIG_DM_SPI=y
+ CONFIG_STM32_QSPI=y
++CONFIG_STM32_SPI=y
+ CONFIG_USB=y
+ CONFIG_DM_USB=y
+ CONFIG_USB_EHCI_HCD=y
+diff --git a/configs/stm32mp15_ugeast_800M_512M_trusted_defconfig b/configs/stm32mp15_ugeast_800M_512M_trusted_defconfig
+index b9b9763..6f49e5a 100644
+--- a/configs/stm32mp15_ugeast_800M_512M_trusted_defconfig
++++ b/configs/stm32mp15_ugeast_800M_512M_trusted_defconfig
+@@ -4,8 +4,10 @@ CONFIG_SYS_MALLOC_F_LEN=0x3000
+ CONFIG_TARGET_UGEA_STM32MP1=y
+ CONFIG_DISTRO_DEFAULTS=y
+ CONFIG_FIT=y
++CONFIG_BOOTCOMMAND="run distro_bootcmd"
+ CONFIG_SYS_PROMPT="STM32MP-uGea> "
+ # CONFIG_CMD_BOOTD is not set
++CONFIG_CMD_DTIMG=y
+ # CONFIG_CMD_ELF is not set
+ # CONFIG_CMD_IMI is not set
+ # CONFIG_CMD_XIMG is not set
+@@ -22,6 +24,7 @@ CONFIG_CMD_I2C=y
+ CONFIG_CMD_MMC=y
+ CONFIG_CMD_REMOTEPROC=y
+ CONFIG_CMD_SF=y
++CONFIG_CMD_SPI=y
+ CONFIG_CMD_USB=y
+ CONFIG_CMD_USB_MASS_STORAGE=y
+ CONFIG_CMD_BMP=y
+@@ -34,6 +37,13 @@ CONFIG_CMD_EXT4_WRITE=y
+ CONFIG_CMD_MTDPARTS=y
+ CONFIG_CMD_UBI=y
+ CONFIG_DEFAULT_DEVICE_TREE="stm32mp157a-ugeast-800M-512M-mx"
++CONFIG_ENV_IS_NOWHERE=y
++CONFIG_ENV_IS_IN_EXT4=y
++CONFIG_ENV_IS_IN_SPI_FLASH=y
++CONFIG_ENV_IS_IN_UBI=y
++CONFIG_ENV_EXT4_INTERFACE="mmc"
++CONFIG_ENV_EXT4_DEVICE_AND_PART="0:auto"
++CONFIG_ENV_EXT4_FILE="/uboot.env"
+ CONFIG_STM32_ADC=y
+ CONFIG_USB_FUNCTION_FASTBOOT=y
+ CONFIG_FASTBOOT_BUF_ADDR=0xC0000000
+@@ -77,10 +87,13 @@ CONFIG_DM_REGULATOR_GPIO=y
+ CONFIG_DM_REGULATOR_STM32_VREFBUF=y
+ CONFIG_DM_REGULATOR_STPMIC1=y
+ CONFIG_REMOTEPROC_STM32_COPRO=y
++CONFIG_DM_RTC=y
++CONFIG_RTC_STM32=y
+ CONFIG_SERIAL_RX_BUFFER=y
+ CONFIG_SPI=y
+ CONFIG_DM_SPI=y
+ CONFIG_STM32_QSPI=y
++CONFIG_STM32_SPI=y
+ CONFIG_USB=y
+ CONFIG_DM_USB=y
+ CONFIG_USB_EHCI_HCD=y
+diff --git a/configs/stm32mp15_ugeast_trusted_defconfig b/configs/stm32mp15_ugeast_trusted_defconfig
+index cad5205..a515e0d 100644
+--- a/configs/stm32mp15_ugeast_trusted_defconfig
++++ b/configs/stm32mp15_ugeast_trusted_defconfig
+@@ -4,8 +4,10 @@ CONFIG_SYS_MALLOC_F_LEN=0x3000
+ CONFIG_TARGET_UGEA_STM32MP1=y
+ CONFIG_DISTRO_DEFAULTS=y
+ CONFIG_FIT=y
++CONFIG_BOOTCOMMAND="run distro_bootcmd"
+ CONFIG_SYS_PROMPT="STM32MP-uGea> "
+ # CONFIG_CMD_BOOTD is not set
++CONFIG_CMD_DTIMG=y
+ # CONFIG_CMD_ELF is not set
+ # CONFIG_CMD_IMI is not set
+ # CONFIG_CMD_XIMG is not set
+@@ -22,6 +24,7 @@ CONFIG_CMD_I2C=y
+ CONFIG_CMD_MMC=y
+ CONFIG_CMD_REMOTEPROC=y
+ CONFIG_CMD_SF=y
++CONFIG_CMD_SPI=y
+ CONFIG_CMD_USB=y
+ CONFIG_CMD_USB_MASS_STORAGE=y
+ CONFIG_CMD_BMP=y
+@@ -34,6 +37,13 @@ CONFIG_CMD_EXT4_WRITE=y
+ CONFIG_CMD_MTDPARTS=y
+ CONFIG_CMD_UBI=y
+ CONFIG_DEFAULT_DEVICE_TREE="stm32mp157a-ugeast-mx"
++CONFIG_ENV_IS_NOWHERE=y
++CONFIG_ENV_IS_IN_EXT4=y
++CONFIG_ENV_IS_IN_SPI_FLASH=y
++CONFIG_ENV_IS_IN_UBI=y
++CONFIG_ENV_EXT4_INTERFACE="mmc"
++CONFIG_ENV_EXT4_DEVICE_AND_PART="0:auto"
++CONFIG_ENV_EXT4_FILE="/uboot.env"
+ CONFIG_STM32_ADC=y
+ CONFIG_USB_FUNCTION_FASTBOOT=y
+ CONFIG_FASTBOOT_BUF_ADDR=0xC0000000
+@@ -77,10 +87,13 @@ CONFIG_DM_REGULATOR_GPIO=y
+ CONFIG_DM_REGULATOR_STM32_VREFBUF=y
+ CONFIG_DM_REGULATOR_STPMIC1=y
+ CONFIG_REMOTEPROC_STM32_COPRO=y
++CONFIG_DM_RTC=y
++CONFIG_RTC_STM32=y
+ CONFIG_SERIAL_RX_BUFFER=y
+ CONFIG_SPI=y
+ CONFIG_DM_SPI=y
+ CONFIG_STM32_QSPI=y
++CONFIG_STM32_SPI=y
+ CONFIG_USB=y
+ CONFIG_DM_USB=y
+ CONFIG_USB_EHCI_HCD=y
+diff --git a/include/configs/stm32mp1-icore.h b/include/configs/stm32mp1-icore.h
+index cfc4149..80c016d 100644
+--- a/include/configs/stm32mp1-icore.h
++++ b/include/configs/stm32mp1-icore.h
+@@ -48,7 +48,19 @@
+ /*
+  * Env parameters
+  */
+-#define CONFIG_ENV_SIZE				SZ_4K
++#define CONFIG_ENV_OVERWRITE
++#define CONFIG_ENV_SIZE				SZ_8K
++
++#if defined(CONFIG_ENV_IS_IN_UBI)
++#define	CONFIG_ENV_UBI_PART			"UBI"
++#define	CONFIG_ENV_UBI_VOLUME			"uboot_config"
++#define CONFIG_ENV_UBI_VOLUME_REDUND		"uboot_config_r"
++#endif
++
++#if defined(CONFIG_ENV_IS_IN_SPI_FLASH)
++#define	CONFIG_ENV_SECT_SIZE			SZ_256K
++#define	CONFIG_ENV_OFFSET			0x00280000
++#endif
+ 
+ /* ATAGs */
+ #define CONFIG_CMDLINE_TAG
+@@ -130,20 +142,87 @@
+ 	func(MMC, mmc, 2) \
+ 	func(PXE, pxe, na)
+ 
+-#include <config_distro_bootcmd.h>
++/*
++ * bootcmd for stm32mp1:
++ *    CONFIG_BOOTCOMMAND="run bootcmd_stm32mp"
++ * for serial/usb: execute the stm32prog command
++ * for mmc boot (eMMC, SD card), boot only on the same device
++ * for nand boot, boot with on ubifs partition on nand
++ * for nor boot, use the default order
++ */
++#define CONFIG_PREBOOT
+ 
+-#define CONFIG_PREBOOT \
+-	"echo \"Boot over ${boot_device}${boot_instance}!\"; " \
+-	"if test ${boot_device} = serial; then " \
+-		"stm32prog serial ${boot_instance}; " \
+-	"else if test ${boot_device} = usb; then " \
+-		"stm32prog usb ${boot_instance}; " \
++#define STM32MP_BOOTCMD "bootcmd_stm32mp=" \
++	"echo \"Boot over ${boot_device}${boot_instance}!\";" \
++	"if test ${boot_device} = serial || test ${boot_device} = usb;" \
++	"then stm32prog ${boot_device} ${boot_instance}; " \
+ 	"else " \
+-		"if test ${boot_device} = mmc; then " \
+-			"env set boot_targets \"mmc${boot_instance}\"; "\
+-		"else if test ${boot_device} = nand; then " \
+-			"env set boot_targets \"ubifs0\"; "\
+-	"fi; fi; fi; fi;"
++		"run env_check;" \
++		"if test ${boot_device} = mmc;" \
++		"then env set boot_targets \"mmc${boot_instance}\"; fi;" \
++		"if test ${boot_device} = nand;" \
++		"then env set boot_targets ubifs0; fi;" \
++		"run distro_bootcmd;" \
++	"fi;\0"
++
++/* DTIMG command added only for Android distribution */
++#ifdef CONFIG_CMD_DTIMG
++/*
++ * bootcmd for android on MMC:
++ *    CONFIG_BOOTCOMMAND="run bootcmd_android"
++ * overidde DISTRO script "mmc_boot" to boot android on mmc
++ * using system_${suffix} partition (with "_a") by default
++ * - display splash screen
++ * - load device tree form dtimg
++ * - load kernel and set bootargs
++ * - start kernel
++ */
++
++#define STM32MP_ANDROID \
++	"suffix=a\0" \
++	"dtimg_addr=0xc4500000\0" \
++	"android_mmc_splash="\
++		"if part start mmc ${devnum} splash splash_start && " \
++		   "part size mmc ${devnum} splash splash_size;"\
++		"then " \
++		   "mmc read ${splashimage} ${splash_start} ${splash_size};" \
++		   "cls; bmp display ${splashimage} m m;" \
++		"fi\0" \
++	"android_mmc_fdt="\
++		"if part start mmc ${devnum} dt_${suffix} dt_start &&" \
++		   "part size mmc ${devnum} dt_${suffix} dt_size;"\
++		"then " \
++		   "mmc read ${dtimg_addr} ${dt_start} ${dt_size};" \
++		   "dtimg getindex ${dtimg_addr} ${board_id} ${board_rev}" \
++		     " dt_index;" \
++		   "dtimg start ${dtimg_addr} ${dt_index} fdt_addr_r;"\
++		"fi\0" \
++	"android_mmc_kernel="\
++		"if part start mmc ${devnum} boot_${suffix} boot_start &&" \
++		   "part size mmc ${devnum} boot_${suffix} boot_size;"\
++		"then " \
++		   "mmc read ${kernel_addr_r} ${boot_start} ${boot_size};" \
++		   "part nb mmc ${devnum} system_${suffix} rootpart_nb;" \
++		   "env set bootargs" \
++		     "root=/dev/mmcblk${devnum}p${rootpart_nb} " \
++		     "androidboot.serialno=${serial#} " \
++		     "androidboot.slot_suffix=_${suffix};"\
++		"fi\0" \
++	"android_mmc_boot="\
++		"mmc dev ${devnum};"\
++		"run android_mmc_splash;" \
++		"run android_mmc_fdt;" \
++		"run android_mmc_kernel;" \
++		"bootm ${kernel_addr_r} - ${fdt_addr_r};\0" \
++	"bootcmd_android=" \
++		"env set mmc_boot run android_mmc_boot;" \
++		"run bootcmd_stm32mp\0"
++
++#else
++#define STM32MP_ANDROID
++#endif/* CONFIG_CMD_DTIMG */
++
++#include <config_distro_bootcmd.h>
+ 
+ #ifdef CONFIG_STM32MP1_OPTEE
+ #define CONFIG_SYS_MEM_TOP_HIDE			SZ_32M
+diff --git a/include/configs/stm32mp1-ugea.h b/include/configs/stm32mp1-ugea.h
+index b56dbc7..5e87707 100644
+--- a/include/configs/stm32mp1-ugea.h
++++ b/include/configs/stm32mp1-ugea.h
+@@ -48,7 +48,19 @@
+ /*
+  * Env parameters
+  */
+-#define CONFIG_ENV_SIZE				SZ_4K
++#define CONFIG_ENV_OVERWRITE
++#define CONFIG_ENV_SIZE				SZ_8K
++
++#if defined(CONFIG_ENV_IS_IN_UBI)
++#define	CONFIG_ENV_UBI_PART			"UBI"
++#define	CONFIG_ENV_UBI_VOLUME			"uboot_config"
++#define CONFIG_ENV_UBI_VOLUME_REDUND		"uboot_config_r"
++#endif
++
++#if defined(CONFIG_ENV_IS_IN_SPI_FLASH)
++#define	CONFIG_ENV_SECT_SIZE			SZ_256K
++#define	CONFIG_ENV_OFFSET			0x00280000
++#endif
+ 
+ /* ATAGs */
+ #define CONFIG_CMDLINE_TAG
+@@ -129,20 +141,87 @@
+ 	func(MMC, mmc, 2) \
+ 	func(PXE, pxe, na)
+ 
+-#include <config_distro_bootcmd.h>
++/*
++ * bootcmd for stm32mp1:
++ *    CONFIG_BOOTCOMMAND="run bootcmd_stm32mp"
++ * for serial/usb: execute the stm32prog command
++ * for mmc boot (eMMC, SD card), boot only on the same device
++ * for nand boot, boot with on ubifs partition on nand
++ * for nor boot, use the default order
++ */
++#define CONFIG_PREBOOT
+ 
+-#define CONFIG_PREBOOT \
+-	"echo \"Boot over ${boot_device}${boot_instance}!\"; " \
+-	"if test ${boot_device} = serial; then " \
+-		"stm32prog serial ${boot_instance}; " \
+-	"else if test ${boot_device} = usb; then " \
+-		"stm32prog usb ${boot_instance}; " \
++#define STM32MP_BOOTCMD "bootcmd_stm32mp=" \
++	"echo \"Boot over ${boot_device}${boot_instance}!\";" \
++	"if test ${boot_device} = serial || test ${boot_device} = usb;" \
++	"then stm32prog ${boot_device} ${boot_instance}; " \
+ 	"else " \
+-		"if test ${boot_device} = mmc; then " \
+-			"env set boot_targets \"mmc${boot_instance}\"; "\
+-		"else if test ${boot_device} = nand; then " \
+-			"env set boot_targets \"ubifs0\"; "\
+-	"fi; fi; fi; fi;"
++		"run env_check;" \
++		"if test ${boot_device} = mmc;" \
++		"then env set boot_targets \"mmc${boot_instance}\"; fi;" \
++		"if test ${boot_device} = nand;" \
++		"then env set boot_targets ubifs0; fi;" \
++		"run distro_bootcmd;" \
++	"fi;\0"
++
++/* DTIMG command added only for Android distribution */
++#ifdef CONFIG_CMD_DTIMG
++/*
++ * bootcmd for android on MMC:
++ *    CONFIG_BOOTCOMMAND="run bootcmd_android"
++ * overidde DISTRO script "mmc_boot" to boot android on mmc
++ * using system_${suffix} partition (with "_a") by default
++ * - display splash screen
++ * - load device tree form dtimg
++ * - load kernel and set bootargs
++ * - start kernel
++ */
++
++#define STM32MP_ANDROID \
++	"suffix=a\0" \
++	"dtimg_addr=0xc4500000\0" \
++	"android_mmc_splash="\
++		"if part start mmc ${devnum} splash splash_start && " \
++		   "part size mmc ${devnum} splash splash_size;"\
++		"then " \
++		   "mmc read ${splashimage} ${splash_start} ${splash_size};" \
++		   "cls; bmp display ${splashimage} m m;" \
++		"fi\0" \
++	"android_mmc_fdt="\
++		"if part start mmc ${devnum} dt_${suffix} dt_start &&" \
++		   "part size mmc ${devnum} dt_${suffix} dt_size;"\
++		"then " \
++		   "mmc read ${dtimg_addr} ${dt_start} ${dt_size};" \
++		   "dtimg getindex ${dtimg_addr} ${board_id} ${board_rev}" \
++		     " dt_index;" \
++		   "dtimg start ${dtimg_addr} ${dt_index} fdt_addr_r;"\
++		"fi\0" \
++	"android_mmc_kernel="\
++		"if part start mmc ${devnum} boot_${suffix} boot_start &&" \
++		   "part size mmc ${devnum} boot_${suffix} boot_size;"\
++		"then " \
++		   "mmc read ${kernel_addr_r} ${boot_start} ${boot_size};" \
++		   "part nb mmc ${devnum} system_${suffix} rootpart_nb;" \
++		   "env set bootargs" \
++		     "root=/dev/mmcblk${devnum}p${rootpart_nb} " \
++		     "androidboot.serialno=${serial#} " \
++		     "androidboot.slot_suffix=_${suffix};"\
++		"fi\0" \
++	"android_mmc_boot="\
++		"mmc dev ${devnum};"\
++		"run android_mmc_splash;" \
++		"run android_mmc_fdt;" \
++		"run android_mmc_kernel;" \
++		"bootm ${kernel_addr_r} - ${fdt_addr_r};\0" \
++	"bootcmd_android=" \
++		"env set mmc_boot run android_mmc_boot;" \
++		"run bootcmd_stm32mp\0"
++
++#else
++#define STM32MP_ANDROID
++#endif/* CONFIG_CMD_DTIMG */
++
++#include <config_distro_bootcmd.h>
+ 
+ #ifdef CONFIG_STM32MP1_OPTEE
+ #define CONFIG_SYS_MEM_TOP_HIDE			SZ_32M
+-- 
+2.20.1
+
