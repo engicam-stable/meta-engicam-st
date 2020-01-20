@@ -1,0 +1,62 @@
+From 9ac9cfba349b0a6d25b169300fcf5f25444734e0 Mon Sep 17 00:00:00 2001
+From: Francesco_Utel <francesco.utel@engicam.com>
+Date: Mon, 20 Jan 2020 16:10:02 +0100
+Subject: [PATCH] added quectel EG95 support
+
+---
+ drivers/usb/serial/option.c   | 12 ++++++++++++
+ drivers/usb/serial/usb_wwan.c | 15 +++++++++++++++
+ 2 files changed, 27 insertions(+)
+
+diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+index e72ad9f..790aea8 100644
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1941,6 +1941,18 @@ static const struct usb_device_id option_ids[] = {
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(WETELECOM_VENDOR_ID, WETELECOM_PRODUCT_6802, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(WETELECOM_VENDOR_ID, WETELECOM_PRODUCT_WMD300, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(0x03f0, 0x421d, 0xff, 0xff, 0xff) }, /* HP lt2523 (Novatel E371) */
++	#if 1 //Added by Quectel
++	{ USB_DEVICE(0x05C6, 0x9090) }, /* Quectel UC15 */
++	{ USB_DEVICE(0x05C6, 0x9003) }, /* Quectel UC20 */
++	{ USB_DEVICE(0x2C7C, 0x0125) }, /* Quectel EC25 */
++	{ USB_DEVICE(0x2C7C, 0x0121) }, /* Quectel EC21 */
++	{ USB_DEVICE(0x05C6, 0x9215) }, /* Quectel EC20 */
++	{ USB_DEVICE(0x2C7C, 0x0191) }, /* Quectel EG91 */
++	{ USB_DEVICE(0x2C7C, 0x0195) }, /* Quectel EG95 */
++	{ USB_DEVICE(0x2C7C, 0x0306) }, /* Quectel EG06/EP06/EM06 */
++	{ USB_DEVICE(0x2C7C, 0x0296) }, /* Quectel BG96 */
++	{ USB_DEVICE(0x2C7C, 0x0435) }, /* Quectel AG35 */
++	#endif
+ 	{ } /* Terminating entry */
+ };
+ MODULE_DEVICE_TABLE(usb, option_ids);
+diff --git a/drivers/usb/serial/usb_wwan.c b/drivers/usb/serial/usb_wwan.c
+index 912472f..22a614c 100644
+--- a/drivers/usb/serial/usb_wwan.c
++++ b/drivers/usb/serial/usb_wwan.c
+@@ -500,6 +500,21 @@ static struct urb *usb_wwan_setup_urb(struct usb_serial_port *port,
+ 			  usb_sndbulkpipe(serial->dev, endpoint) | dir,
+ 			  buf, len, callback, ctx);
+ 
++	#if 1
++	//Added by Quectel for zero packet
++	if (dir == USB_DIR_OUT) {
++	struct usb_device_descriptor *desc = &serial->dev->descriptor;
++	if (desc->idVendor == cpu_to_le16(0x05C6) && desc->idProduct == cpu_to_le16(0x9090))
++			urb->transfer_flags |= URB_ZERO_PACKET;
++	if (desc->idVendor == cpu_to_le16(0x05C6) && desc->idProduct == cpu_to_le16(0x9003))
++			urb->transfer_flags |= URB_ZERO_PACKET;
++	if (desc->idVendor == cpu_to_le16(0x05C6) && desc->idProduct == cpu_to_le16(0x9215))
++			urb->transfer_flags |= URB_ZERO_PACKET;
++	if (desc->idVendor == cpu_to_le16(0x2C7C))
++			urb->transfer_flags |= URB_ZERO_PACKET;
++	}
++	#endif
++
+ 	return urb;
+ }
+ 
+-- 
+2.7.4
+

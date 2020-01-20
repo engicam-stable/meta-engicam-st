@@ -37,4 +37,5 @@ SRC_URI+=" \
             file://0035-fix-mmc1-boot-issue.patch \
             file://0036-add-usart1-on-icore-module.patch \
             file://0037-ported-capacitive-touch-ofcap2-10.patch \
+            file://0038-added-quectel-EG95-support.patch \
         "
