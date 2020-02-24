@@ -27,11 +27,11 @@ BOOTSCHEME_LABELS += "trusted"
 # =========================================================================
 # Define the boot device supported
 #BOOTDEVICE_LABELS += "emmc"
-BOOTDEVICE_LABELS += "nand-4-256"
+#BOOTDEVICE_LABELS += "nand-4-256"
 #BOOTDEVICE_LABELS += "nor-emmc"
 #BOOTDEVICE_LABELS += "nor-nand-4-256"
 #BOOTDEVICE_LABELS += "nor-sdcard"
-#BOOTDEVICE_LABELS += "sdcard"
+BOOTDEVICE_LABELS += "sdcard"
 
 # =========================================================================
 # Machine settings
@@ -55,7 +55,7 @@ MACHINE_FEATURES += "splashscreen"
 # Image
 # =========================================================================
 # Add ubi FSTYPES to default ones for nand volumes
-IMAGE_FSTYPES += "stmultiubi"
+#IMAGE_FSTYPES += "stmultiubi"
 
 # =========================================================================
 # Kernel
