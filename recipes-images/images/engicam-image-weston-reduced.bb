@@ -49,14 +49,16 @@ IMAGE_X11_XWAYLAND_DISPLAY_PART = " \
     xclock \
     xorg-minimal-fonts \
     libx11 libx11-locale \
-    qt5everywheredemo \
     qtwayland \
     qtserialport \
+    qtserialbus \
     packagegroup-core-ssh-openssh \
     nfs-utils \
     qtquickcontrols \
     qtquickcontrols2 \
     sqlite \
+    brcm-patchram-plus \
+    lwb-bcm4343w-fw \
 "
 
 PACKAGECONFIG_remove_pn-qtwayland = " xcomposite-glx "
@@ -72,13 +74,8 @@ IMAGE_X11_DISPLAY_PART = " \
 CORE_IMAGE_EXTRA_INSTALL += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd-networkd-configuration', '', d)} \
     \
-    packagegroup-framework-tools-core-base      \
-    packagegroup-framework-tools-kernel-base    \
-    packagegroup-framework-tools-network-base   \
-    packagegroup-framework-tools-audio-base     \
-    packagegroup-framework-tools-ui-base        \
-    packagegroup-framework-tools-python2-base   \
-    packagegroup-framework-tools-python3-base   \
+    packagegroup-framework-core-base    \
+    packagegroup-framework-tools-base   \
     \
     ${IMAGE_DISPLAY_PART}                       \
     ${IMAGE_MM_PART}                            \

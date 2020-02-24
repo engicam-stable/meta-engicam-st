@@ -9,10 +9,7 @@ IMAGE_LINGUAS = "en-us"
 
 IMAGE_FEATURES += "\
     splash \
-    package-management \
     ssh-server-openssh \
-    hwcodecs \
-    tools-profile \
     "
 
 #
