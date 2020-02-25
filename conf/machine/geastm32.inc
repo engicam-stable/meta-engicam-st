@@ -47,7 +47,7 @@ BOOTDEVICE_LABELS += "sdcard"
 # =========================================================================
 MACHINE_FEATURES += "bluetooth"
 MACHINE_FEATURES += "wifi"
-MACHINE_FEATURES += "${@'gpu' if d.getVar('ACCEPT_EULA_'+d.getVar('MACHINE')) == '1' else ''}"
+MACHINE_FEATURES += "gpu"
 # Splashscreen enabled
 MACHINE_FEATURES += "splashscreen"
 
