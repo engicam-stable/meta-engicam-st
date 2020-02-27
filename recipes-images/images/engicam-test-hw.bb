@@ -44,7 +44,19 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     \
     obexftp \
     \
-    packagegroup-framework-tools      \
+    packagegroup-framework-tools-core-base      \
+    packagegroup-framework-tools-kernel-base    \
+    packagegroup-framework-tools-network-base   \
+    packagegroup-framework-tools-audio-base     \
+    packagegroup-framework-tools-python2-base   \
+    packagegroup-framework-tools-python3-base   \
+    packagegroup-framework-tools-core           \
+    packagegroup-framework-tools-kernel         \
+    packagegroup-framework-tools-network        \
+    packagegroup-framework-tools-audio          \
+    packagegroup-framework-tools-ui             \
+    packagegroup-framework-tools-python2        \
+    packagegroup-framework-tools-python3        \    
     packagegroup-gstreamer1-0 \
     ppp \      
     \
