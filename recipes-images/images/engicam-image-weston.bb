@@ -22,6 +22,9 @@ IMAGE_FEATURES += "\
 # INSTALL addons
 #
 CORE_IMAGE_EXTRA_INSTALL += " \
+    \
+    brcm-patchram-plus \
+    \
     packagegroup-framework-core-base    \
     packagegroup-framework-tools-base   \
     \

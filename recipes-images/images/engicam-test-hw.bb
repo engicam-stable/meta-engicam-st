@@ -38,8 +38,6 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     \
     devmem2 \
     \
-    lwb-bcm4343w-fw \
-    \
     mtd-utils \
     \
     obexftp \
