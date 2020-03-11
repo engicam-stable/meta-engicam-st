@@ -41,7 +41,8 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     \
     obexftp \
     \
-    packagegroup-framework-tools      \
+    packagegroup-framework-core-base    \
+    packagegroup-framework-tools-base	\
     packagegroup-gstreamer1-0 \
     ppp \      
     \
