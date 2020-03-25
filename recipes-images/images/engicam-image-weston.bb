@@ -5,6 +5,8 @@ include recipes-st/images/st-image.inc
 
 inherit core-image distro_features_check
 
+inherit populate_sdk_qt5
+
 # let's make sure we have a good image...
 REQUIRED_DISTRO_FEATURES = "wayland"
 
