@@ -1,0 +1,29 @@
+From 58273a28ba55d1516fe4ed5d59593911576de599 Mon Sep 17 00:00:00 2001
+From: engicam <support@engicam.com>
+Date: Mon, 6 Apr 2020 17:27:21 +0200
+Subject: [PATCH] fixed ohci controller for usb
+
+---
+ arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts b/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
+index b8cbbd047..1cd863eef 100644
+--- a/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-ugeast-mx.dts
+@@ -779,6 +779,12 @@
+ 	status = "okay";
+ };
+ 
++&usbh_ohci {
++    phys = <&usbphyc_port0>;
++	phy-names = "usb";
++	status = "okay";
++};
++
+ &usbotg_hs {
+ 	dr_mode = "host";
+ 	force-b-session-valid;
+-- 
+2.17.1
+
