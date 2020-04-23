@@ -16,7 +16,7 @@ DEPENDS += "lzop-native bc-native"
 DEFAULT_PREFERENCE = "1"
 
 SRC_URI = "git://github.com/engicam-stable/linux-stm32mp.git;protocol=git;branch=thud"
-SRCREV = "546466bf3e9e45c2c2a78db05275dd56ca742edd"
+SRCREV = "4fbccc47ccba1310a6e41eeb5d9c6baf06a9f98a"
 
 
 S = "${WORKDIR}/git"
@@ -29,7 +29,7 @@ do_copy_defconfig () {
         cp  ${KBUILD_DEFCONFIG} ${WORKDIR}/defconfig
 }
 
-COMPATIBLE_MACHINE = "(ugea)"
+COMPATIBLE_MACHINE = "(ugea|icore)"
 
 # -------------------------------------------------------------
 # Kernel Args
