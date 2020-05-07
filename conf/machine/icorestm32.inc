@@ -139,8 +139,9 @@ KERNEL_DEVICETREE = "stm32mp157a-icorestm32-lvds-mx.dtb \
 # -----------------------------------------------------------------------------
 # Define available targets to use
 
-UBOOT_EXTLINUX_TARGETS = "mp157a-icorest-mx-starterkit"
-UBOOT_EXTLINUX_LABELS = "mp157a-icorest-mx-starterkit "
+UBOOT_EXTLINUX_TARGETS = "mp157a-icorest-mx-starterkit mp157a-icorest-mx-ofcap2-10"
+UBOOT_EXTLINUX_LABELS = "mp157a-icorest-mx-starterkit mp157a-icorest-mx-ofcap2-10"
 
 UBOOT_EXTLINUX_FDT_mp157a-icorest-mx-starterkit        = "/stm32mp157a-icorestm32-lvds-mx.dtb"
+UBOOT_EXTLINUX_FDT_mp157a-icorest-mx-ofcap2-10        = "/stm32mp157a-icorestm32-ofcap2-10.dtb"
 

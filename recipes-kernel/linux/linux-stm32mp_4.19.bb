@@ -16,7 +16,7 @@ DEPENDS += "lzop-native bc-native"
 DEFAULT_PREFERENCE = "1"
 
 SRC_URI = "git://github.com/engicam-stable/linux-stm32mp.git;protocol=git;branch=thud"
-SRCREV = "4fbccc47ccba1310a6e41eeb5d9c6baf06a9f98a"
+SRCREV = "442d284353df249cc76d0574238a1acbdb557275"
 
 
 S = "${WORKDIR}/git"
