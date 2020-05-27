@@ -13,7 +13,7 @@ DEPENDS += "flex-native bison-native"
 COMPATIBLE_MACHINE = "(stm32mpcommon)"
 
 SRC_URI = "git://github.com/engicam-stable/uboot-stm32mp.git;protocol=git;branch=thud"
-SRCREV = "ececfe3a7b6a9130f64903cd2aad6e0a43d907c2"
+SRCREV = "14f69799f67609182f110e31961a77da92383747"
 
 U_BOOT_VERSION = "2018.11"
 PV = "${U_BOOT_VERSION}"
