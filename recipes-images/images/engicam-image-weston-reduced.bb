@@ -58,7 +58,6 @@ IMAGE_X11_XWAYLAND_DISPLAY_PART = " \
     qtquickcontrols2 \
     sqlite \
     brcm-patchram-plus \
-    lwb-bcm4343w-fw \
 "
 
 PACKAGECONFIG_remove_pn-qtwayland = " xcomposite-glx "
