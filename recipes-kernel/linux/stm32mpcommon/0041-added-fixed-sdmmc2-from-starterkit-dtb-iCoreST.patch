@@ -1,0 +1,97 @@
+From 11615ebe4f5efc589f6a0d850a0294f37e1e742f Mon Sep 17 00:00:00 2001
+From: Francesco_Utel <francesco.utel@engicam.com>
+Date: Wed, 6 May 2020 15:05:54 +0200
+Subject: [PATCH] sdmm
+
+---
+ .../boot/dts/stm32mp157a-icorestm32-lvds-mx.dts    | 60 ++++++++++++++++++++++
+ 1 file changed, 60 insertions(+)
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-icorestm32-lvds-mx.dts b/arch/arm/boot/dts/stm32mp157a-icorestm32-lvds-mx.dts
+index 11aa3d9..f90b57c 100644
+--- a/arch/arm/boot/dts/stm32mp157a-icorestm32-lvds-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-icorestm32-lvds-mx.dts
+@@ -405,6 +405,31 @@
+             slew-rate = <3>;
+         };
+     };
++    sdmmc2_pins_mx: sdmmc2_mx-0 {
++        u-boot,dm-pre-reloc;
++        pins1 {
++            u-boot,dm-pre-reloc;
++					pinmux = <STM32_PINMUX('B', 14, AF9)>, /* SDMMC2_D0 */
++						 <STM32_PINMUX('B', 15, AF9)>, /* SDMMC2_D1 */
++						 <STM32_PINMUX('B', 3, AF9)>, /* SDMMC2_D2 */
++						 <STM32_PINMUX('B', 4, AF9)>, /* SDMMC2_D3 */
++						 <STM32_PINMUX('G', 6, AF10)>, /* SDMMC2_CMD */
++						 <STM32_PINMUX('A', 8, AF9)>, /* SDMMC2_D4 */
++						 <STM32_PINMUX('A', 9, AF10)>, /* SDMMC2_D5 */
++						 <STM32_PINMUX('E', 5, AF9)>, /* SDMMC2_D6 */
++						 <STM32_PINMUX('D', 3, AF9)>; /* SDMMC2_D7 */
++					slew-rate = <3>;
++					drive-push-pull;
++					bias-pull-up;
++        };
++        pins2 {
++            u-boot,dm-pre-reloc;
++            pinmux = <STM32_PINMUX('E', 3, AF9)>; /* SDMMC2_CK */
++            bias-disable;
++            drive-push-pull;
++            slew-rate = <3>;
++        };
++    };
+     uart4_pins_mx: uart4_mx-0 {
+         u-boot,dm-pre-reloc;
+         pins1 {
+@@ -496,6 +521,22 @@
+                      <STM32_PINMUX('D', 2, ANALOG)>; /* SDMMC1_CMD */
+         };
+     };
++    sdmmc2_sleep_pins_mx: sdmmc2_sleep_mx-0 {
++        u-boot,dm-pre-reloc;
++        pins {
++            u-boot,dm-pre-reloc;
++            pinmux = <STM32_PINMUX('A', 8, ANALOG)>, /* SDMMC2_D4 */
++                     <STM32_PINMUX('A', 9, ANALOG)>, /* SDMMC2_D5 */
++                     <STM32_PINMUX('B', 3, ANALOG)>, /* SDMMC2_D2 */
++                     <STM32_PINMUX('B', 4, ANALOG)>, /* SDMMC2_D3 */
++                     <STM32_PINMUX('B', 14, ANALOG)>, /* SDMMC2_D0 */
++                     <STM32_PINMUX('B', 15, ANALOG)>, /* SDMMC2_D1 */
++                     <STM32_PINMUX('D', 3, ANALOG)>, /* SDMMC2_D7 */
++                     <STM32_PINMUX('E', 3, ANALOG)>, /* SDMMC2_CK */
++                     <STM32_PINMUX('E', 5, ANALOG)>, /* SDMMC2_D6 */
++                     <STM32_PINMUX('G', 6, ANALOG)>; /* SDMMC2_CMD */
++        };
++    };
+     uart4_sleep_pins_mx: uart4_sleep_mx-0 {
+         u-boot,dm-pre-reloc;
+         pins {
+@@ -895,6 +936,25 @@
+     /* USER CODE END sdmmc1 */
+ };
+ 
++&sdmmc2{
++    u-boot,dm-pre-reloc;
++    pinctrl-names = "default", "sleep";
++    pinctrl-0 = <&sdmmc2_pins_mx>;
++    pinctrl-1 = <&sdmmc2_sleep_pins_mx>;
++    status = "okay";
++
++    /* USER CODE BEGIN sdmmc2 */  
++    non-removable;
++	no-sd;
++	no-sdio;
++	st,dirpol;
++	st,negedge;
++	bus-width = <8>;
++	vmmc-supply = <&v3v3>;
++	vqmmc-supply = <&v3v3>;
++    /* USER CODE END sdmmc2 */
++};
++
+ &uart4{
+     u-boot,dm-pre-reloc;
+     pinctrl-names = "default", "sleep";
+-- 
+2.7.4
+

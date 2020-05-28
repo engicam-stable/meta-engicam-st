@@ -39,4 +39,6 @@ SRC_URI+=" \
             file://0037-ported-capacitive-touch-ofcap2-10.patch \
             file://0038-added-quectel-EG95-support.patch \
             file://0039-fixed-ohci-controller-for-usb.patch \
+            file://0040-removed-sdmmc2-from-starterkit-dtb-iCoreST.patch \
+	    file://0041-added-fixed-sdmmc2-from-starterkit-dtb-iCoreST.patch \
         "
