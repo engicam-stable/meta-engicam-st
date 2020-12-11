@@ -62,10 +62,11 @@ EXTLINUX_ROOT_SDCARD_OPTEE = "root=/dev/mmcblk0p9"
 KERNEL_DEVICETREE = "\
 			stm32mp157a-ugeast-mx.dtb \
 			stm32mp157a-ugeast-mx-lcd7.dtb \
+			stm32mp157a-ugeast-mx-m4.dtb \
 "
 
-UBOOT_EXTLINUX_TARGETS = "mp157a-ugeast-mx-lcd7 mp157a-ugeast-mx"
-UBOOT_EXTLINUX_LABELS = "mp157a-ugeast-mx-lcd7 mp157a-ugeast-mx"
+UBOOT_EXTLINUX_TARGETS = "mp157a-ugeast-mx-lcd7 mp157a-ugeast-mx mp157a-ugeast-mx-m4"
+UBOOT_EXTLINUX_LABELS = "mp157a-ugeast-mx-lcd7 mp157a-ugeast-mx mp157a-ugeast-mx-m4"
 
 UBOOT_EXTLINUX_DEFAULT_LABEL = "stm32mp157a-ugeast-mx-lcd7"
 
@@ -73,5 +74,7 @@ UBOOT_EXTLINUX_MENU_DESCRIPTION_mp157a-ugeast-mx-lcd7 = "stm32mp157a-ugeast-mx-l
 UBOOT_EXTLINUX_FDT_mp157a-ugeast-mx-lcd7 = "/stm32mp157a-ugeast-mx-lcd7.dtb"
 UBOOT_EXTLINUX_MENU_DESCRIPTION_mp157a-ugeast-mx = "stm32mp157a-ugeast-mx"
 UBOOT_EXTLINUX_FDT_mp157a-ugeast-mx = "/stm32mp157a-ugeast-mx.dtb"
+UBOOT_EXTLINUX_MENU_DESCRIPTION_mp157a-ugeast-mx-m4 = "stm32mp157a-ugeast-mx-m4"
+UBOOT_EXTLINUX_FDT_mp157a-ugeast-mx-m4 = "/stm32mp157a-ugeast-mx-m4.dtb"
 
 
