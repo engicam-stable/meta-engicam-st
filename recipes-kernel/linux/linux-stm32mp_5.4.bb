@@ -28,7 +28,7 @@ do_copy_defconfig () {
         cp  ${KBUILD_DEFCONFIG} ${WORKDIR}/defconfig
 }
 
-COMPATIBLE_MACHINE = "(ugea)"
+COMPATIBLE_MACHINE = "(ugea|icore)"
 
 # ---------------------------------
 # Configure archiver use
