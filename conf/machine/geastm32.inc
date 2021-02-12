@@ -51,6 +51,11 @@ MACHINE_FEATURES += "wifi"
 MACHINE_FEATURES += "${@'gpu' if d.getVar('ACCEPT_EULA_'+d.getVar('MACHINE')) == '1' else ''}"
 MACHINE_FEATURES += "m4copro"
 
+# Bluetooth
+BLUETOOTH_LIST += "linux-firmware-bluetooth-bcm4343"
+# Wifi
+WIFI_LIST += "linux-firmware-bcm43430"
+
 EXTLINUX_ROOT_EMMC         = "root=/dev/mmcblk1p4"
 EXTLINUX_ROOT_EMMC_OPTEE   = "root=/dev/mmcblk1p7"
 EXTLINUX_ROOT_NAND         = "ubi.mtd=UBI rootfstype=ubifs root=ubi0:rootfs"
@@ -76,5 +81,3 @@ UBOOT_EXTLINUX_MENU_DESCRIPTION_mp157a-ugeast-mx = "stm32mp157a-ugeast-mx"
 UBOOT_EXTLINUX_FDT_mp157a-ugeast-mx = "/stm32mp157a-ugeast-mx.dtb"
 UBOOT_EXTLINUX_MENU_DESCRIPTION_mp157a-ugeast-mx-m4 = "stm32mp157a-ugeast-mx-m4"
 UBOOT_EXTLINUX_FDT_mp157a-ugeast-mx-m4 = "/stm32mp157a-ugeast-mx-m4.dtb"
-
-
