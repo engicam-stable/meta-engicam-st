@@ -17,6 +17,9 @@ DEFAULT_PREFERENCE = "1"
 
 SRC_URI = "git://github.com/engicam-stable/linux-stm32mp.git;protocol=git;branch=dunfell"
 SRCREV_default = "${AUTOREV}"
+PVBASE="5.4.31"
+PV = "${PVBASE}+git${SRCPV}"
+
 
 S = "${WORKDIR}/git"
 
