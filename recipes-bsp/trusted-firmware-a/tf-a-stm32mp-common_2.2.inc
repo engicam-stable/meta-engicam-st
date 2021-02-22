@@ -11,6 +11,10 @@ SRCREV_default = "${AUTOREV}"
 TF_VERSION = "2.2"
 PV = "${TF_VERSION}.r1"
 
+TF_VERSION = "2.2"
+PVBASE = "${TF_VERSION}.r1"
+PV = "${PVBASE}+git${SRCPV}"
+
 S = "${WORKDIR}/git"
 
 # ---------------------------------
