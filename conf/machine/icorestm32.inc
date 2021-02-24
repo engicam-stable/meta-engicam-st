@@ -23,7 +23,7 @@ BOOTSCHEME_LABELS += "trusted"
 # =========================================================================
 # Define u-boot defconfig and binary to use for each UBOOT_CONFIG
 #UBOOT_CONFIG[trusted] = "stm32mp15_ugeast_trusted_defconfig,,u-boot.stm32"
-KERNEL_DEFCONFIG=" stm32mp1_defconfig"
+KERNEL_DEFCONFIG=" stm32mp1icore_defconfig"
 
 # =========================================================================
 
