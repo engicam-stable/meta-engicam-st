@@ -3,7 +3,7 @@
 #@DESCRIPTION: Configuration for ugea board with 256MB RAM
 #@NEEDED_BSPLAYERS: meta-engicam-st
 
-include conf/machine/include/st-machine-common-stm32mp.inc
+include conf/machine/include/eng-st-machine-common-stm32mp.inc
 include conf/machine/include/st-machine-providers-stm32mp.inc
 
 # Define specific familly common machine name
@@ -58,7 +58,7 @@ WIFI_LIST += "linux-firmware-bcm43430"
 
 EXTLINUX_ROOT_EMMC         = "root=/dev/mmcblk1p4"
 EXTLINUX_ROOT_EMMC_OPTEE   = "root=/dev/mmcblk1p7"
-EXTLINUX_ROOT_NAND         = "ubi.mtd=UBI rootfstype=ubifs root=ubi0:rootfs"
+EXTLINUX_ROOT_NAND         = "ubi.mtd=UBI rootfstype=ubifs root=/dev/ubi0_4"
 EXTLINUX_ROOT_NOREMMC      = "root=/dev/mmcblk1p3"
 EXTLINUX_ROOT_NORSDCARD    = "root=/dev/mmcblk0p3"
 EXTLINUX_ROOT_SDCARD       = "root=/dev/mmcblk0p6"
