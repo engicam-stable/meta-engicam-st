@@ -1,41 +1,41 @@
 This README file contains information on the contents of the meta-engicam-st layer.
 
-Please see the corresponding sections below for details.
+The meta-engicam-st is a BSP layer for Engicam SOM equipped with STMicroelectronics processors. For more info about the available SOM:
+
+* **https://www.engicam.com/** 
 
 Dependencies
 ============
 
-  URI: <first dependency>
-  branch: <branch name>
-
-  URI: <second dependency>
-  branch: <branch name>
-
-  .
-  .
-  .
+meta-engicam-st is based on OpenSTLinux ditribution package for Yocto dunfell 5.10
 
 Patches
 =======
 
-Please submit any patches against the meta-engicam-st layer to the xxxx mailing list (xxxx@zzzz.org)
-and cc: the maintainer:
-
-Maintainer: XXX YYYYYY <xxx.yyyyyy@zzzzz.com>
+Please submit any patches against the meta-engicam-st layer to the Engicam support mailing list (support@engicam.com)
+ 
 
 Table of Contents
 =================
 
-  I. Adding the meta-engicam-st layer to your build
- II. Misc
+   I. Available MACHINE
+  II. Adding the meta-engicam-st layer to your build
+ III. Distro and Images
 
 
-I. Adding the meta-engicam-st layer to your build
+I. Available MACHINE
+====================
+
+* **stm32mp1-ugea512**:
+Configuration file for MicorGEA STM32MP1 on MicroDev 2.0 Carrier Board. 
+
+II. Adding the meta-engicam-st layer to your build
 =================================================
 
 Run 'bitbake-layers add-layer meta-engicam-st'
 
-II. Misc
-========
+III. Distro and Images
+======================
+For a quick start image with the OpenStLinux bsp compile * **st-image-weston** for distribution * **openstlinux-weston**
 
---- replace with specific information about the meta-engicam-st layer ---
+
