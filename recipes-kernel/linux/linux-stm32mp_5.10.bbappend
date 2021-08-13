@@ -4,6 +4,7 @@ SRC_URI += "file://0001-add-edt-ft5x26-touch-screen-driver.patch \
             file://0002-initial-support-ugea.patch \
             file://0003-add-RS232-support-ttySTM1.patch \
             file://0004-add-nand-flash-layout.patch \
+            file://0005-initial-support-for-icore-edimm-2.0.patch \
             "
 
 KERNEL_CONFIG_FRAGMENTS += "${WORKDIR}/fragments/${LINUX_VERSION}/fragment-06.config"
