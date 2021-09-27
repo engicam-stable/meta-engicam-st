@@ -1,0 +1,220 @@
+From ff8777686ec2d8591146c276c2ec988793e874a6 Mon Sep 17 00:00:00 2001
+From: frautel <francesco.utel@engicam.com>
+Date: Mon, 27 Sep 2021 15:57:02 +0200
+Subject: [PATCH] Added rs485 support
+
+---
+ arch/arm/boot/dts/stm32mp157a-ugea512-mx.dts | 66 +++++++++++---------
+ 1 file changed, 35 insertions(+), 31 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugea512-mx.dts b/arch/arm/boot/dts/stm32mp157a-ugea512-mx.dts
+index 173eb186a..f6d7139d8 100644
+--- a/arch/arm/boot/dts/stm32mp157a-ugea512-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-ugea512-mx.dts
+@@ -91,12 +91,12 @@
+ 		serial4 = &usart1;
+ 		mmc0 = &sdmmc1;
+ 		mmc1 = &sdmmc3;
+-	};	
+-	
++	};
++
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+-	
++
+ 	usb_phy_tuning: usb-phy-tuning {
+ 		st,hs-dc-level = <2>;
+ 		st,fs-rftime-tuning;
+@@ -106,8 +106,8 @@
+ 		st,squelch-level = <3>;
+ 		st,hs-rx-offset = <2>;
+ 		st,no-lsfs-sc;
+-	};	
+-	
++	};
++
+ 	vddcore: regulator-vddcore {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vddcore";
+@@ -235,10 +235,10 @@
+ 		startup-delay-us = <10000>;
+ 		enable-active-high;
+ 	};
+-	
++
+ 	panel_rgb: panel-rgb {
+ 		compatible = "auo,b101aw03";
+-		status = "okay";		
++		status = "okay";
+ 		port {
+ 			panel_in_rgb: endpoint {
+ 				remote-endpoint = <&ltdc_out_rgb>;
+@@ -253,13 +253,13 @@
+ 		regulator-max-microvolt = <3300000>;
+ 		gpio = <&gpiob 10 0>;
+ 		regulator-always-on;
+-	};	
+-	
++	};
++
+     backlight {
+         compatible = "gpio-backlight";
+ 		gpios = <&gpiod 13 GPIO_ACTIVE_HIGH>;
+         default-on;
+-    };	
++    };
+ 
+ 	/* USER CODE END root */
+ 
+@@ -677,15 +677,16 @@
+ 		u-boot,dm-pre-reloc;
+ 		pins1 {
+ 			u-boot,dm-pre-reloc;
+-			pinmux = <STM32_PINMUX('B', 10, AF7)>; /* USART3_TX */
++			pinmux = <STM32_PINMUX('B', 12, AF8)>; /* USART3_RX */
+ 			bias-disable;
+-			drive-push-pull;
+-			slew-rate = <0>;
+ 		};
+ 		pins2 {
+ 			u-boot,dm-pre-reloc;
+-			pinmux = <STM32_PINMUX('B', 12, AF8)>; /* USART3_RX */
++			pinmux = <STM32_PINMUX('D', 8, AF7)>, /* USART3_TX */
++					 <STM32_PINMUX('G', 8, AF8)>; /* USART3_RTS */
+ 			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
+ 		};
+ 	};
+ 
+@@ -693,8 +694,9 @@
+ 		u-boot,dm-pre-reloc;
+ 		pins {
+ 			u-boot,dm-pre-reloc;
+-			pinmux = <STM32_PINMUX('B', 10, ANALOG)>, /* USART3_TX */
+-					 <STM32_PINMUX('B', 12, ANALOG)>; /* USART3_RX */
++			pinmux = <STM32_PINMUX('B', 12, ANALOG)>, /* USART3_RX */
++					 <STM32_PINMUX('D', 8, ANALOG)>, /* USART3_TX */
++					 <STM32_PINMUX('G', 8, ANALOG)>; /* USART3_RTS */
+ 		};
+ 	};
+ 
+@@ -711,7 +713,7 @@
+ 	};
+ 
+ 	/* USER CODE BEGIN pinctrl */
+-	
++
+ 	eth_res: eth_res-0 {
+ 		pins {
+ 			pinmux = <STM32_PINMUX('A', 13, GPIO)>;
+@@ -721,17 +723,17 @@
+ 			slew-rate = <0>;
+ 		};
+ 	};
+-	
++
+ //	rtc_pins_mx: rtc_mx-0 {
+ //		pins {
+ //			pinmux = <STM32_PINMUX('I', 8, ANALOG)>; /* RTC_LSCO */
+ //		};
+-//	};	
++//	};
+ 
+ 	pinctrl_edt_ft5x26: pinctrl_edt_ft5x26-0 {
+ 		pins {
+ 			pinmux = <STM32_PINMUX('B', 3, GPIO)>;
+-		};	
++		};
+ 	};
+ 	/* USER CODE END pinctrl */
+ };
+@@ -875,6 +877,7 @@
+ 	/* USER CODE BEGIN fmc */
+ 	nand-controller@4,0 {
+ 		status = "okay";
++
+ 		nand@0 {
+ 				reg = <0>;
+ 				nand-on-flash-bbt;
+@@ -929,10 +932,10 @@
+ 	polytouch: edt-ft5x26@38 {
+ 		compatible = "edt,edt-ft5526";
+ 		reg = <0x38>;
+-		pinctrl-names = "default";		
++		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_edt_ft5x26>;
+ 		interrupt-parent = <&gpiob>;
+-		interrupts = <3 0>;	
++		interrupts = <3 0>;
+ 	};
+ 	/* USER CODE END i2c2 */
+ };
+@@ -956,18 +959,18 @@
+ 	/* USER CODE BEGIN ltdc */
+ 
+ 	powerdown-gpios = <&gpiof 2 1>;
+-	
+-	
++
++
+ 	port{
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		
++
+ 		ltdc_out_rgb: endpoint@0 {
+ 			reg = <0>;
+ 			remote-endpoint = <&panel_in_rgb>;
+ 		};
+ 	};
+-	
++
+ 	/* USER CODE END ltdc */
+ };
+ 
+@@ -1014,7 +1017,7 @@
+ 	st,neg-edge;
+ 	bus-width = <4>;
+ 	max-frequency = <10000000>;
+-	vmmc-supply = <&v3v3>;	
++	vmmc-supply = <&v3v3>;
+ 	/* USER CODE END sdmmc1 */
+ };
+ 
+@@ -1111,6 +1114,7 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN usart3 */
++	linux,rs485-enabled-at-boot-time;
+ 	/* USER CODE END usart3 */
+ };
+ 
+@@ -1118,10 +1122,10 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN usbh_ehci */
+-	
++
+ 	phys = <&usbphyc_port0>;
+ 	phy-names = "usb";
+-	
++
+ 	/* USER CODE END usbh_ehci */
+ };
+ 
+@@ -1129,10 +1133,10 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN usbh_ohci */
+-	
++
+ 	phys = <&usbphyc_port0>;
+ 	phy-names = "usb";
+-	
++
+ 	/* USER CODE END usbh_ohci */
+ };
+ 
