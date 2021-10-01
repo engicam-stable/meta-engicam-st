@@ -64,6 +64,11 @@ function usage
 	if [ "$1" == "emmc_bootfs_fs" ];
 	then
 		echo "Usage: ${1}.sh [-h] <emmc_device> $path"
+		echo ""
+		echo "WARNING: This script do not create a new filesystem for the bootfs partition as this operation would delete the u-boot environment section"
+		echo "If you need to create a file system for the bootfs partition run the following command before the script:"
+		echo "mkfs.ext4 -O ^metadata_csum,^dir_index -F /dev/mmcblk1p2"
+		echo ""
 	fi
 
 	if [ "$1" == "emmc_rootfs" ];
@@ -91,6 +96,9 @@ function usage
 		 4          167970         6459425   3.0 GiB     8300  rootfs
 		 5         6459426         7405534   462.0 MiB   8300  userfs
 	  "
+		echo ""
+		echo "ATTENTION: be aware that the current script will format the bootfs partition, resetting the U-boot environment"
+		echo ""
 	fi
 	echo -e "\nThe order of the options is important!\n"
 	exit
@@ -151,8 +159,6 @@ function write_rootfs
 function write_bootfs_fs
 {
 
-  mkfs.ext4 -O ^metadata_csum,^dir_index -F $1"p2"
-	error $?
   mkfs.ext4 -F $1"p3"
 	error $?
   mkfs.ext4 -F $1"p4"
@@ -175,6 +181,7 @@ function write_bootfs_fs
 	error $?
 
   echo "Fill bootfs   ..."
+	rm -rf /media/p2/*
   tar -xvf $2"bootfs.tar.xz" -C /media/p2/ 2>&1 >/dev/null
   echo "Fill vendorfs ..."
   tar -xvf $2"vendorfs.tar.xz" -C /media/p3/ 2>&1 >/dev/null
