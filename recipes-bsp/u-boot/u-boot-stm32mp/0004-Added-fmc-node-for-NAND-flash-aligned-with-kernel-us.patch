@@ -1,0 +1,528 @@
+From 9b88937edb5c98efb96d4933286c971098ba68cf Mon Sep 17 00:00:00 2001
+From: frautel <francesco.utel@engicam.com>
+Date: Tue, 5 Oct 2021 17:12:32 +0200
+Subject: [PATCH] Added fmc node for NAND flash + aligned with kernel usercode
+
+---
+ ...tm32mp157a-icore-starterkit-mx-u-boot.dtsi |   8 +
+ .../dts/stm32mp157a-icore-starterkit-mx.dts   | 193 ++++++++++++++++++
+ .../stm32mp157a-icore-starterkit-mx.dts.bak   | 184 ++++++++++++++++-
+ 3 files changed, 384 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/stm32mp157a-icore-starterkit-mx-u-boot.dtsi b/arch/arm/dts/stm32mp157a-icore-starterkit-mx-u-boot.dtsi
+index 566a48299c..bc60f94532 100644
+--- a/arch/arm/dts/stm32mp157a-icore-starterkit-mx-u-boot.dtsi
++++ b/arch/arm/dts/stm32mp157a-icore-starterkit-mx-u-boot.dtsi
+@@ -89,6 +89,7 @@
+ 	>;
+ 	st,pkcs = <
+ 		CLK_CKPER_DISABLED
++		CLK_FMC_ACLK
+ 		CLK_ETH_PLL3Q
+ 		CLK_SDMMC12_HCLK6
+ 		CLK_DSI_DSIPLL
+@@ -162,6 +163,13 @@
+ 
+ #endif	/*CONFIG_TFABOOT*/
+ 
++&fmc{
++	u-boot,dm-pre-reloc;
++
++	/* USER CODE BEGIN fmc */
++	/* USER CODE END fmc */
++};
++
+ &uart4{
+ 	u-boot,dm-pre-reloc;
+ 
+diff --git a/arch/arm/dts/stm32mp157a-icore-starterkit-mx.dts b/arch/arm/dts/stm32mp157a-icore-starterkit-mx.dts
+index 5e7591828b..68b212f3e1 100644
+--- a/arch/arm/dts/stm32mp157a-icore-starterkit-mx.dts
++++ b/arch/arm/dts/stm32mp157a-icore-starterkit-mx.dts
+@@ -248,6 +248,22 @@
+ 		status = "okay";
+ 	};
+ 
++	gpio_export {
++		compatible = "gpio-export";
++		#size-cells = <0>;
++		gpio-backlight {
++			gpio-export,name = "panel_backlight";
++			gpio-export,output = <1>;
++			gpios = <&gpiod 13 GPIO_ACTIVE_HIGH>;
++		};
++	};
++
++	panel_backlight: panel-backlight {
++		compatible = "gpio-backlight";
++		gpios = <&gpiod 13 GPIO_ACTIVE_HIGH>;
++		default-on;
++		status="okay";
++	};
+ 	/* USER CODE END root */
+ 
+ 	clocks {
+@@ -359,6 +375,55 @@
+ 		};
+ 	};
+ 
++	fmc_pins_mx: fmc_mx-0 {
++		u-boot,dm-pre-reloc;
++		pins1 {
++			u-boot,dm-pre-reloc;
++			pinmux = <STM32_PINMUX('D', 0, AF12)>, /* FMC_D2 */
++					 <STM32_PINMUX('D', 1, AF12)>, /* FMC_D3 */
++					 <STM32_PINMUX('D', 4, AF12)>, /* FMC_NOE */
++					 <STM32_PINMUX('D', 5, AF12)>, /* FMC_NWE */
++					 <STM32_PINMUX('D', 11, AF12)>, /* FMC_CLE */
++					 <STM32_PINMUX('D', 12, AF12)>, /* FMC_ALE */
++					 <STM32_PINMUX('D', 14, AF12)>, /* FMC_D0 */
++					 <STM32_PINMUX('D', 15, AF12)>, /* FMC_D1 */
++					 <STM32_PINMUX('E', 7, AF12)>, /* FMC_D4 */
++					 <STM32_PINMUX('E', 8, AF12)>, /* FMC_D5 */
++					 <STM32_PINMUX('E', 9, AF12)>, /* FMC_D6 */
++					 <STM32_PINMUX('E', 10, AF12)>, /* FMC_D7 */
++					 <STM32_PINMUX('G', 9, AF12)>; /* FMC_NCE */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			u-boot,dm-pre-reloc;
++			pinmux = <STM32_PINMUX('D', 6, AF12)>; /* FMC_NWAIT */
++			bias-pull-up;
++		};
++	};
++
++	fmc_sleep_pins_mx: fmc_sleep_mx-0 {
++		u-boot,dm-pre-reloc;
++		pins {
++			u-boot,dm-pre-reloc;
++			pinmux = <STM32_PINMUX('D', 0, ANALOG)>, /* FMC_D2 */
++					 <STM32_PINMUX('D', 1, ANALOG)>, /* FMC_D3 */
++					 <STM32_PINMUX('D', 4, ANALOG)>, /* FMC_NOE */
++					 <STM32_PINMUX('D', 5, ANALOG)>, /* FMC_NWE */
++					 <STM32_PINMUX('D', 6, ANALOG)>, /* FMC_NWAIT */
++					 <STM32_PINMUX('D', 11, ANALOG)>, /* FMC_CLE */
++					 <STM32_PINMUX('D', 12, ANALOG)>, /* FMC_ALE */
++					 <STM32_PINMUX('D', 14, ANALOG)>, /* FMC_D0 */
++					 <STM32_PINMUX('D', 15, ANALOG)>, /* FMC_D1 */
++					 <STM32_PINMUX('E', 7, ANALOG)>, /* FMC_D4 */
++					 <STM32_PINMUX('E', 8, ANALOG)>, /* FMC_D5 */
++					 <STM32_PINMUX('E', 9, ANALOG)>, /* FMC_D6 */
++					 <STM32_PINMUX('E', 10, ANALOG)>, /* FMC_D7 */
++					 <STM32_PINMUX('G', 9, ANALOG)>; /* FMC_NCE */
++		};
++	};
++
+ 	i2c2_pins_mx: i2c2_mx-0 {
+ 		pins {
+ 			pinmux = <STM32_PINMUX('H', 4, AF4)>, /* I2C2_SCL */
+@@ -675,6 +740,12 @@
+ 											<STM32_PINMUX('F', 15, GPIO)>;
+ 		 };
+ 	};
++	pinctrl_edt_ft5x26: pinctrl_edt_ft5x26-0 {
++		pins {
++				pinmux = <STM32_PINMUX('H', 10, GPIO)>;
++		};
++	};
++
+ 	/* USER CODE END pinctrl */
+ };
+ 
+@@ -770,6 +841,27 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN dsi */
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@0 {
++			reg = <0>;
++			dsi_in: endpoint {
++				remote-endpoint = <&ltdc_ep1_out>;
++			};
++		};
++
++		port@1 {
++			reg = <1>;
++			dsim_to_sn65dsi8: endpoint {
++				remote-endpoint = <&sn65dsi83_in>;
++			};
++		};
++	};
+ 	/* USER CODE END dsi */
+ };
+ 
+@@ -809,6 +901,48 @@
+ 	/* USER CODE END ethernet0 */
+ };
+ 
++&fmc{
++	u-boot,dm-pre-reloc;
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&fmc_pins_mx>;
++	pinctrl-1 = <&fmc_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN fmc */
++	nand-controller@4,0 {
++		status = "okay";
++
++		nand: nand@0 {
++			reg = <0>;
++			nand-on-flash-bbt;
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++					partition@0 {
++						label = "fsbl";
++						reg = <0x00000000 0x200000>;
++					};
++
++					partition@200000 {
++						label = "fip1";
++						reg = <0x200000 0x400000>;
++					};
++
++					partition@600000 {
++						label = "fip2";
++						reg = <0x600000 0x400000>;
++					};
++
++					partition@A00000 {
++						label = "UBI";
++						reg = <0xA00000 0x1F600000>;
++					};
++		};
++
++  };
++	/* USER CODE END fmc */
++};
++
+ &gpu{
+ 	status = "okay";
+ 
+@@ -867,6 +1001,16 @@
+ 		compatible = "nxp,pcf8523";
+ 		reg = <0x68>;
+ 	};
++
++	polytouch: edt-ft5x26@38 {
++		compatible = "edt,edt-ft5x26";
++		reg = <0x38>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_edt_ft5x26>;
++		interrupt-parent = <&gpioh>;
++		interrupts = <10 IRQ_TYPE_EDGE_FALLING>;
++		reset-gpios= <&gpiog 2 GPIO_ACTIVE_LOW>;
++	};
+ 	/* USER CODE END i2c2 */
+ };
+ 
+@@ -877,6 +1021,44 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN i2c6 */
++	/delete-property/dmas;
++	/delete-property/dma-names;
++	lvds_bridge: sn65dsi83@2c {
++		compatible = "ti,sn65dsi83";
++		reg = <0x2c>;
++		ti,dsi-lanes = <2>;
++		ti,lvds-format = <2>;
++		ti,lvds-bpp = <24>;
++		ti,width-mm = <149>;
++		ti,height-mm = <93>;
++		enable-gpios = <&gpiof 15  GPIO_ACTIVE_HIGH>;
++		pinctrl-0 = <&pinctrl_bridge_lvds>;
++		status = "okay";
++
++		 display-timings {
++					lvds {	/* 1024x600 @65Hz */
++							clock-frequency = <65000000>;
++							hactive = <1024>;
++							vactive = <600>;
++							hback-porch = <160>;
++							hfront-porch = <20>;
++							vback-porch = <29>;
++							vfront-porch = <3>;
++							hsync-len = <136>;
++							vsync-len = <6>;
++							hsync-active = <0>;
++							vsync-active = <0>;
++							de-active = <1>;
++							pixelclk-active = <0>;
++					};
++			};
++
++			port {
++					sn65dsi83_in: endpoint {
++							remote-endpoint = <&dsim_to_sn65dsi8>;
++					};
++			};
++	};
+ 	/* USER CODE END i2c6 */
+ };
+ 
+@@ -884,6 +1066,17 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN ltdc */
++	backlight = <&panel_backlight>;
++
++	port {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ltdc_ep1_out: endpoint@0 {
++			reg = <0>;
++			remote-endpoint = <&dsi_in>;
++		};
++	};
+ 	/* USER CODE END ltdc */
+ };
+ 
+diff --git a/arch/arm/dts/stm32mp157a-icore-starterkit-mx.dts.bak b/arch/arm/dts/stm32mp157a-icore-starterkit-mx.dts.bak
+index be193c8a29..89e0780b99 100644
+--- a/arch/arm/dts/stm32mp157a-icore-starterkit-mx.dts.bak
++++ b/arch/arm/dts/stm32mp157a-icore-starterkit-mx.dts.bak
+@@ -248,6 +248,22 @@
+ 		status = "okay";
+ 	};
+ 
++	gpio_export {
++		compatible = "gpio-export";
++		#size-cells = <0>;
++		gpio-backlight {
++			gpio-export,name = "panel_backlight";
++			gpio-export,output = <1>;
++			gpios = <&gpiod 13 GPIO_ACTIVE_HIGH>;
++		};
++	};
++
++	panel_backlight: panel-backlight {
++		compatible = "gpio-backlight";
++		gpios = <&gpiod 13 GPIO_ACTIVE_HIGH>;
++		default-on;
++		status="okay";
++	};
+ 	/* USER CODE END root */
+ 
+ 	clocks {
+@@ -359,6 +375,55 @@
+ 		};
+ 	};
+ 
++	fmc_pins_mx: fmc_mx-0 {
++		u-boot,dm-pre-reloc;
++		pins1 {
++			u-boot,dm-pre-reloc;
++			pinmux = <STM32_PINMUX('D', 0, AF12)>, /* FMC_D2 */
++					 <STM32_PINMUX('D', 1, AF12)>, /* FMC_D3 */
++					 <STM32_PINMUX('D', 4, AF12)>, /* FMC_NOE */
++					 <STM32_PINMUX('D', 5, AF12)>, /* FMC_NWE */
++					 <STM32_PINMUX('D', 11, AF12)>, /* FMC_CLE */
++					 <STM32_PINMUX('D', 12, AF12)>, /* FMC_ALE */
++					 <STM32_PINMUX('D', 14, AF12)>, /* FMC_D0 */
++					 <STM32_PINMUX('D', 15, AF12)>, /* FMC_D1 */
++					 <STM32_PINMUX('E', 7, AF12)>, /* FMC_D4 */
++					 <STM32_PINMUX('E', 8, AF12)>, /* FMC_D5 */
++					 <STM32_PINMUX('E', 9, AF12)>, /* FMC_D6 */
++					 <STM32_PINMUX('E', 10, AF12)>, /* FMC_D7 */
++					 <STM32_PINMUX('G', 9, AF12)>; /* FMC_NCE */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			u-boot,dm-pre-reloc;
++			pinmux = <STM32_PINMUX('D', 6, AF12)>; /* FMC_NWAIT */
++			bias-disable;
++		};
++	};
++
++	fmc_sleep_pins_mx: fmc_sleep_mx-0 {
++		u-boot,dm-pre-reloc;
++		pins {
++			u-boot,dm-pre-reloc;
++			pinmux = <STM32_PINMUX('D', 0, ANALOG)>, /* FMC_D2 */
++					 <STM32_PINMUX('D', 1, ANALOG)>, /* FMC_D3 */
++					 <STM32_PINMUX('D', 4, ANALOG)>, /* FMC_NOE */
++					 <STM32_PINMUX('D', 5, ANALOG)>, /* FMC_NWE */
++					 <STM32_PINMUX('D', 6, ANALOG)>, /* FMC_NWAIT */
++					 <STM32_PINMUX('D', 11, ANALOG)>, /* FMC_CLE */
++					 <STM32_PINMUX('D', 12, ANALOG)>, /* FMC_ALE */
++					 <STM32_PINMUX('D', 14, ANALOG)>, /* FMC_D0 */
++					 <STM32_PINMUX('D', 15, ANALOG)>, /* FMC_D1 */
++					 <STM32_PINMUX('E', 7, ANALOG)>, /* FMC_D4 */
++					 <STM32_PINMUX('E', 8, ANALOG)>, /* FMC_D5 */
++					 <STM32_PINMUX('E', 9, ANALOG)>, /* FMC_D6 */
++					 <STM32_PINMUX('E', 10, ANALOG)>, /* FMC_D7 */
++					 <STM32_PINMUX('G', 9, ANALOG)>; /* FMC_NCE */
++		};
++	};
++
+ 	i2c2_pins_mx: i2c2_mx-0 {
+ 		pins {
+ 			pinmux = <STM32_PINMUX('H', 4, AF4)>, /* I2C2_SCL */
+@@ -681,6 +746,23 @@
+ &pinctrl_z {
+ 	u-boot,dm-pre-reloc;
+ 
++	i2c6_pins_z_mx: i2c6_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('Z', 6, AF2)>, /* I2C6_SCL */
++					 <STM32_PINMUX('Z', 7, AF2)>; /* I2C6_SDA */
++			bias-disable;
++			drive-open-drain;
++			slew-rate = <0>;
++		};
++	};
++
++	i2c6_sleep_pins_z_mx: i2c6_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('Z', 6, ANALOG)>, /* I2C6_SCL */
++					 <STM32_PINMUX('Z', 7, ANALOG)>; /* I2C6_SDA */
++		};
++	};
++
+ 	usart1_pins_z_mx: usart1_mx-0 {
+ 		u-boot,dm-pre-reloc;
+ 		pins1 {
+@@ -753,6 +835,27 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN dsi */
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@0 {
++			reg = <0>;
++			dsi_in: endpoint {
++				remote-endpoint = <&ltdc_ep1_out>;
++			};
++		};
++
++		port@1 {
++			reg = <1>;
++			dsim_to_sn65dsi8: endpoint {
++				remote-endpoint = <&sn65dsi83_in>;
++			};
++		};
++	};
+ 	/* USER CODE END dsi */
+ };
+ 
+@@ -792,6 +895,27 @@
+ 	/* USER CODE END ethernet0 */
+ };
+ 
++&fmc{
++	u-boot,dm-pre-reloc;
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&fmc_pins_mx>;
++	pinctrl-1 = <&fmc_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN fmc */
++	nand-controller@4,0 {
++		status = "okay";
++
++		nand@0 {
++				reg = <0>;
++				nand-on-flash-bbt;
++				#address-cells = <1>;
++				#size-cells = <1>;
++		};
++	};
++	/* USER CODE END fmc */
++};
++
+ &gpu{
+ 	status = "okay";
+ 
+@@ -853,10 +977,69 @@
+ 	/* USER CODE END i2c2 */
+ };
+ 
++&i2c6{
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&i2c6_pins_z_mx>;
++	pinctrl-1 = <&i2c6_sleep_pins_z_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN i2c6 */
++	/delete-property/dmas;
++	/delete-property/dma-names;
++	lvds_bridge: sn65dsi83@2c {
++		compatible = "ti,sn65dsi83";
++		reg = <0x2c>;
++		ti,dsi-lanes = <2>;
++		ti,lvds-format = <2>;
++		ti,lvds-bpp = <24>;
++		ti,width-mm = <149>;
++		ti,height-mm = <93>;
++		enable-gpios = <&gpiof 15  GPIO_ACTIVE_HIGH>;
++		pinctrl-0 = <&pinctrl_bridge_lvds>;
++		status = "okay";
++
++		 display-timings {
++					lvds {	/* 1024x600 @65Hz */
++							clock-frequency = <65000000>;
++							hactive = <1024>;
++							vactive = <600>;
++							hback-porch = <160>;
++							hfront-porch = <20>;
++							vback-porch = <29>;
++							vfront-porch = <3>;
++							hsync-len = <136>;
++							vsync-len = <6>;
++							hsync-active = <0>;
++							vsync-active = <0>;
++							de-active = <1>;
++							pixelclk-active = <0>;
++					};
++			};
++
++			port {
++					sn65dsi83_in: endpoint {
++							remote-endpoint = <&dsim_to_sn65dsi8>;
++					};
++			};
++	};
++	/* USER CODE END i2c6 */
++};
++
+ &ltdc{
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN ltdc */
++	backlight = <&panel_backlight>;
++
++	port {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ltdc_ep1_out: endpoint@0 {
++			reg = <0>;
++			remote-endpoint = <&dsi_in>;
++		};
++	};
+ 	/* USER CODE END ltdc */
+ };
+ 
+@@ -1117,4 +1300,3 @@
+ 
+ /* USER CODE BEGIN addons */
+ /* USER CODE END addons */
+-

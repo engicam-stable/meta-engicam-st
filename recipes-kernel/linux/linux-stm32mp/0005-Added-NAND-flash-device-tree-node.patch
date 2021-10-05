@@ -1,0 +1,139 @@
+From 434736b413149b74eb55ce22c57d01b9ae79e644 Mon Sep 17 00:00:00 2001
+From: frautel <francesco.utel@engicam.com>
+Date: Tue, 5 Oct 2021 16:55:05 +0200
+Subject: [PATCH] Added NAND flash device tree node
+
+---
+ .../dts/stm32mp157a-icore-starterkit-mx.dts   | 98 ++++++++++++++++++-
+ 1 file changed, 95 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-icore-starterkit-mx.dts b/arch/arm/boot/dts/stm32mp157a-icore-starterkit-mx.dts
+index b2fd6a599..6e3ad280d 100644
+--- a/arch/arm/boot/dts/stm32mp157a-icore-starterkit-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-icore-starterkit-mx.dts
+@@ -375,6 +375,55 @@
+ 		};
+ 	};
+ 
++	fmc_pins_mx: fmc_mx-0 {
++		u-boot,dm-pre-reloc;
++		pins1 {
++			u-boot,dm-pre-reloc;
++			pinmux = <STM32_PINMUX('D', 0, AF12)>, /* FMC_D2 */
++					 <STM32_PINMUX('D', 1, AF12)>, /* FMC_D3 */
++					 <STM32_PINMUX('D', 4, AF12)>, /* FMC_NOE */
++					 <STM32_PINMUX('D', 5, AF12)>, /* FMC_NWE */
++					 <STM32_PINMUX('D', 11, AF12)>, /* FMC_CLE */
++					 <STM32_PINMUX('D', 12, AF12)>, /* FMC_ALE */
++					 <STM32_PINMUX('D', 14, AF12)>, /* FMC_D0 */
++					 <STM32_PINMUX('D', 15, AF12)>, /* FMC_D1 */
++					 <STM32_PINMUX('E', 7, AF12)>, /* FMC_D4 */
++					 <STM32_PINMUX('E', 8, AF12)>, /* FMC_D5 */
++					 <STM32_PINMUX('E', 9, AF12)>, /* FMC_D6 */
++					 <STM32_PINMUX('E', 10, AF12)>, /* FMC_D7 */
++					 <STM32_PINMUX('G', 9, AF12)>; /* FMC_NCE */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			u-boot,dm-pre-reloc;
++			pinmux = <STM32_PINMUX('D', 6, AF12)>; /* FMC_NWAIT */
++			bias-pull-up;
++		};
++	};
++
++	fmc_sleep_pins_mx: fmc_sleep_mx-0 {
++		u-boot,dm-pre-reloc;
++		pins {
++			u-boot,dm-pre-reloc;
++			pinmux = <STM32_PINMUX('D', 0, ANALOG)>, /* FMC_D2 */
++					 <STM32_PINMUX('D', 1, ANALOG)>, /* FMC_D3 */
++					 <STM32_PINMUX('D', 4, ANALOG)>, /* FMC_NOE */
++					 <STM32_PINMUX('D', 5, ANALOG)>, /* FMC_NWE */
++					 <STM32_PINMUX('D', 6, ANALOG)>, /* FMC_NWAIT */
++					 <STM32_PINMUX('D', 11, ANALOG)>, /* FMC_CLE */
++					 <STM32_PINMUX('D', 12, ANALOG)>, /* FMC_ALE */
++					 <STM32_PINMUX('D', 14, ANALOG)>, /* FMC_D0 */
++					 <STM32_PINMUX('D', 15, ANALOG)>, /* FMC_D1 */
++					 <STM32_PINMUX('E', 7, ANALOG)>, /* FMC_D4 */
++					 <STM32_PINMUX('E', 8, ANALOG)>, /* FMC_D5 */
++					 <STM32_PINMUX('E', 9, ANALOG)>, /* FMC_D6 */
++					 <STM32_PINMUX('E', 10, ANALOG)>, /* FMC_D7 */
++					 <STM32_PINMUX('G', 9, ANALOG)>; /* FMC_NCE */
++		};
++	};
++
+ 	i2c2_pins_mx: i2c2_mx-0 {
+ 		pins {
+ 			pinmux = <STM32_PINMUX('H', 4, AF4)>, /* I2C2_SCL */
+@@ -691,12 +740,12 @@
+ 											<STM32_PINMUX('F', 15, GPIO)>;
+ 		 };
+ 	};
+-
+ 	pinctrl_edt_ft5x26: pinctrl_edt_ft5x26-0 {
+-					pins {
+-		pinmux = <STM32_PINMUX('H', 10, GPIO)>;
++		pins {
++				pinmux = <STM32_PINMUX('H', 10, GPIO)>;
+ 		};
+ 	};
++
+ 	/* USER CODE END pinctrl */
+ };
+ 
+@@ -852,6 +901,48 @@
+ 	/* USER CODE END ethernet0 */
+ };
+ 
++&fmc{
++	u-boot,dm-pre-reloc;
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&fmc_pins_mx>;
++	pinctrl-1 = <&fmc_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN fmc */
++	nand-controller@4,0 {
++		status = "okay";
++
++		nand: nand@0 {
++			reg = <0>;
++			nand-on-flash-bbt;
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++					partition@0 {
++						label = "fsbl";
++						reg = <0x00000000 0x200000>;
++					};
++
++					partition@200000 {
++						label = "fip1";
++						reg = <0x200000 0x400000>;
++					};
++
++					partition@600000 {
++						label = "fip2";
++						reg = <0x600000 0x400000>;
++					};
++
++					partition@A00000 {
++						label = "UBI";
++						reg = <0xA00000 0x1F600000>;
++					};
++		};
++
++  };
++	/* USER CODE END fmc */
++};
++
+ &gpu{
+ 	status = "okay";
+ 
+@@ -1246,3 +1337,4 @@
+ 
+ /* USER CODE BEGIN addons */
+ /* USER CODE END addons */
++
