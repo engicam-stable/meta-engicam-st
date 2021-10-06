@@ -1,0 +1,124 @@
+From 8b0b85f206feb1aa1e905634820ab9524605b920 Mon Sep 17 00:00:00 2001
+From: frautel <francesco.utel@engicam.com>
+Date: Wed, 6 Oct 2021 11:27:28 +0200
+Subject: [PATCH] ctouch - added nand flash node
+
+---
+ ...2mp157a-icore-ctouch2-amp10-mx-u-boot.dtsi |  8 +++
+ .../stm32mp157a-icore-ctouch2-amp10-mx.dts    | 70 +++++++++++++++++++
+ 2 files changed, 78 insertions(+)
+
+diff --git a/arch/arm/dts/stm32mp157a-icore-ctouch2-amp10-mx-u-boot.dtsi b/arch/arm/dts/stm32mp157a-icore-ctouch2-amp10-mx-u-boot.dtsi
+index 566a48299c..bc60f94532 100644
+--- a/arch/arm/dts/stm32mp157a-icore-ctouch2-amp10-mx-u-boot.dtsi
++++ b/arch/arm/dts/stm32mp157a-icore-ctouch2-amp10-mx-u-boot.dtsi
+@@ -89,6 +89,7 @@
+ 	>;
+ 	st,pkcs = <
+ 		CLK_CKPER_DISABLED
++		CLK_FMC_ACLK
+ 		CLK_ETH_PLL3Q
+ 		CLK_SDMMC12_HCLK6
+ 		CLK_DSI_DSIPLL
+@@ -162,6 +163,13 @@
+ 
+ #endif	/*CONFIG_TFABOOT*/
+ 
++&fmc{
++	u-boot,dm-pre-reloc;
++
++	/* USER CODE BEGIN fmc */
++	/* USER CODE END fmc */
++};
++
+ &uart4{
+ 	u-boot,dm-pre-reloc;
+ 
+diff --git a/arch/arm/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts b/arch/arm/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts
+index 7799c6164d..13c142af70 100644
+--- a/arch/arm/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts
++++ b/arch/arm/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts
+@@ -355,6 +355,55 @@
+ 		};
+ 	};
+ 
++	fmc_pins_mx: fmc_mx-0 {
++		u-boot,dm-pre-reloc;
++		pins1 {
++			u-boot,dm-pre-reloc;
++			pinmux = <STM32_PINMUX('D', 0, AF12)>, /* FMC_D2 */
++					 <STM32_PINMUX('D', 1, AF12)>, /* FMC_D3 */
++					 <STM32_PINMUX('D', 4, AF12)>, /* FMC_NOE */
++					 <STM32_PINMUX('D', 5, AF12)>, /* FMC_NWE */
++					 <STM32_PINMUX('D', 11, AF12)>, /* FMC_CLE */
++					 <STM32_PINMUX('D', 12, AF12)>, /* FMC_ALE */
++					 <STM32_PINMUX('D', 14, AF12)>, /* FMC_D0 */
++					 <STM32_PINMUX('D', 15, AF12)>, /* FMC_D1 */
++					 <STM32_PINMUX('E', 7, AF12)>, /* FMC_D4 */
++					 <STM32_PINMUX('E', 8, AF12)>, /* FMC_D5 */
++					 <STM32_PINMUX('E', 9, AF12)>, /* FMC_D6 */
++					 <STM32_PINMUX('E', 10, AF12)>, /* FMC_D7 */
++					 <STM32_PINMUX('G', 9, AF12)>; /* FMC_NCE */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			u-boot,dm-pre-reloc;
++			pinmux = <STM32_PINMUX('D', 6, AF12)>; /* FMC_NWAIT */
++			bias-pull-up;
++		};
++	};
++
++	fmc_sleep_pins_mx: fmc_sleep_mx-0 {
++		u-boot,dm-pre-reloc;
++		pins {
++			u-boot,dm-pre-reloc;
++			pinmux = <STM32_PINMUX('D', 0, ANALOG)>, /* FMC_D2 */
++					 <STM32_PINMUX('D', 1, ANALOG)>, /* FMC_D3 */
++					 <STM32_PINMUX('D', 4, ANALOG)>, /* FMC_NOE */
++					 <STM32_PINMUX('D', 5, ANALOG)>, /* FMC_NWE */
++					 <STM32_PINMUX('D', 6, ANALOG)>, /* FMC_NWAIT */
++					 <STM32_PINMUX('D', 11, ANALOG)>, /* FMC_CLE */
++					 <STM32_PINMUX('D', 12, ANALOG)>, /* FMC_ALE */
++					 <STM32_PINMUX('D', 14, ANALOG)>, /* FMC_D0 */
++					 <STM32_PINMUX('D', 15, ANALOG)>, /* FMC_D1 */
++					 <STM32_PINMUX('E', 7, ANALOG)>, /* FMC_D4 */
++					 <STM32_PINMUX('E', 8, ANALOG)>, /* FMC_D5 */
++					 <STM32_PINMUX('E', 9, ANALOG)>, /* FMC_D6 */
++					 <STM32_PINMUX('E', 10, ANALOG)>, /* FMC_D7 */
++					 <STM32_PINMUX('G', 9, ANALOG)>; /* FMC_NCE */
++		};
++	};
++
+ 	i2c2_pins_mx: i2c2_mx-0 {
+ 		pins {
+ 			pinmux = <STM32_PINMUX('H', 4, AF4)>, /* I2C2_SCL */
+@@ -826,6 +875,27 @@
+ 	/* USER CODE END ethernet0 */
+ };
+ 
++&fmc{
++	u-boot,dm-pre-reloc;
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&fmc_pins_mx>;
++	pinctrl-1 = <&fmc_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN fmc */
++	nand-controller@4,0 {
++	status = "okay";
++
++		nand@0 {
++				reg = <0>;
++				nand-on-flash-bbt;
++				#address-cells = <1>;
++				#size-cells = <1>;
++		};
++	};
++	/* USER CODE END fmc */
++};
++
+ &gpu{
+ 	status = "okay";
+ 
