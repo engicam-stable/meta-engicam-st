@@ -1,0 +1,140 @@
+From a89fea078f06df027c7ef6cf5ba55aa243b2e4fe Mon Sep 17 00:00:00 2001
+From: frautel <francesco.utel@engicam.com>
+Date: Wed, 20 Oct 2021 16:41:24 +0200
+Subject: [PATCH] Enabled ethernet and usb in u-boot for icore
+
+---
+ .../stm32mp157a-icore-ctouch2-amp10-mx.dts    |  6 ++++
+ .../dts/stm32mp157a-icore-starterkit-mx.dts   |  6 ++++
+ board/st/stm32mp1/stm32mp1.c                  | 36 ++++++++++++++++++-
+ configs/stm32mp15_trusted_defconfig           |  1 +
+ 4 files changed, 48 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts b/arch/arm/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts
+index 13c142af70..99e6dfa811 100644
+--- a/arch/arm/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts
++++ b/arch/arm/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts
+@@ -264,6 +264,10 @@
+ 		default-on;
+ 		status="okay";
+ 	};
++
++	config {
++		st,reset-phy-gpios = <&gpiod 10 GPIO_ACTIVE_LOW>;
++	};
+ 	/* USER CODE END root */
+ 
+ 	clocks {
+@@ -1257,6 +1261,7 @@
+ 
+ 	/* USER CODE BEGIN usbphyc_port0 */
+ 	st,phy-tuning = <&usb_phy_tuning>;
++	phy-supply = <&vdd_usb>;
+ 	/* USER CODE END usbphyc_port0 */
+ };
+ 
+@@ -1265,6 +1270,7 @@
+ 
+ 	/* USER CODE BEGIN usbphyc_port1 */
+ 	st,phy-tuning = <&usb_phy_tuning>;
++	phy-supply = <&vdd_usb>;
+ 	/* USER CODE END usbphyc_port1 */
+ };
+ 
+diff --git a/arch/arm/dts/stm32mp157a-icore-starterkit-mx.dts b/arch/arm/dts/stm32mp157a-icore-starterkit-mx.dts
+index 68b212f3e1..fdf92e8e13 100644
+--- a/arch/arm/dts/stm32mp157a-icore-starterkit-mx.dts
++++ b/arch/arm/dts/stm32mp157a-icore-starterkit-mx.dts
+@@ -264,6 +264,10 @@
+ 		default-on;
+ 		status="okay";
+ 	};
++
++	config {
++		st,reset-phy-gpios = <&gpiod 10 GPIO_ACTIVE_LOW>;
++	};
+ 	/* USER CODE END root */
+ 
+ 	clocks {
+@@ -1320,6 +1324,7 @@
+ 
+ 	/* USER CODE BEGIN usbphyc_port0 */
+ 	st,phy-tuning = <&usb_phy_tuning>;
++	phy-supply = <&vdd_usb>;
+ 	/* USER CODE END usbphyc_port0 */
+ };
+ 
+@@ -1328,6 +1333,7 @@
+ 
+ 	/* USER CODE BEGIN usbphyc_port1 */
+ 	st,phy-tuning = <&usb_phy_tuning>;
++	phy-supply = <&vdd_usb>;
+ 	/* USER CODE END usbphyc_port1 */
+ };
+ 
+diff --git a/board/st/stm32mp1/stm32mp1.c b/board/st/stm32mp1/stm32mp1.c
+index 9a02e14ba5..4ac745ddff 100644
+--- a/board/st/stm32mp1/stm32mp1.c
++++ b/board/st/stm32mp1/stm32mp1.c
+@@ -729,6 +729,38 @@ void board_quiesce_devices(void)
+ 	setup_led(LEDST_OFF);
+ }
+ 
++int reset_eth_phy(void)
++{
++	ofnode node;
++	struct gpio_desc gpio;
++
++	node = ofnode_path("/config");
++	if (!ofnode_valid(node)) 
++	{
++		return -1;
++	}
++
++	if (gpio_request_by_name_nodev(node, "st,reset-phy-gpios", 0,
++						 &gpio, GPIOD_IS_OUT)) 
++	{
++		return -2;
++	}
++
++	if (dm_gpio_set_value(&gpio,1)) 
++	{
++		return -3;
++	}
++
++	udelay(20000);
++
++	if (dm_gpio_set_value(&gpio,0))
++	{
++		return -4;
++	}
++
++	return 0;
++}
++
+ /* eth init function : weak called in eqos driver */
+ int board_interface_eth_init(struct udevice *dev,
+ 			     phy_interface_t interface_type)
+@@ -749,7 +781,9 @@ int board_interface_eth_init(struct udevice *dev,
+ 
+ 	if (!syscfg)
+ 		return -ENODEV;
+-
++	
++	reset_eth_phy();
++	
+ 	switch (interface_type) {
+ 	case PHY_INTERFACE_MODE_MII:
+ 		value = SYSCFG_PMCSETR_ETH_SEL_GMII_MII |
+diff --git a/configs/stm32mp15_trusted_defconfig b/configs/stm32mp15_trusted_defconfig
+index 5b4cfc4ca3..d8a5b95010 100644
+--- a/configs/stm32mp15_trusted_defconfig
++++ b/configs/stm32mp15_trusted_defconfig
+@@ -51,6 +51,7 @@ CONFIG_ENV_UBI_VOLUME="uboot_config"
+ CONFIG_ENV_UBI_VOLUME_REDUND="uboot_config_r"
+ CONFIG_SYS_RELOC_GD_ENV_ADDR=y
+ CONFIG_SYS_MMC_ENV_DEV=-1
++CONFIG_NET_RANDOM_ETHADDR=y
+ CONFIG_STM32_ADC=y
+ CONFIG_CLK_SCMI=y
+ CONFIG_SET_DFU_ALT_INFO=y
