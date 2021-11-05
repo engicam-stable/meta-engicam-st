@@ -1,0 +1,55 @@
+From c31efc02d2b8dd2f6505f05bae245313c5a1c094 Mon Sep 17 00:00:00 2001
+From: frautel <francesco.utel@engicam.com>
+Date: Fri, 5 Nov 2021 15:59:53 +0100
+Subject: [PATCH] Ported stm32mp157d 800 MHz on Engicam starterkit
+
+---
+ ...d-icore_800MHz-starterkit-mx-fw-config.dts | 11 ++++++++++
+ ...stm32mp157d-icore_800MHz-starterkit-mx.dts | 20 +++++++++++++++++++
+ 2 files changed, 31 insertions(+)
+ create mode 100644 fdts/stm32mp157d-icore_800MHz-starterkit-mx-fw-config.dts
+ create mode 100644 fdts/stm32mp157d-icore_800MHz-starterkit-mx.dts
+
+diff --git a/fdts/stm32mp157d-icore_800MHz-starterkit-mx-fw-config.dts b/fdts/stm32mp157d-icore_800MHz-starterkit-mx-fw-config.dts
+new file mode 100644
+index 000000000..600555812
+--- /dev/null
++++ b/fdts/stm32mp157d-icore_800MHz-starterkit-mx-fw-config.dts
+@@ -0,0 +1,11 @@
++/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
++/*
++ * Copyright (C) STMicroelectronics 2021 - All Rights Reserved
++ * Author: STM32CubeMX code generation for STMicroelectronics.
++ */
++
++/* For more information on Device Tree configuration, please refer to
++ * https://wiki.st.com/stm32mpu/wiki/Category:Device_tree_configuration
++ */
++
++#include "stm32mp15-ddr-512m-fw-config.dts"
+diff --git a/fdts/stm32mp157d-icore_800MHz-starterkit-mx.dts b/fdts/stm32mp157d-icore_800MHz-starterkit-mx.dts
+new file mode 100644
+index 000000000..93e1ed22a
+--- /dev/null
++++ b/fdts/stm32mp157d-icore_800MHz-starterkit-mx.dts
+@@ -0,0 +1,20 @@
++/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
++/* For more information on Device Tree configuration, please refer to
++ * https://wiki.st.com/stm32mpu/wiki/Category:Device_tree_configuration
++ */
++
++ #include "stm32mp157a-icore-starterkit-mx.dts"
++ #include "stm32mp15xd.dtsi"
++
++/ {
++   model = "STMicroelectronics custom Engicam board";
++   compatible = "st,stm32mp157d-icore_800MHz-starterkit-mx", "st,stm32mp157";
++};
++
++&rcc {
++  pll1:st,pll@0 {
++    compatible = "st,stm32mp1-pll";
++    reg = <0>;
++    cfg = < 3 49 0 1 1 PQR(1,0,0) >;
++ };
++};

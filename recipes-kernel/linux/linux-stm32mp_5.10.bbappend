@@ -6,6 +6,7 @@ SRC_URI += "file://0001-initial-support-for-icore-edimm-2.0.patch \
             file://0004-Initial-support-for-icore-ctouch2-with-Ampire10-disp.patch \
             file://0005-starterkit-Added-NAND-flash-device-tree-node.patch \
             file://0006-ctouch-Added-nand-flash-device-tree-node.patch \
+            file://0007-Ported-stm32mp157d-800-MHz-on-Engicam-starterkit.patch \
             "
 
 KERNEL_CONFIG_FRAGMENTS += "${WORKDIR}/fragments/${LINUX_VERSION}/fragment-06.config"

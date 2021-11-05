@@ -1,0 +1,36 @@
+From bd496c63421d3c320f6cc713c26a3fd9081a9511 Mon Sep 17 00:00:00 2001
+From: frautel <francesco.utel@engicam.com>
+Date: Fri, 5 Nov 2021 16:02:54 +0100
+Subject: [PATCH] Ported stm32mp157d 800 MHz on Engicam starterkit
+
+---
+ ...stm32mp157d-icore_800MHz-starterkit-mx.dts | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+ create mode 100644 arch/arm/boot/dts/stm32mp157d-icore_800MHz-starterkit-mx.dts
+
+diff --git a/arch/arm/boot/dts/stm32mp157d-icore_800MHz-starterkit-mx.dts b/arch/arm/boot/dts/stm32mp157d-icore_800MHz-starterkit-mx.dts
+new file mode 100644
+index 000000000..2d99b7347
+--- /dev/null
++++ b/arch/arm/boot/dts/stm32mp157d-icore_800MHz-starterkit-mx.dts
+@@ -0,0 +1,20 @@
++/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
++/* For more information on Device Tree configuration, please refer to
++ * https://wiki.st.com/stm32mpu/wiki/Category:Device_tree_configuration
++ */
++
++ #include "stm32mp157a-icore-starterkit-mx.dts"
++ #include "stm32mp15xd.dtsi"
++
++/ {
++  model = "STMicroelectronics custom Engicam board";
++  compatible = "st,stm32mp157d-icore_800MHz-starterkit-mx", "st,stm32mp157";
++
++   vddcore: regulator-vddcore {
++     compatible = "regulator-fixed";
++     regulator-name = "vddcore";
++     regulator-min-microvolt = <1350000>;
++     regulator-max-microvolt = <1350000>;
++     regulator-always-on;
++   };
++};

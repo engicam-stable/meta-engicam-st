@@ -1,0 +1,58 @@
+From 8b678b08e18a0f28e09130ed8fa45319b85db720 Mon Sep 17 00:00:00 2001
+From: frautel <francesco.utel@engicam.com>
+Date: Fri, 5 Nov 2021 16:01:45 +0100
+Subject: [PATCH] Ported stm32mp157d 800 MHz on Engicam starterkit
+
+---
+ ...57d-icore_800MHz-starterkit-mx-u-boot.dtsi | 14 +++++++++++++
+ ...stm32mp157d-icore_800MHz-starterkit-mx.dts | 20 +++++++++++++++++++
+ 2 files changed, 34 insertions(+)
+ create mode 100644 arch/arm/dts/stm32mp157d-icore_800MHz-starterkit-mx-u-boot.dtsi
+ create mode 100644 arch/arm/dts/stm32mp157d-icore_800MHz-starterkit-mx.dts
+
+diff --git a/arch/arm/dts/stm32mp157d-icore_800MHz-starterkit-mx-u-boot.dtsi b/arch/arm/dts/stm32mp157d-icore_800MHz-starterkit-mx-u-boot.dtsi
+new file mode 100644
+index 0000000000..2dd120bcc7
+--- /dev/null
++++ b/arch/arm/dts/stm32mp157d-icore_800MHz-starterkit-mx-u-boot.dtsi
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
++/* For more information on Device Tree configuration, please refer to
++ * https://wiki.st.com/stm32mpu/wiki/Category:Device_tree_configuration
++ */
++
++ #include "stm32mp157a-icore-starterkit-mx-u-boot.dtsi"
++
++&rcc {
++   pll1:st,pll@0 {
++     compatible = "st,stm32mp1-pll";
++     reg = <0>;
++     cfg = < 3 49 0 1 1 PQR(1,0,0) >;
++  };
++};
+diff --git a/arch/arm/dts/stm32mp157d-icore_800MHz-starterkit-mx.dts b/arch/arm/dts/stm32mp157d-icore_800MHz-starterkit-mx.dts
+new file mode 100644
+index 0000000000..2d99b73470
+--- /dev/null
++++ b/arch/arm/dts/stm32mp157d-icore_800MHz-starterkit-mx.dts
+@@ -0,0 +1,20 @@
++/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
++/* For more information on Device Tree configuration, please refer to
++ * https://wiki.st.com/stm32mpu/wiki/Category:Device_tree_configuration
++ */
++
++ #include "stm32mp157a-icore-starterkit-mx.dts"
++ #include "stm32mp15xd.dtsi"
++
++/ {
++  model = "STMicroelectronics custom Engicam board";
++  compatible = "st,stm32mp157d-icore_800MHz-starterkit-mx", "st,stm32mp157";
++
++   vddcore: regulator-vddcore {
++     compatible = "regulator-fixed";
++     regulator-name = "vddcore";
++     regulator-min-microvolt = <1350000>;
++     regulator-max-microvolt = <1350000>;
++     regulator-always-on;
++   };
++};
