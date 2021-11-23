@@ -8,6 +8,7 @@ SRC_URI += "file://0001-initial-support-for-icore-edimm-2.0.patch \
             file://0006-ctouch-Added-nand-flash-device-tree-node.patch \
             file://0007-Ported-stm32mp157d-800-MHz-on-Engicam-starterkit.patch \
             file://0008-Fix-Set-sgtl5000-as-master-of-SAI2B-for-FS-and-SCK-c.patch \
+            file://0009-Enabled-M4-remote-processor-for-icore-starterkit-dev.patch \
             "
 
 KERNEL_CONFIG_FRAGMENTS += "${WORKDIR}/fragments/${LINUX_VERSION}/fragment-06.config"
