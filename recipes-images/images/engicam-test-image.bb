@@ -22,9 +22,11 @@ CORE_IMAGE_EXTRA_INSTALL += " \
 	devmem2 \
 	weston \
 	weston-init \
+	weston-examples \
 	libdrm \
 	rsync \
 	fontconfig \
 	mtd-utils-ubifs \
 	eng-emmc-tools \
+	brcm-patchram-plus \
 "
