@@ -18,6 +18,7 @@ CORE_IMAGE_EXTRA_INSTALL += " \
 	\
 	packagegroup-framework-core-base \
 	packagegroup-framework-tools-base \
+	packagegroup-framework-tools \
 	packagegroup-core-ssh-openssh \
 	devmem2 \
 	weston \
@@ -29,4 +30,9 @@ CORE_IMAGE_EXTRA_INSTALL += " \
 	mtd-utils-ubifs \
 	eng-emmc-tools \
 	brcm-patchram-plus \
+	minicom \
+"
+
+CORE_IMAGE_EXTRA_INSTALL += " \
+	eng-emmc-tools \
 "
