@@ -1,0 +1,10 @@
+Available images for Engicam-ST layers are:
+
+  - Official Engicam test image:
+	engicam-test-image	-    Weston image with basic Wayland support, no Qt libraries
+
+  - Official OpenSTLinux images:
+      	st-image-weston       -   OpenSTLinux weston image with basic Wayland support (if enable in distro)
+
+
+
