@@ -3,7 +3,7 @@ SECTION = "bootloaders"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://license.rst;md5=e927e02bca647e14efd87e9e914b2443"
 
-SRC_URI = "git://github.com/engicam-stable/tfa-stm32mp.git;protocol=git;branch=thud"
+SRC_URI = "git://github.com/engicam-stable/tfa-stm32mp.git;protocol=https;branch=thud"
 #SRCREV = "0ca47eb37a8b1d963f1c6b16532d9fe5d40672e4"
 SRCREV_default = "${AUTOREV}"
 

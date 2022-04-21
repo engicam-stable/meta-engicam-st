@@ -16,7 +16,7 @@ DEPENDS += "lzop-native bc-native"
 DEFAULT_PREFERENCE = "1"
 
 KERNEL_BRANCH ?= "thud"
-KERNEL_SRC ?= "git://github.com/engicam-stable/linux-stm32mp.git;protocol=http"
+KERNEL_SRC ?= "git://github.com/engicam-stable/linux-stm32mp.git;protocol=https"
 SRC_URI = "${KERNEL_SRC};branch=${KERNEL_BRANCH}"
 SRCREV_default = "${AUTOREV}"
 PV = "${KERNEL_BRANCH}+git${SRCPV}"

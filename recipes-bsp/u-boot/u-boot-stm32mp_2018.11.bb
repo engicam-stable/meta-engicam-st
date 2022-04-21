@@ -12,7 +12,7 @@ DEPENDS += "flex-native bison-native"
 
 COMPATIBLE_MACHINE = "(stm32mpcommon)"
 
-SRC_URI = "git://github.com/engicam-stable/uboot-stm32mp.git;protocol=git;branch=thud"
+SRC_URI = "git://github.com/engicam-stable/uboot-stm32mp.git;protocol=https;branch=thud"
 #SRCREV = "a23cb26c8a4b6e0c4ff6d4727b19b597d96e9561"
 SRCREV_default = "${AUTOREV}"
 
