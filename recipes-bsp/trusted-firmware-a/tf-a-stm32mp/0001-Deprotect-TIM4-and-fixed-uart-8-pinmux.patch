@@ -1,0 +1,70 @@
+From 63ca743a0fd094ca049a92f4865997e6ad68bd49 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Fri, 27 May 2022 12:21:59 +0200
+Subject: [PATCH] Deprotect TIM4 and fixed uart 8 pinmux
+
+---
+ fdts/stm32mp157a-ugea512-mx.dts | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/fdts/stm32mp157a-ugea512-mx.dts b/fdts/stm32mp157a-ugea512-mx.dts
+index d24dbd881..213cf719e 100644
+--- a/fdts/stm32mp157a-ugea512-mx.dts
++++ b/fdts/stm32mp157a-ugea512-mx.dts
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
+ /*
+- * Copyright (C) STMicroelectronics 2021 - All Rights Reserved
++ * Copyright (C) STMicroelectronics 2022 - All Rights Reserved
+  * Author: STM32CubeMX code generation for STMicroelectronics.
+  */
+ 
+@@ -28,7 +28,7 @@
+ 	compatible = "st,stm32mp157a-ugea512-mx", "st,stm32mp157";
+ 
+ 	/* USER CODE BEGIN root */
+-
++	
+ 	aliases {
+ 		serial0 = &uart4;
+ 		serial1 = &usart3;
+@@ -44,7 +44,7 @@
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+-
++	
+ 	/* USER CODE END root */
+ 
+ 	clocks {
+@@ -128,14 +128,15 @@
+ 
+ 	usart3_pins_mx: usart3_mx-0 {
+ 		pins1 {
+-			pinmux = <STM32_PINMUX('B', 10, AF7)>; /* USART3_TX */
++			pinmux = <STM32_PINMUX('B', 12, AF8)>; /* USART3_RX */
+ 			bias-disable;
+-			drive-push-pull;
+-			slew-rate = <0>;
+ 		};
+ 		pins2 {
+-			pinmux = <STM32_PINMUX('B', 12, AF8)>; /* USART3_RX */
++			pinmux = <STM32_PINMUX('D', 8, AF7)>, /* USART3_TX */
++					 <STM32_PINMUX('G', 8, AF8)>; /* USART3_RTS */
+ 			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
+ 		};
+ 	};
+ 
+@@ -264,8 +265,10 @@
+ 	DECPROT(STM32MP1_ETZPC_SDMMC3_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_DLYBSD3_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_TIM12_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_TIM4_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_UART4_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_UART7_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_UART8_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_USART1_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_USART3_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_OTG_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
