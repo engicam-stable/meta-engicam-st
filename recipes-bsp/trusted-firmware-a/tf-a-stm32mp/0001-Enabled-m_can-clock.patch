@@ -1,0 +1,21 @@
+From 5c0d13311b7333d29df6294e5c1508754b8ef0ff Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Wed, 1 Jun 2022 14:11:04 +0200
+Subject: [PATCH] Enabled m_can clock
+
+---
+ fdts/stm32mp157a-ugea512-mx.dts | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/fdts/stm32mp157a-ugea512-mx.dts b/fdts/stm32mp157a-ugea512-mx.dts
+index 213cf719e..ce1f98a1c 100644
+--- a/fdts/stm32mp157a-ugea512-mx.dts
++++ b/fdts/stm32mp157a-ugea512-mx.dts
+@@ -214,6 +214,7 @@
+ 		CLK_UART6_DISABLED
+ 		CLK_UART78_PCLK1
+ 		CLK_SPDIF_DISABLED
++		CLK_FDCAN_HSE
+ 		CLK_SAI1_DISABLED
+ 		CLK_SAI2_DISABLED
+ 		CLK_SAI3_DISABLED

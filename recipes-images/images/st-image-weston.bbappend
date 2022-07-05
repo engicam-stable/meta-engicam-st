@@ -8,3 +8,8 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     "
 
 CORE_IMAGE_EXTRA_INSTALL_remove = " packagegroup-st-demo "
+
+CORE_IMAGE_EXTRA_INSTALL += " \
+  libsocketcan  \
+  can-utils \
+"
