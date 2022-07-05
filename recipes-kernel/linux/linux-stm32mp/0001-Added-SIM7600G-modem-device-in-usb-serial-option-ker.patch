@@ -1,0 +1,32 @@
+From c637f2408c2d610c24c7e4c7a87557d6fae0bf51 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Tue, 5 Jul 2022 15:27:35 +0200
+Subject: [PATCH] Added SIM7600G modem device in usb serial option kernel
+ module
+
+---
+ drivers/usb/serial/option.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+index 3fe959104..c3b44e23d 100644
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -578,6 +578,8 @@ static void option_instat_callback(struct urb *urb);
+ /* Device needs ZLP */
+ #define ZLP		BIT(17)
+ 
++#define SIMCOM_SIM7600_VID	0x1E0E
++#define SIMCOM_SIM7600_PID	0x9001
+ 
+ static const struct usb_device_id option_ids[] = {
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
+@@ -1089,6 +1091,8 @@ static const struct usb_device_id option_ids[] = {
+ 	{ USB_DEVICE(QUALCOMM_VENDOR_ID, 0x0023)}, /* ONYX 3G device */
+ 	{ USB_DEVICE(QUALCOMM_VENDOR_ID, 0x9000), /* SIMCom SIM5218 */
+ 	  .driver_info = NCTRL(0) | NCTRL(1) | NCTRL(2) | NCTRL(3) | RSVD(4) },
++	{ USB_DEVICE(SIMCOM_SIM7600_VID, SIMCOM_SIM7600_PID), /* SIMCom SIM7600 */
++	  .driver_info = RSVD(5) },
+ 	/* Quectel products using Qualcomm vendor ID */
+ 	{ USB_DEVICE(QUALCOMM_VENDOR_ID, QUECTEL_PRODUCT_UC15)},
+ 	{ USB_DEVICE(QUALCOMM_VENDOR_ID, QUECTEL_PRODUCT_UC20),
