@@ -1,0 +1,126 @@
+From 1470c92a6e9d0e4083c228b7338873a179c26656 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Wed, 27 Jul 2022 11:10:15 +0200
+Subject: [PATCH] stm32mp135 gea - Enabled connectivity peripherals
+
+---
+ .../arm/dts/stm32mp135d-gea-starterkit-mx.dts | 68 ++++++++++++++++++-
+ 1 file changed, 67 insertions(+), 1 deletion(-)
+
+diff --git a/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts b/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
+index 6118bed5..b3041448 100644
+--- a/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
++++ b/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
+@@ -150,8 +150,13 @@
+ 	/*"NS_R S_W" peripherals*/
+ 	DECPROT(STM32MP1_ETZPC_DDRCTRLPHY_ID, DECPROT_NS_R_S_W, DECPROT_LOCK)
+ 	/*"Non Secured" peripherals*/
++	DECPROT(STM32MP1_ETZPC_ETH1_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_ETH2_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_SDMMC1_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_SDMMC2_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_USART2_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_OTG_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_USBPHYCTRL_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	/*"Secured" peripherals*/
+ 	DECPROT(STM32MP1_ETZPC_I2C5_ID, DECPROT_S_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_RNG_ID, DECPROT_S_RW, DECPROT_UNLOCK)
+@@ -369,11 +374,18 @@
+ 		CLK_MCO1_DISABLED
+ 		CLK_MCO2_DISABLED
+ 		CLK_CKPER_DISABLED
++		CLK_ETH1_PLL3Q
++		CLK_ETH2_PLL3Q
+ 		CLK_SDMMC1_HCLK6
+ 		CLK_SDMMC2_HCLK6
+ 		CLK_STGEN_HSI
++		CLK_USBPHY_HSE
++		CLK_USBO_USBPHY
+ 		CLK_I2C5_PCLK6
++		CLK_UART2_PCLK6
+ 		CLK_UART4_PCLK1
++		CLK_UART78_PCLK1
++		CLK_FDCAN_HSE
+ 		CLK_RNG1_CSI
+ 	>;
+ 	st,clkdiv = <
+@@ -399,6 +411,10 @@
+ 			src = < CLK_PLL12_HSE >;
+ 			divmn = < 2 64 >;
+ 		};
++		pll3_vco_600Mhz_mx: pll3-vco-600Mhz-mx {
++			src = < CLK_PLL3_HSE >;
++			divmn = < 1 49 >;
++		};
+ 
+ 		/* USER CODE BEGIN rcc_st-pll_vco */
+ 		/* USER CODE END rcc_st-pll_vco */
+@@ -432,12 +448,26 @@
+ 		/* USER CODE END pll2 */
+ 	};
+ 
++	pll3:st,pll@2 {
++		compatible = "st,stm32mp1-pll";
++		reg = <2>;
++
++		st,pll = < &pll3_cfg1 >;
++
++		pll3_cfg1: pll3_cfg1 {
++			st,pll_vco = < &pll3_vco_600Mhz_mx >;
++			st,pll_div_pqr = < 1 11 1 >;
++		};
++		/* USER CODE BEGIN pll3 */
++		/* USER CODE END pll3 */
++	};
++
+ 	st,clk_opp {
+ 		/* CK_MPU clock config for MP13 */
+ 		st,ck_mpu {
+ 
+ 			cfg_1 {
+-				hz = < 900000000 >;
++				hz = < 1000000000 >;
+ 				st,clksrc = < CLK_MPU_PLL1P >;
+ 				st,pll = < &pll1_cfg1 >;
+ 			};
+@@ -521,4 +551,40 @@
+ &cpu0 {
+ 	cpu-supply = <&vddcpu>;
+ };
++
++&scmi_regu {
++	scmi_vddcpu: voltd-vddcpu {
++		voltd-name = "vddcpu";
++		regulator-name = "vddcpu";
++	};
++	scmi_vdd: voltd-vdd {
++		voltd-name = "vdd";
++		regulator-name = "vdd";
++	};
++	scmi_vddcore: voltd-vddcore {
++		voltd-name = "vddcore";
++		regulator-name = "vddcore";
++	};
++	scmi_vdd_adc: voltd-vdd_adc {
++		voltd-name = "vdd_adc";
++		regulator-name = "vdd_adc";
++	};
++	scmi_vdd_usb: voltd-vdd_usb {
++		voltd-name = "vdd_usb";
++		regulator-name = "vdd_usb";
++	};
++	scmi_vdd_sd: voltd-vdd_sd {
++		voltd-name = "vdd_sd";
++		regulator-name = "vdd_sd";
++	};
++	scmi_v1v8_periph: voltd-v1v8_periph {
++		voltd-name = "v1v8_periph";
++		regulator-name = "v1v8_periph";
++	};
++	scmi_v3v3_sw: voltd-v3v3_sw {
++		voltd-name = "v3v3_sw";
++		regulator-name = "v3v3_sw";
++	};
++};
+ /* USER CODE END addons */
++

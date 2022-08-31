@@ -1,0 +1,383 @@
+From 8d23908422f9202a01faeab0f806778ce10f3961 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Fri, 22 Jul 2022 17:14:42 +0200
+Subject: [PATCH] stm32mp135 gea - Basic porting
+
+---
+ arch/arm/boot/dts/Makefile                    |   1 +
+ .../dts/stm32mp135d-gea-starterkit-mx.dts     | 354 ++++++++++++++++++
+ 2 files changed, 355 insertions(+)
+ create mode 100644 arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 09460432d..fe9f72c7a 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -1154,6 +1154,7 @@ dtb-$(CONFIG_ARCH_STM32) += \
+ 	stm32mp135d-dk-a7-examples.dtb \
+ 	stm32mp135f-dk.dtb \
+ 	stm32mp135f-dk-a7-examples.dtb \
++	stm32mp135d-gea-starterkit-mx.dtb \
+ 	stm32mp153c-dhcom-drc02.dtb \
+ 	stm32mp157a-avenger96.dtb \
+ 	stm32mp157a-dhcor-avenger96.dtb \
+diff --git a/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
+new file mode 100644
+index 000000000..a7401bac2
+--- /dev/null
++++ b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
+@@ -0,0 +1,354 @@
++/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
++/*
++ * Copyright (C) STMicroelectronics 2022 - All Rights Reserved
++ * Author: STM32CubeMX code generation for STMicroelectronics.
++ */
++
++/* For more information on Device Tree configuration, please refer to
++ * https://wiki.st.com/stm32mpu/wiki/Category:Device_tree_configuration
++ */
++
++/dts-v1/;
++#include <dt-bindings/pinctrl/stm32-pinfunc.h>
++
++#include "stm32mp135.dtsi"
++#include "stm32mp13xd.dtsi"
++
++/* USER CODE BEGIN includes */
++/* USER CODE END includes */
++
++/ {
++	model = "STMicroelectronics custom STM32CubeMX board - openstlinux-5.15-yocto-kirkstone-mp1-v22.06.15";
++	compatible = "st,stm32mp135d-gea-starterkit-mx", "st,stm32mp135";
++
++	memory@c0000000 {
++		device_type = "memory";
++		reg = <0xc0000000 0x20000000>;
++
++		/* USER CODE BEGIN memory */
++		/* USER CODE END memory */
++	};
++
++	reserved-memory {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		/* USER CODE BEGIN reserved-memory */
++		optee_framebuffer@dd000000 {
++			reg = <0xdd000000 0x1000000>;
++			no-map;
++		};
++
++		optee@de000000 {
++			reg = <0xde000000 0x2000000>;
++			no-map;
++		};
++		/* USER CODE END reserved-memory */
++	};
++
++	/* USER CODE BEGIN root */
++	aliases {
++		//ethernet0 = &eth1;
++		//ethernet1 = &eth2;
++		serial0 = &uart4;
++		serial1 = &uart8;
++		serial2 = &usart2;
++		serial3 = &usart1;
++	};
++
++	chosen {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++		stdout-path = "serial0:115200n8";
++
++		framebuffer {
++			compatible = "simple-framebuffer";
++			clocks = <&rcc LTDC_PX>;
++			status = "disabled";
++		};
++	};
++
++
++	v3v3_ao: v3v3_ao {
++		compatible = "regulator-fixed";
++		regulator-name = "v3v3_ao";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
++	};
++	/* USER CODE END root */
++
++	clocks {
++		/* USER CODE BEGIN clocks */
++		/* USER CODE END clocks */
++
++	};
++
++}; /*root*/
++
++&pinctrl {
++
++	sdmmc1_pins_mx: sdmmc1_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('C', 8, AF12)>, /* SDMMC1_D0 */
++					 <STM32_PINMUX('C', 9, AF12)>, /* SDMMC1_D1 */
++					 <STM32_PINMUX('C', 10, AF12)>, /* SDMMC1_D2 */
++					 <STM32_PINMUX('C', 11, AF12)>, /* SDMMC1_D3 */
++					 <STM32_PINMUX('D', 2, AF12)>; /* SDMMC1_CMD */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('C', 12, AF12)>; /* SDMMC1_CK */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <3>;
++		};
++	};
++
++	sdmmc1_opendrain_pins_mx: sdmmc1_opendrain_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('C', 8, AF12)>, /* SDMMC1_D0 */
++					 <STM32_PINMUX('C', 9, AF12)>, /* SDMMC1_D1 */
++					 <STM32_PINMUX('C', 10, AF12)>, /* SDMMC1_D2 */
++					 <STM32_PINMUX('C', 11, AF12)>; /* SDMMC1_D3 */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('C', 12, AF12)>; /* SDMMC1_CK */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <3>;
++		};
++		pins3 {
++			pinmux = <STM32_PINMUX('D', 2, AF12)>; /* SDMMC1_CMD */
++			bias-pull-up;
++			drive-open-drain;
++			slew-rate = <1>;
++		};
++	};
++
++	sdmmc1_sleep_pins_mx: sdmmc1_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('C', 8, ANALOG)>, /* SDMMC1_D0 */
++					 <STM32_PINMUX('C', 9, ANALOG)>, /* SDMMC1_D1 */
++					 <STM32_PINMUX('C', 10, ANALOG)>, /* SDMMC1_D2 */
++					 <STM32_PINMUX('C', 11, ANALOG)>, /* SDMMC1_D3 */
++					 <STM32_PINMUX('C', 12, ANALOG)>, /* SDMMC1_CK */
++					 <STM32_PINMUX('D', 2, ANALOG)>; /* SDMMC1_CMD */
++		};
++	};
++
++	sdmmc2_pins_mx: sdmmc2_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('B', 3, AF10)>, /* SDMMC2_D2 */
++					 <STM32_PINMUX('B', 4, AF10)>, /* SDMMC2_D3 */
++					 <STM32_PINMUX('B', 14, AF10)>, /* SDMMC2_D0 */
++					 <STM32_PINMUX('B', 15, AF10)>, /* SDMMC2_D1 */
++					 <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('E', 3, AF10)>; /* SDMMC2_CK */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <3>;
++		};
++	};
++
++	sdmmc2_opendrain_pins_mx: sdmmc2_opendrain_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('B', 3, AF10)>, /* SDMMC2_D2 */
++					 <STM32_PINMUX('B', 4, AF10)>, /* SDMMC2_D3 */
++					 <STM32_PINMUX('B', 14, AF10)>, /* SDMMC2_D0 */
++					 <STM32_PINMUX('B', 15, AF10)>; /* SDMMC2_D1 */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('E', 3, AF10)>; /* SDMMC2_CK */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <3>;
++		};
++		pins3 {
++			pinmux = <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
++			bias-pull-up;
++			drive-open-drain;
++			slew-rate = <1>;
++		};
++	};
++
++	sdmmc2_sleep_pins_mx: sdmmc2_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('B', 3, ANALOG)>, /* SDMMC2_D2 */
++					 <STM32_PINMUX('B', 4, ANALOG)>, /* SDMMC2_D3 */
++					 <STM32_PINMUX('B', 14, ANALOG)>, /* SDMMC2_D0 */
++					 <STM32_PINMUX('B', 15, ANALOG)>, /* SDMMC2_D1 */
++					 <STM32_PINMUX('E', 3, ANALOG)>, /* SDMMC2_CK */
++					 <STM32_PINMUX('G', 6, ANALOG)>; /* SDMMC2_CMD */
++		};
++	};
++
++	uart4_pins_mx: uart4_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('D', 6, AF8)>; /* UART4_TX */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('D', 8, AF8)>; /* UART4_RX */
++			bias-disable;
++		};
++	};
++
++	uart4_sleep_pins_mx: uart4_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('D', 6, ANALOG)>, /* UART4_TX */
++					 <STM32_PINMUX('D', 8, ANALOG)>; /* UART4_RX */
++		};
++	};
++
++	/* USER CODE BEGIN pinctrl */
++	/* USER CODE END pinctrl */
++};
++
++&bsec{
++	status = "okay";
++
++	/* USER CODE BEGIN bsec */
++	/* USER CODE END bsec */
++};
++
++&dma1{
++	status = "okay";
++
++	/* USER CODE BEGIN dma1 */
++	/* USER CODE END dma1 */
++};
++
++&dma2{
++	status = "okay";
++
++	/* USER CODE BEGIN dma2 */
++	/* USER CODE END dma2 */
++};
++
++&dmamux1{
++	status = "okay";
++
++	dma-masters = <&dma1 &dma2>;
++	dma-channels = <16>;
++
++	/* USER CODE BEGIN dmamux1 */
++	/* USER CODE END dmamux1 */
++};
++
++&mdma{
++	status = "okay";
++
++	/* USER CODE BEGIN mdma */
++	/* USER CODE END mdma */
++};
++
++&rcc{
++	status = "okay";
++
++	/* USER CODE BEGIN rcc */
++	/* USER CODE END rcc */
++};
++
++&rtc{
++	status = "okay";
++
++	/* USER CODE BEGIN rtc */
++	/* USER CODE END rtc */
++};
++
++&sdmmc1{
++	pinctrl-names = "default", "opendrain", "sleep";
++	pinctrl-0 = <&sdmmc1_pins_mx>;
++	pinctrl-1 = <&sdmmc1_opendrain_pins_mx>;
++	pinctrl-2 = <&sdmmc1_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN sdmmc1 */
++	broken-cd;
++	disable-wp;
++	st,neg-edge;
++	bus-width = <4>;
++	//vmmc-supply = <&scmi_vdd_sd>;
++	vmmc-supply = <&v3v3_ao>;
++	/* USER CODE END sdmmc1 */
++};
++
++&sdmmc2{
++	pinctrl-names = "default", "opendrain", "sleep";
++	pinctrl-0 = <&sdmmc2_pins_mx>;
++	pinctrl-1 = <&sdmmc2_opendrain_pins_mx>;
++	pinctrl-2 = <&sdmmc2_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN sdmmc2 */
++	non-removable;
++	st,neg-edge;
++	bus-width = <8>;
++	vmmc-supply = <&v3v3_ao>;
++	/* USER CODE END sdmmc2 */
++};
++
++&uart4{
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&uart4_pins_mx>;
++	pinctrl-1 = <&uart4_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN uart4 */
++	/* USER CODE END uart4 */
++};
++
++/* USER CODE BEGIN addons */
++&scmi_regu {
++	scmi_vddcpu: voltd-vddcpu {
++		voltd-name = "vddcpu";
++		regulator-name = "vddcpu";
++	};
++	scmi_vdd: voltd-vdd {
++		voltd-name = "vdd";
++		regulator-name = "vdd";
++	};
++	scmi_vddcore: voltd-vddcore {
++		voltd-name = "vddcore";
++		regulator-name = "vddcore";
++	};
++	scmi_vdd_adc: voltd-vdd_adc {
++		voltd-name = "vdd_adc";
++		regulator-name = "vdd_adc";
++	};
++	scmi_vdd_usb: voltd-vdd_usb {
++		voltd-name = "vdd_usb";
++		regulator-name = "vdd_usb";
++	};
++	scmi_vdd_sd: voltd-vdd_sd {
++		voltd-name = "vdd_sd";
++		regulator-name = "vdd_sd";
++	};
++	scmi_v1v8_periph: voltd-v1v8_periph {
++		voltd-name = "v1v8_periph";
++		regulator-name = "v1v8_periph";
++	};
++	scmi_v3v3_sw: voltd-v3v3_sw {
++		voltd-name = "v3v3_sw";
++		regulator-name = "v3v3_sw";
++	};
++};
++/* USER CODE END addons */

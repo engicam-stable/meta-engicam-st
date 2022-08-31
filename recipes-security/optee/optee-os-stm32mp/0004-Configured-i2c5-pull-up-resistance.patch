@@ -1,0 +1,27 @@
+From 28393abc115622f2c404fa452318a666c57eb106 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Wed, 10 Aug 2022 16:41:53 +0200
+Subject: [PATCH] Configured i2c5 pull up resistance
+
+---
+ core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts b/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
+index 3237eac5..3f055f92 100644
+--- a/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
++++ b/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
+@@ -116,7 +116,7 @@
+ 		pins {
+ 			pinmux = <STM32_PINMUX('D', 1, AF4)>, /* I2C5_SCL */
+ 					 <STM32_PINMUX('H', 6, AF4)>; /* I2C5_SDA */
+-			bias-disable;
++			bias-pull-up;
+ 			drive-open-drain;
+ 			slew-rate = <0>;
+ 		};
+@@ -607,3 +607,4 @@
+ 	};
+ };
+ /* USER CODE END addons */
++

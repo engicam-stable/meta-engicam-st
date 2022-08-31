@@ -1,0 +1,96 @@
+From 6facb3bd75a83e78a0d6a1c9f74f19051704c556 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Wed, 27 Jul 2022 11:08:48 +0200
+Subject: [PATCH] stm32mp135 gea - Enabled connectivity peripherals
+
+---
+ fdts/stm32mp135d-gea-starterkit-mx.dts | 33 ++++++++++++++++++++++----
+ 1 file changed, 29 insertions(+), 4 deletions(-)
+
+diff --git a/fdts/stm32mp135d-gea-starterkit-mx.dts b/fdts/stm32mp135d-gea-starterkit-mx.dts
+index 66cccfbbc..5a064fe1a 100644
+--- a/fdts/stm32mp135d-gea-starterkit-mx.dts
++++ b/fdts/stm32mp135d-gea-starterkit-mx.dts
+@@ -113,13 +113,13 @@
+ 					 <STM32_PINMUX('C', 10, AF12)>, /* SDMMC1_D2 */
+ 					 <STM32_PINMUX('C', 11, AF12)>, /* SDMMC1_D3 */
+ 					 <STM32_PINMUX('D', 2, AF12)>; /* SDMMC1_CMD */
+-			bias-disable;
++			bias-pull-up;
+ 			drive-push-pull;
+ 			slew-rate = <1>;
+ 		};
+ 		pins2 {
+ 			pinmux = <STM32_PINMUX('C', 12, AF12)>; /* SDMMC1_CK */
+-			bias-disable;
++			bias-pull-up;
+ 			drive-push-pull;
+ 			slew-rate = <3>;
+ 		};
+@@ -132,13 +132,13 @@
+ 					 <STM32_PINMUX('B', 14, AF10)>, /* SDMMC2_D0 */
+ 					 <STM32_PINMUX('B', 15, AF10)>, /* SDMMC2_D1 */
+ 					 <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
+-			bias-disable;
++			bias-pull-up;
+ 			drive-push-pull;
+ 			slew-rate = <1>;
+ 		};
+ 		pins2 {
+ 			pinmux = <STM32_PINMUX('E', 3, AF10)>; /* SDMMC2_CK */
+-			bias-disable;
++			bias-pull-up;
+ 			drive-push-pull;
+ 			slew-rate = <3>;
+ 		};
+@@ -289,11 +289,18 @@
+ 		CLK_MCO1_DISABLED
+ 		CLK_MCO2_DISABLED
+ 		CLK_CKPER_DISABLED
++		CLK_ETH1_PLL3Q
++		CLK_ETH2_PLL3Q
+ 		CLK_SDMMC1_HCLK6
+ 		CLK_SDMMC2_HCLK6
+ 		CLK_STGEN_HSI
++		CLK_USBPHY_HSE
++		CLK_USBO_USBPHY
+ 		CLK_I2C5_PCLK6
++		CLK_UART2_PCLK6
+ 		CLK_UART4_PCLK1
++		CLK_UART78_PCLK1
++		CLK_FDCAN_HSE
+ 		CLK_RNG1_CSI
+ 	>;
+ 	st,clkdiv = <
+@@ -319,6 +326,10 @@
+ 			src = < CLK_PLL12_HSE >;
+ 			divmn = < 2 64 >;
+ 		};
++		pll3_vco_600Mhz_mx: pll3-vco-600Mhz-mx {
++			src = < CLK_PLL3_HSE >;
++			divmn = < 1 49 >;
++		};
+ 
+ 		/* USER CODE BEGIN rcc_st-pll_vco */
+ 		/* USER CODE END rcc_st-pll_vco */
+@@ -352,6 +363,20 @@
+ 		/* USER CODE END pll2 */
+ 	};
+ 
++	pll3:st,pll@2 {
++		compatible = "st,stm32mp1-pll";
++		reg = <2>;
++
++		st,pll = < &pll3_cfg1 >;
++
++		pll3_cfg1: pll3_cfg1 {
++			st,pll_vco = < &pll3_vco_600Mhz_mx >;
++			st,pll_div_pqr = < 1 11 1 >;
++		};
++		/* USER CODE BEGIN pll3 */
++		/* USER CODE END pll3 */
++	};
++
+ 	st,clk_opp {
+ 		/* CK_MPU clock config for MP13 */
+ 		st,ck_mpu {

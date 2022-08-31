@@ -1,0 +1,93 @@
+From 132187d8d763729cfae6747ac9d38170e745b628 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Wed, 10 Aug 2022 16:47:39 +0200
+Subject: [PATCH] stm32mp135 gea on starterkit - Ported eMMC
+
+---
+ .../arm/dts/stm32mp135d-gea-starterkit-mx.dts | 25 ++++++++++++++++++-
+ .../dts/stm32mp135d-gea-starterkit-mx.dts.bak |  5 ----
+ 2 files changed, 24 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts b/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
+index 90cba58572..40ccb553f8 100644
+--- a/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
++++ b/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
+@@ -399,6 +399,15 @@
+ 			slew-rate = <1>;
+ 		};
+ 		pins2 {
++			pinmux = <STM32_PINMUX('B', 9, AF10)>, /* SDMMC2_D5 */
++					 <STM32_PINMUX('C', 6, AF10)>, /* SDMMC2_D6 */
++					 <STM32_PINMUX('C', 7, AF10)>, /* SDMMC2_D7 */
++					 <STM32_PINMUX('F', 0, AF10)>; /* SDMMC2_D4 */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins3 {
+ 			pinmux = <STM32_PINMUX('E', 3, AF10)>; /* SDMMC2_CK */
+ 			bias-pull-up;
+ 			drive-push-pull;
+@@ -417,12 +426,21 @@
+ 			slew-rate = <1>;
+ 		};
+ 		pins2 {
++			pinmux = <STM32_PINMUX('B', 9, AF10)>, /* SDMMC2_D5 */
++					 <STM32_PINMUX('C', 6, AF10)>, /* SDMMC2_D6 */
++					 <STM32_PINMUX('C', 7, AF10)>, /* SDMMC2_D7 */
++					 <STM32_PINMUX('F', 0, AF10)>; /* SDMMC2_D4 */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins3 {
+ 			pinmux = <STM32_PINMUX('E', 3, AF10)>; /* SDMMC2_CK */
+ 			bias-pull-up;
+ 			drive-push-pull;
+ 			slew-rate = <3>;
+ 		};
+-		pins3 {
++		pins4 {
+ 			pinmux = <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
+ 			bias-pull-up;
+ 			drive-open-drain;
+@@ -434,9 +452,13 @@
+ 		pins {
+ 			pinmux = <STM32_PINMUX('B', 3, ANALOG)>, /* SDMMC2_D2 */
+ 					 <STM32_PINMUX('B', 4, ANALOG)>, /* SDMMC2_D3 */
++					 <STM32_PINMUX('B', 9, ANALOG)>, /* SDMMC2_D5 */
+ 					 <STM32_PINMUX('B', 14, ANALOG)>, /* SDMMC2_D0 */
+ 					 <STM32_PINMUX('B', 15, ANALOG)>, /* SDMMC2_D1 */
++					 <STM32_PINMUX('C', 6, ANALOG)>, /* SDMMC2_D6 */
++					 <STM32_PINMUX('C', 7, ANALOG)>, /* SDMMC2_D7 */
+ 					 <STM32_PINMUX('E', 3, ANALOG)>, /* SDMMC2_CK */
++					 <STM32_PINMUX('F', 0, ANALOG)>, /* SDMMC2_D4 */
+ 					 <STM32_PINMUX('G', 6, ANALOG)>; /* SDMMC2_CMD */
+ 		};
+ 	};
+@@ -839,3 +861,4 @@
+ 	};
+ };
+ /* USER CODE END addons */
++
+diff --git a/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts.bak b/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts.bak
+index 89652cf2e4..90cba58572 100644
+--- a/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts.bak
++++ b/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts.bak
+@@ -92,11 +92,7 @@
+ 	};
+ 
+ 	panel_rgb: panel-rgb {
+-	//compatible = "ampire,am800480r3tmqwa1h";
+-	//compatible = "ampire,am-800480stmqw-t00h", "panel-dpi";
+-	//compatible = "auo,b101aw03";
+ 	compatible = "panel-dpi";
+-	//enable-gpios = <&gpioi 7 GPIO_ACTIVE_HIGH>;
+ 	backlight = <&panel_backlight>;
+ 	power-supply = <&scmi_v3v3_sw>;
+ 	data-mapping = "bgr666";
+@@ -843,4 +839,3 @@
+ 	};
+ };
+ /* USER CODE END addons */
+-

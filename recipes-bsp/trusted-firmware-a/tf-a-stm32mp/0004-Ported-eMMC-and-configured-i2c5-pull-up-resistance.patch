@@ -1,0 +1,38 @@
+From 040c44975a079b7165e1591c39c584f70923eb77 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Wed, 10 Aug 2022 16:40:14 +0200
+Subject: [PATCH] Ported eMMC and configured i2c5 pull up resistance
+
+---
+ fdts/stm32mp135d-gea-starterkit-mx.dts | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/fdts/stm32mp135d-gea-starterkit-mx.dts b/fdts/stm32mp135d-gea-starterkit-mx.dts
+index a0d718b9e..56e286d1e 100644
+--- a/fdts/stm32mp135d-gea-starterkit-mx.dts
++++ b/fdts/stm32mp135d-gea-starterkit-mx.dts
+@@ -100,7 +100,7 @@
+ 		pins {
+ 			pinmux = <STM32_PINMUX('D', 1, AF4)>, /* I2C5_SCL */
+ 					 <STM32_PINMUX('H', 6, AF4)>; /* I2C5_SDA */
+-			bias-disable;
++			bias-pull-up;
+ 			drive-open-drain;
+ 			slew-rate = <0>;
+ 		};
+@@ -137,6 +137,15 @@
+ 			slew-rate = <1>;
+ 		};
+ 		pins2 {
++			pinmux = <STM32_PINMUX('B', 9, AF10)>, /* SDMMC2_D5 */
++					 <STM32_PINMUX('C', 6, AF10)>, /* SDMMC2_D6 */
++					 <STM32_PINMUX('C', 7, AF10)>, /* SDMMC2_D7 */
++					 <STM32_PINMUX('F', 0, AF10)>; /* SDMMC2_D4 */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins3 {
+ 			pinmux = <STM32_PINMUX('E', 3, AF10)>; /* SDMMC2_CK */
+ 			bias-pull-up;
+ 			drive-push-pull;

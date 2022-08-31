@@ -1,0 +1,54 @@
+From e6ad7e1837907b55e8f6c582246b0b7c366fcb0e Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Fri, 29 Jul 2022 16:52:33 +0200
+Subject: [PATCH] stm32mp135 gea on starterkit - Enabled parallel display and
+ touchscreen
+
+---
+ fdts/stm32mp135d-gea-starterkit-mx.dts | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/fdts/stm32mp135d-gea-starterkit-mx.dts b/fdts/stm32mp135d-gea-starterkit-mx.dts
+index 5a064fe1a..a0d718b9e 100644
+--- a/fdts/stm32mp135d-gea-starterkit-mx.dts
++++ b/fdts/stm32mp135d-gea-starterkit-mx.dts
+@@ -296,6 +296,7 @@
+ 		CLK_STGEN_HSI
+ 		CLK_USBPHY_HSE
+ 		CLK_USBO_USBPHY
++		CLK_I2C12_PCLK1
+ 		CLK_I2C5_PCLK6
+ 		CLK_UART2_PCLK6
+ 		CLK_UART4_PCLK1
+@@ -330,6 +331,10 @@
+ 			src = < CLK_PLL3_HSE >;
+ 			divmn = < 1 49 >;
+ 		};
++		pll4_vco_600Mhz_mx: pll4-vco-600Mhz-mx {
++			src = < CLK_PLL4_HSE >;
++			divmn = < 1 49 >;
++		};
+ 
+ 		/* USER CODE BEGIN rcc_st-pll_vco */
+ 		/* USER CODE END rcc_st-pll_vco */
+@@ -377,6 +382,20 @@
+ 		/* USER CODE END pll3 */
+ 	};
+ 
++	pll4:st,pll@3 {
++		compatible = "st,stm32mp1-pll";
++		reg = <3>;
++
++		st,pll = < &pll4_cfg1 >;
++
++		pll4_cfg1: pll4_cfg1 {
++			st,pll_vco = < &pll4_vco_600Mhz_mx >;
++			st,pll_div_pqr = < 0 59 5 >;
++		};
++		/* USER CODE BEGIN pll4 */
++		/* USER CODE END pll4 */
++	};
++
+ 	st,clk_opp {
+ 		/* CK_MPU clock config for MP13 */
+ 		st,ck_mpu {

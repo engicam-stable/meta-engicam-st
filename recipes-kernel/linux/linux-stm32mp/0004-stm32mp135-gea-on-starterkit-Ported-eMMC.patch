@@ -1,0 +1,66 @@
+From ebfc7b88574e6ca58695fda1d1849dbf96814b81 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Wed, 10 Aug 2022 16:51:58 +0200
+Subject: [PATCH] stm32mp135 gea on starterkit - Ported eMMC
+
+---
+ .../dts/stm32mp135d-gea-starterkit-mx.dts     | 24 ++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
+index 765706c99..6590e674a 100644
+--- a/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
++++ b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
+@@ -399,6 +399,15 @@
+ 			slew-rate = <1>;
+ 		};
+ 		pins2 {
++			pinmux = <STM32_PINMUX('B', 9, AF10)>, /* SDMMC2_D5 */
++					 <STM32_PINMUX('C', 6, AF10)>, /* SDMMC2_D6 */
++					 <STM32_PINMUX('C', 7, AF10)>, /* SDMMC2_D7 */
++					 <STM32_PINMUX('F', 0, AF10)>; /* SDMMC2_D4 */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins3 {
+ 			pinmux = <STM32_PINMUX('E', 3, AF10)>; /* SDMMC2_CK */
+ 			bias-pull-up;
+ 			drive-push-pull;
+@@ -417,12 +426,21 @@
+ 			slew-rate = <1>;
+ 		};
+ 		pins2 {
++			pinmux = <STM32_PINMUX('B', 9, AF10)>, /* SDMMC2_D5 */
++					 <STM32_PINMUX('C', 6, AF10)>, /* SDMMC2_D6 */
++					 <STM32_PINMUX('C', 7, AF10)>, /* SDMMC2_D7 */
++					 <STM32_PINMUX('F', 0, AF10)>; /* SDMMC2_D4 */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins3 {
+ 			pinmux = <STM32_PINMUX('E', 3, AF10)>; /* SDMMC2_CK */
+ 			bias-pull-up;
+ 			drive-push-pull;
+ 			slew-rate = <3>;
+ 		};
+-		pins3 {
++		pins4 {
+ 			pinmux = <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
+ 			bias-pull-up;
+ 			drive-open-drain;
+@@ -434,9 +452,13 @@
+ 		pins {
+ 			pinmux = <STM32_PINMUX('B', 3, ANALOG)>, /* SDMMC2_D2 */
+ 					 <STM32_PINMUX('B', 4, ANALOG)>, /* SDMMC2_D3 */
++					 <STM32_PINMUX('B', 9, ANALOG)>, /* SDMMC2_D5 */
+ 					 <STM32_PINMUX('B', 14, ANALOG)>, /* SDMMC2_D0 */
+ 					 <STM32_PINMUX('B', 15, ANALOG)>, /* SDMMC2_D1 */
++					 <STM32_PINMUX('C', 6, ANALOG)>, /* SDMMC2_D6 */
++					 <STM32_PINMUX('C', 7, ANALOG)>, /* SDMMC2_D7 */
+ 					 <STM32_PINMUX('E', 3, ANALOG)>, /* SDMMC2_CK */
++					 <STM32_PINMUX('F', 0, ANALOG)>, /* SDMMC2_D4 */
+ 					 <STM32_PINMUX('G', 6, ANALOG)>; /* SDMMC2_CMD */
+ 		};
+ 	};

@@ -1,0 +1,451 @@
+From 551169ffd9b14067ef7949fb36f6c41bf67c5b93 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Fri, 29 Jul 2022 16:55:45 +0200
+Subject: [PATCH] stm32mp135 gea on starterkit - Enabled parallel display and
+ touchscreen
+
+---
+ .../arm/dts/stm32mp135d-gea-starterkit-mx.dts | 157 +++++++++++++++-
+ .../dts/stm32mp135d-gea-starterkit-mx.dts.bak | 175 +++++++++++++++++-
+ 2 files changed, 329 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts b/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
+index 1f0cb483ff..90cba58572 100644
+--- a/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
++++ b/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
+@@ -82,6 +82,48 @@
+ 		regulator-max-microvolt = <3300000>;
+ 		regulator-always-on;
+ 	};
++
++	panel_backlight: panel-backlight {
++		compatible = "gpio-backlight";
++		gpios = <&gpioe 12 GPIO_ACTIVE_HIGH>;
++		default-on;
++		default-brightness-level = <0>;
++		status = "okay";
++	};
++
++	panel_rgb: panel-rgb {
++	compatible = "panel-dpi";
++	backlight = <&panel_backlight>;
++	power-supply = <&scmi_v3v3_sw>;
++	data-mapping = "bgr666";
++
++	status = "okay";
++
++	port {
++		panel_in_rgb: endpoint {
++			remote-endpoint = <&ltdc_out_rgb>;
++		};
++	};
++
++	panel-timing {
++		clock-frequency = <28000000>;
++		hactive = <800>;
++		vactive = <480>;
++		hfront-porch = <30>;
++		hback-porch = <30>;
++		hsync-len = <64>;
++		vsync-len = <20>;
++		vfront-porch = <5>;
++		vback-porch = <5>;
++
++
++		hsync-active = <0>;
++		vsync-active = <0>;
++		de-active = <1>;
++		pixelclk-active = <0>;
++	};
++
++};
+ 	/* USER CODE END root */
+ 
+ 	clocks {
+@@ -212,6 +254,85 @@
+ 		};
+ 	};
+ 
++	i2c1_pins_mx: i2c1_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('D', 3, AF5)>, /* I2C1_SDA */
++					 <STM32_PINMUX('D', 12, AF5)>; /* I2C1_SCL */
++			bias-disable;
++			drive-open-drain;
++			slew-rate = <0>;
++		};
++	};
++
++	i2c1_sleep_pins_mx: i2c1_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('D', 3, ANALOG)>, /* I2C1_SDA */
++					 <STM32_PINMUX('D', 12, ANALOG)>; /* I2C1_SCL */
++		};
++	};
++
++	ltdc_pins_mx: ltdc_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('A', 8, AF14)>, /* LTDC_B7 */
++					 <STM32_PINMUX('A', 9, AF14)>, /* LTDC_R6 */
++					 <STM32_PINMUX('B', 6, AF7)>, /* LTDC_B6 */
++					 <STM32_PINMUX('B', 12, AF13)>, /* LTDC_R3 */
++					 <STM32_PINMUX('D', 5, AF14)>, /* LTDC_G4 */
++					 <STM32_PINMUX('D', 10, AF14)>, /* LTDC_B2 */
++					 <STM32_PINMUX('D', 11, AF11)>, /* LTDC_R7 */
++					 <STM32_PINMUX('D', 14, AF14)>, /* LTDC_R4 */
++					 <STM32_PINMUX('E', 0, AF14)>, /* LTDC_B5 */
++					 <STM32_PINMUX('E', 4, AF14)>, /* LTDC_G7 */
++					 <STM32_PINMUX('E', 7, AF14)>, /* LTDC_R5 */
++					 <STM32_PINMUX('E', 9, AF11)>, /* LTDC_HSYNC */
++					 <STM32_PINMUX('F', 2, AF14)>, /* LTDC_B3 */
++					 <STM32_PINMUX('F', 3, AF14)>, /* LTDC_G3 */
++					 <STM32_PINMUX('G', 0, AF14)>, /* LTDC_G5 */
++					 <STM32_PINMUX('G', 4, AF11)>, /* LTDC_VSYNC */
++					 <STM32_PINMUX('H', 8, AF14)>, /* LTDC_R2 */
++					 <STM32_PINMUX('H', 9, AF11)>, /* LTDC_DE */
++					 <STM32_PINMUX('H', 11, AF14)>, /* LTDC_G6 */
++					 <STM32_PINMUX('H', 13, AF14)>, /* LTDC_G2 */
++					 <STM32_PINMUX('H', 14, AF11)>; /* LTDC_B4 */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('D', 9, AF13)>; /* LTDC_CLK */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++	};
++
++	ltdc_sleep_pins_mx: ltdc_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('A', 8, ANALOG)>, /* LTDC_B7 */
++					 <STM32_PINMUX('A', 9, ANALOG)>, /* LTDC_R6 */
++					 <STM32_PINMUX('B', 6, ANALOG)>, /* LTDC_B6 */
++					 <STM32_PINMUX('B', 12, ANALOG)>, /* LTDC_R3 */
++					 <STM32_PINMUX('D', 5, ANALOG)>, /* LTDC_G4 */
++					 <STM32_PINMUX('D', 9, ANALOG)>, /* LTDC_CLK */
++					 <STM32_PINMUX('D', 10, ANALOG)>, /* LTDC_B2 */
++					 <STM32_PINMUX('D', 11, ANALOG)>, /* LTDC_R7 */
++					 <STM32_PINMUX('D', 14, ANALOG)>, /* LTDC_R4 */
++					 <STM32_PINMUX('E', 0, ANALOG)>, /* LTDC_B5 */
++					 <STM32_PINMUX('E', 4, ANALOG)>, /* LTDC_G7 */
++					 <STM32_PINMUX('E', 7, ANALOG)>, /* LTDC_R5 */
++					 <STM32_PINMUX('E', 9, ANALOG)>, /* LTDC_HSYNC */
++					 <STM32_PINMUX('F', 2, ANALOG)>, /* LTDC_B3 */
++					 <STM32_PINMUX('F', 3, ANALOG)>, /* LTDC_G3 */
++					 <STM32_PINMUX('G', 0, ANALOG)>, /* LTDC_G5 */
++					 <STM32_PINMUX('G', 4, ANALOG)>, /* LTDC_VSYNC */
++					 <STM32_PINMUX('H', 8, ANALOG)>, /* LTDC_R2 */
++					 <STM32_PINMUX('H', 9, ANALOG)>, /* LTDC_DE */
++					 <STM32_PINMUX('H', 11, ANALOG)>, /* LTDC_G6 */
++					 <STM32_PINMUX('H', 13, ANALOG)>, /* LTDC_G2 */
++					 <STM32_PINMUX('H', 14, ANALOG)>; /* LTDC_B4 */
++		};
++	};
++
+ 	sdmmc1_pins_mx: sdmmc1_mx-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('C', 8, AF12)>, /* SDMMC1_D0 */
+@@ -490,6 +611,39 @@
+ 	/* USER CODE END eth2 */
+ };
+ 
++&i2c1{
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&i2c1_pins_mx>;
++	pinctrl-1 = <&i2c1_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN i2c1 */
++	polytouch: st1232_ts@55 {
++		compatible = "sitronix,st1633-ts";
++		reg = <0x55>;
++		//pinctrl-names = "default";
++		//pinctrl-0 = <&pinctrl_st1232_ts>;
++		interrupt-parent = <&gpioi>;
++		interrupts = <2 IRQ_TYPE_EDGE_RISING>;
++	};
++	/* USER CODE END i2c1 */
++};
++
++&ltdc{
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&ltdc_pins_mx>;
++	pinctrl-1 = <&ltdc_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN ltdc */
++	port {
++		ltdc_out_rgb: endpoint {
++			remote-endpoint = <&panel_in_rgb>;
++		};
++	};
++	/* USER CODE END ltdc */
++};
++
+ &m_can1{
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&fdcan1_pins_mx>;
+@@ -616,6 +770,8 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN usbotg_hs */
++	phys = <&usbphyc_port1 0>;
++	phy-names = "usb2-phy";
+ 	/* USER CODE END usbotg_hs */
+ };
+ 
+@@ -683,4 +839,3 @@
+ 	};
+ };
+ /* USER CODE END addons */
+-
+diff --git a/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts.bak b/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts.bak
+index 0304089614..89652cf2e4 100644
+--- a/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts.bak
++++ b/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts.bak
+@@ -82,6 +82,52 @@
+ 		regulator-max-microvolt = <3300000>;
+ 		regulator-always-on;
+ 	};
++
++	panel_backlight: panel-backlight {
++		compatible = "gpio-backlight";
++		gpios = <&gpioe 12 GPIO_ACTIVE_HIGH>;
++		default-on;
++		default-brightness-level = <0>;
++		status = "okay";
++	};
++
++	panel_rgb: panel-rgb {
++	//compatible = "ampire,am800480r3tmqwa1h";
++	//compatible = "ampire,am-800480stmqw-t00h", "panel-dpi";
++	//compatible = "auo,b101aw03";
++	compatible = "panel-dpi";
++	//enable-gpios = <&gpioi 7 GPIO_ACTIVE_HIGH>;
++	backlight = <&panel_backlight>;
++	power-supply = <&scmi_v3v3_sw>;
++	data-mapping = "bgr666";
++
++	status = "okay";
++
++	port {
++		panel_in_rgb: endpoint {
++			remote-endpoint = <&ltdc_out_rgb>;
++		};
++	};
++
++	panel-timing {
++		clock-frequency = <28000000>;
++		hactive = <800>;
++		vactive = <480>;
++		hfront-porch = <30>;
++		hback-porch = <30>;
++		hsync-len = <64>;
++		vsync-len = <20>;
++		vfront-porch = <5>;
++		vback-porch = <5>;
++
++
++		hsync-active = <0>;
++		vsync-active = <0>;
++		de-active = <1>;
++		pixelclk-active = <0>;
++	};
++
++};
+ 	/* USER CODE END root */
+ 
+ 	clocks {
+@@ -212,6 +258,85 @@
+ 		};
+ 	};
+ 
++	i2c1_pins_mx: i2c1_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('D', 3, AF5)>, /* I2C1_SDA */
++					 <STM32_PINMUX('D', 12, AF5)>; /* I2C1_SCL */
++			bias-disable;
++			drive-open-drain;
++			slew-rate = <0>;
++		};
++	};
++
++	i2c1_sleep_pins_mx: i2c1_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('D', 3, ANALOG)>, /* I2C1_SDA */
++					 <STM32_PINMUX('D', 12, ANALOG)>; /* I2C1_SCL */
++		};
++	};
++
++	ltdc_pins_mx: ltdc_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('A', 8, AF14)>, /* LTDC_B7 */
++					 <STM32_PINMUX('A', 9, AF14)>, /* LTDC_R6 */
++					 <STM32_PINMUX('B', 6, AF7)>, /* LTDC_B6 */
++					 <STM32_PINMUX('B', 12, AF13)>, /* LTDC_R3 */
++					 <STM32_PINMUX('D', 5, AF14)>, /* LTDC_G4 */
++					 <STM32_PINMUX('D', 10, AF14)>, /* LTDC_B2 */
++					 <STM32_PINMUX('D', 11, AF11)>, /* LTDC_R7 */
++					 <STM32_PINMUX('D', 14, AF14)>, /* LTDC_R4 */
++					 <STM32_PINMUX('E', 0, AF14)>, /* LTDC_B5 */
++					 <STM32_PINMUX('E', 4, AF14)>, /* LTDC_G7 */
++					 <STM32_PINMUX('E', 7, AF14)>, /* LTDC_R5 */
++					 <STM32_PINMUX('E', 9, AF11)>, /* LTDC_HSYNC */
++					 <STM32_PINMUX('F', 2, AF14)>, /* LTDC_B3 */
++					 <STM32_PINMUX('F', 3, AF14)>, /* LTDC_G3 */
++					 <STM32_PINMUX('G', 0, AF14)>, /* LTDC_G5 */
++					 <STM32_PINMUX('G', 4, AF11)>, /* LTDC_VSYNC */
++					 <STM32_PINMUX('H', 8, AF14)>, /* LTDC_R2 */
++					 <STM32_PINMUX('H', 9, AF11)>, /* LTDC_DE */
++					 <STM32_PINMUX('H', 11, AF14)>, /* LTDC_G6 */
++					 <STM32_PINMUX('H', 13, AF14)>, /* LTDC_G2 */
++					 <STM32_PINMUX('H', 14, AF11)>; /* LTDC_B4 */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('D', 9, AF13)>; /* LTDC_CLK */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++	};
++
++	ltdc_sleep_pins_mx: ltdc_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('A', 8, ANALOG)>, /* LTDC_B7 */
++					 <STM32_PINMUX('A', 9, ANALOG)>, /* LTDC_R6 */
++					 <STM32_PINMUX('B', 6, ANALOG)>, /* LTDC_B6 */
++					 <STM32_PINMUX('B', 12, ANALOG)>, /* LTDC_R3 */
++					 <STM32_PINMUX('D', 5, ANALOG)>, /* LTDC_G4 */
++					 <STM32_PINMUX('D', 9, ANALOG)>, /* LTDC_CLK */
++					 <STM32_PINMUX('D', 10, ANALOG)>, /* LTDC_B2 */
++					 <STM32_PINMUX('D', 11, ANALOG)>, /* LTDC_R7 */
++					 <STM32_PINMUX('D', 14, ANALOG)>, /* LTDC_R4 */
++					 <STM32_PINMUX('E', 0, ANALOG)>, /* LTDC_B5 */
++					 <STM32_PINMUX('E', 4, ANALOG)>, /* LTDC_G7 */
++					 <STM32_PINMUX('E', 7, ANALOG)>, /* LTDC_R5 */
++					 <STM32_PINMUX('E', 9, ANALOG)>, /* LTDC_HSYNC */
++					 <STM32_PINMUX('F', 2, ANALOG)>, /* LTDC_B3 */
++					 <STM32_PINMUX('F', 3, ANALOG)>, /* LTDC_G3 */
++					 <STM32_PINMUX('G', 0, ANALOG)>, /* LTDC_G5 */
++					 <STM32_PINMUX('G', 4, ANALOG)>, /* LTDC_VSYNC */
++					 <STM32_PINMUX('H', 8, ANALOG)>, /* LTDC_R2 */
++					 <STM32_PINMUX('H', 9, ANALOG)>, /* LTDC_DE */
++					 <STM32_PINMUX('H', 11, ANALOG)>, /* LTDC_G6 */
++					 <STM32_PINMUX('H', 13, ANALOG)>, /* LTDC_G2 */
++					 <STM32_PINMUX('H', 14, ANALOG)>; /* LTDC_B4 */
++		};
++	};
++
+ 	sdmmc1_pins_mx: sdmmc1_mx-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('C', 8, AF12)>, /* SDMMC1_D0 */
+@@ -384,13 +509,15 @@
+ 
+ 	usb_otg_hs_pins_mx: usb_otg_hs_mx-0 {
+ 		pins {
+-			pinmux = <STM32_PINMUX('A', 10, ANALOG)>; /* USB_OTG_HS_ID */
++			pinmux = <STM32_PINMUX('A', 10, ANALOG)>, /* USB_OTG_HS_ID */
++					 <STM32_PINMUX('I', 7, ANALOG)>; /* USB_OTG_HS_VBUS */
+ 		};
+ 	};
+ 
+ 	usb_otg_hs_sleep_pins_mx: usb_otg_hs_sleep_mx-0 {
+ 		pins {
+-			pinmux = <STM32_PINMUX('A', 10, ANALOG)>; /* USB_OTG_HS_ID */
++			pinmux = <STM32_PINMUX('A', 10, ANALOG)>, /* USB_OTG_HS_ID */
++					 <STM32_PINMUX('I', 7, ANALOG)>; /* USB_OTG_HS_VBUS */
+ 		};
+ 	};
+ 
+@@ -488,6 +615,39 @@
+ 	/* USER CODE END eth2 */
+ };
+ 
++&i2c1{
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&i2c1_pins_mx>;
++	pinctrl-1 = <&i2c1_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN i2c1 */
++	polytouch: st1232_ts@55 {
++		compatible = "sitronix,st1633-ts";
++		reg = <0x55>;
++		//pinctrl-names = "default";
++		//pinctrl-0 = <&pinctrl_st1232_ts>;
++		interrupt-parent = <&gpioi>;
++		interrupts = <2 IRQ_TYPE_EDGE_RISING>;
++	};
++	/* USER CODE END i2c1 */
++};
++
++&ltdc{
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&ltdc_pins_mx>;
++	pinctrl-1 = <&ltdc_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN ltdc */
++	port {
++		ltdc_out_rgb: endpoint {
++			remote-endpoint = <&panel_in_rgb>;
++		};
++	};
++	/* USER CODE END ltdc */
++};
++
+ &m_can1{
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&fdcan1_pins_mx>;
+@@ -595,6 +755,7 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN usbh_ehci */
++	phys = <&usbphyc_port0>;
+ 	/* USER CODE END usbh_ehci */
+ };
+ 
+@@ -602,6 +763,7 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN usbh_ohci */
++	phys = <&usbphyc_port0>;
+ 	/* USER CODE END usbh_ohci */
+ };
+ 
+@@ -612,6 +774,8 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN usbotg_hs */
++	phys = <&usbphyc_port1 0>;
++	phy-names = "usb2-phy";
+ 	/* USER CODE END usbotg_hs */
+ };
+ 
+@@ -626,6 +790,12 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN usbphyc_port0 */
++	phy-supply = <&scmi_vdd_usb>;
++
++	connector {
++		compatible = "usb-a-connector";
++		vbus-supply = <&scmi_v3v3_sw>;
++	};
+ 	/* USER CODE END usbphyc_port0 */
+ };
+ 
+@@ -633,6 +803,7 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN usbphyc_port1 */
++	phy-supply = <&scmi_vdd_usb>;
+ 	/* USER CODE END usbphyc_port1 */
+ };
+ 
