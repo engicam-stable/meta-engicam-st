@@ -9,7 +9,7 @@ SRC_URI = "file://emmc_tools.sh \
 	   file://gpt-emmc \
 	   file://LICENSE "
 
-RDEPENDS_${PN} += "bash dosfstools e2fsprogs pv"
+RDEPENDS:${PN} += "bash dosfstools e2fsprogs pv"
 
 do_install () {
 	install -d ${D}${bindir}
@@ -17,6 +17,7 @@ do_install () {
 	install -d ${D}${datadir}/${PN}
 	install -m 0755 ${WORKDIR}/emmc_tools.sh ${D}${bindir}/emmc_tools.sh
 	ln -sf emmc_tools.sh ${D}${bindir}/emmc_tfa.sh
+	ln -sf emmc_tools.sh ${D}${bindir}/emmc_tfa_metadata.sh
 	ln -sf emmc_tools.sh ${D}${bindir}/emmc_fip.sh
 	ln -sf emmc_tools.sh ${D}${bindir}/emmc_bootfs_fs.sh
 	ln -sf emmc_tools.sh ${D}${bindir}/emmc_rootfs.sh
