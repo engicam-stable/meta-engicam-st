@@ -1,0 +1,38 @@
+From 4cc5972afda1aa6be00c664711e2276e6a14975e Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Mon, 7 Nov 2022 15:51:02 +0100
+Subject: [PATCH] stm32mp135 ugea Fixed usart2 pinmux on microdev2.0
+
+---
+ arch/arm/boot/dts/stm32mp135d-microgea-microdev-mx.dts | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp135d-microgea-microdev-mx.dts b/arch/arm/boot/dts/stm32mp135d-microgea-microdev-mx.dts
+index 0b80acae6..53239d67f 100644
+--- a/arch/arm/boot/dts/stm32mp135d-microgea-microdev-mx.dts
++++ b/arch/arm/boot/dts/stm32mp135d-microgea-microdev-mx.dts
+@@ -445,12 +445,12 @@
+ 
+ 	usart2_pins_mx: usart2_mx-0 {
+ 		pins1 {
+-			pinmux = <STM32_PINMUX('D', 3, AF3)>, /* USART2_CTS */
+-					 <STM32_PINMUX('D', 15, AF1)>; /* USART2_RX */
++			pinmux = <STM32_PINMUX('D', 15, AF1)>; /* USART2_RX */
+ 			bias-disable;
+ 		};
+ 		pins2 {
+-			pinmux = <STM32_PINMUX('H', 12, AF1)>; /* USART2_TX */
++			pinmux = <STM32_PINMUX('D', 4, AF3)>, /* USART2_DE */
++					 <STM32_PINMUX('H', 12, AF1)>; /* USART2_TX */
+ 			bias-disable;
+ 			drive-push-pull;
+ 			slew-rate = <0>;
+@@ -459,7 +459,7 @@
+ 
+ 	usart2_sleep_pins_mx: usart2_sleep_mx-0 {
+ 		pins {
+-			pinmux = <STM32_PINMUX('D', 3, ANALOG)>, /* USART2_CTS */
++			pinmux = <STM32_PINMUX('D', 4, ANALOG)>, /* USART2_DE */
+ 					 <STM32_PINMUX('D', 15, ANALOG)>, /* USART2_RX */
+ 					 <STM32_PINMUX('H', 12, ANALOG)>; /* USART2_TX */
+ 		};
