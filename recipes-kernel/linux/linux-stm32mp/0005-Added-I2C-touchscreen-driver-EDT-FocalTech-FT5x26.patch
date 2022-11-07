@@ -14,7 +14,7 @@ diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconf
 index cc18f54ea..d68af9968 100644
 --- a/drivers/input/touchscreen/Kconfig
 +++ b/drivers/input/touchscreen/Kconfig
-@@ -710,6 +710,19 @@ config TOUCHSCREEN_EDT_FT5X06
+@@ -731,6 +731,19 @@ config TOUCHSCREEN_EDT_FT5X06
  	  To compile this driver as a module, choose M here: the
  	  module will be called edt-ft5x06.
  
@@ -38,14 +38,14 @@ diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Make
 index 6233541e9..8be01f2c3 100644
 --- a/drivers/input/touchscreen/Makefile
 +++ b/drivers/input/touchscreen/Makefile
-@@ -34,6 +34,7 @@ obj-$(CONFIG_TOUCHSCREEN_DA9034)	+= da9034-ts.o
+@@ -32,6 +32,7 @@ obj-$(CONFIG_TOUCHSCREEN_DA9034)	+= da9034-ts.o
  obj-$(CONFIG_TOUCHSCREEN_DA9052)	+= da9052_tsi.o
  obj-$(CONFIG_TOUCHSCREEN_DYNAPRO)	+= dynapro.o
  obj-$(CONFIG_TOUCHSCREEN_EDT_FT5X06)	+= edt-ft5x06.o
 +obj-$(CONFIG_TOUCHSCREEN_EDT_FT5X26)	+= edt-ft5x26.o
  obj-$(CONFIG_TOUCHSCREEN_HAMPSHIRE)	+= hampshire.o
+ obj-$(CONFIG_TOUCHSCREEN_HYCON_HY46XX)	+= hycon-hy46xx.o
  obj-$(CONFIG_TOUCHSCREEN_GUNZE)		+= gunze.o
- obj-$(CONFIG_TOUCHSCREEN_EETI)		+= eeti_ts.o
 diff --git a/drivers/input/touchscreen/edt-ft5x26.c b/drivers/input/touchscreen/edt-ft5x26.c
 new file mode 100644
 index 000000000..b9c233936
