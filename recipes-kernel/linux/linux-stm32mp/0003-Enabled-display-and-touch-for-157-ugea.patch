@@ -1,0 +1,90 @@
+From 6b1d02f86ced41a940f2b6943d56b414d988eca1 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Fri, 20 Jan 2023 17:53:25 +0100
+Subject: [PATCH] Enabled display and touch for 157 ugea
+
+---
+ .../boot/dts/stm32mp157a-ugea-microdev-mx.dts | 34 +++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts b/arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts
+index dd00cae3e..12740153d 100644
+--- a/arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts
+@@ -284,13 +284,23 @@
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('B', 8, AF14)>, /* LTDC_B6 */
+ 					 <STM32_PINMUX('D', 9, AF14)>, /* LTDC_B0 */
++					 <STM32_PINMUX('D', 10, AF14)>, /* LTDC_B3 */
+ 					 <STM32_PINMUX('E', 5, AF14)>, /* LTDC_G0 */
++					 <STM32_PINMUX('E', 6, AF14)>, /* LTDC_G1 */
++					 <STM32_PINMUX('E', 13, AF14)>, /* LTDC_DE */
+ 					 <STM32_PINMUX('E', 15, AF14)>, /* LTDC_R7 */
+ 					 <STM32_PINMUX('G', 10, AF14)>, /* LTDC_B2 */
++					 <STM32_PINMUX('G', 12, AF14)>, /* LTDC_B1 */
++					 <STM32_PINMUX('H', 2, AF14)>, /* LTDC_R0 */
+ 					 <STM32_PINMUX('H', 3, AF14)>, /* LTDC_R1 */
++					 <STM32_PINMUX('H', 8, AF14)>, /* LTDC_R2 */
++					 <STM32_PINMUX('H', 9, AF14)>, /* LTDC_R3 */
++					 <STM32_PINMUX('H', 10, AF14)>, /* LTDC_R4 */
+ 					 <STM32_PINMUX('H', 11, AF14)>, /* LTDC_R5 */
+ 					 <STM32_PINMUX('H', 12, AF14)>, /* LTDC_R6 */
++					 <STM32_PINMUX('H', 13, AF14)>, /* LTDC_G2 */
+ 					 <STM32_PINMUX('H', 14, AF14)>, /* LTDC_G3 */
++					 <STM32_PINMUX('H', 15, AF14)>, /* LTDC_G4 */
+ 					 <STM32_PINMUX('I', 0, AF14)>, /* LTDC_G5 */
+ 					 <STM32_PINMUX('I', 1, AF14)>, /* LTDC_G6 */
+ 					 <STM32_PINMUX('I', 2, AF14)>, /* LTDC_G7 */
+@@ -314,14 +324,24 @@
+ 		pins {
+ 			pinmux = <STM32_PINMUX('B', 8, ANALOG)>, /* LTDC_B6 */
+ 					 <STM32_PINMUX('D', 9, ANALOG)>, /* LTDC_B0 */
++					 <STM32_PINMUX('D', 10, ANALOG)>, /* LTDC_B3 */
+ 					 <STM32_PINMUX('E', 5, ANALOG)>, /* LTDC_G0 */
++					 <STM32_PINMUX('E', 6, ANALOG)>, /* LTDC_G1 */
++					 <STM32_PINMUX('E', 13, ANALOG)>, /* LTDC_DE */
+ 					 <STM32_PINMUX('E', 15, ANALOG)>, /* LTDC_R7 */
+ 					 <STM32_PINMUX('G', 7, ANALOG)>, /* LTDC_CLK */
+ 					 <STM32_PINMUX('G', 10, ANALOG)>, /* LTDC_B2 */
++					 <STM32_PINMUX('G', 12, ANALOG)>, /* LTDC_B1 */
++					 <STM32_PINMUX('H', 2, ANALOG)>, /* LTDC_R0 */
+ 					 <STM32_PINMUX('H', 3, ANALOG)>, /* LTDC_R1 */
++					 <STM32_PINMUX('H', 8, ANALOG)>, /* LTDC_R2 */
++					 <STM32_PINMUX('H', 9, ANALOG)>, /* LTDC_R3 */
++					 <STM32_PINMUX('H', 10, ANALOG)>, /* LTDC_R4 */
+ 					 <STM32_PINMUX('H', 11, ANALOG)>, /* LTDC_R5 */
+ 					 <STM32_PINMUX('H', 12, ANALOG)>, /* LTDC_R6 */
++					 <STM32_PINMUX('H', 13, ANALOG)>, /* LTDC_G2 */
+ 					 <STM32_PINMUX('H', 14, ANALOG)>, /* LTDC_G3 */
++					 <STM32_PINMUX('H', 15, ANALOG)>, /* LTDC_G4 */
+ 					 <STM32_PINMUX('I', 0, ANALOG)>, /* LTDC_G5 */
+ 					 <STM32_PINMUX('I', 1, ANALOG)>, /* LTDC_G6 */
+ 					 <STM32_PINMUX('I', 2, ANALOG)>, /* LTDC_G7 */
+@@ -565,6 +585,12 @@
+ 			slew-rate = <0>;
+ 		};
+ 	};
++
++	pinctrl_edt_ft5x26: pinctrl_edt_ft5x26-0 {
++		pins {
++			pinmux = <STM32_PINMUX('B', 3, GPIO)>;
++		};
++	};
+ 	/* USER CODE END pinctrl */
+ };
+ 
+@@ -758,6 +784,14 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN i2c2 */
++	polytouch: edt-ft5x26@38 {
++		compatible = "edt,edt-ft5526";
++		reg = <0x38>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_edt_ft5x26>;
++		interrupt-parent = <&gpiob>;
++		interrupts = <3 IRQ_TYPE_EDGE_RISING>;
++	};
+ 	/* USER CODE END i2c2 */
+ };
+ 

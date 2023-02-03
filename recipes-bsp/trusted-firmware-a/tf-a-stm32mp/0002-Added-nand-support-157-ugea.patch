@@ -1,0 +1,32 @@
+From dce52c787ceffc4ee67e3968bc26d34100279485 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Mon, 30 Jan 2023 11:31:09 +0100
+Subject: [PATCH] Added nand support 157 ugea
+
+---
+ fdts/stm32mp157a-ugea-microdev-mx.dts | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/fdts/stm32mp157a-ugea-microdev-mx.dts b/fdts/stm32mp157a-ugea-microdev-mx.dts
+index 37a95f588..f294adb4f 100644
+--- a/fdts/stm32mp157a-ugea-microdev-mx.dts
++++ b/fdts/stm32mp157a-ugea-microdev-mx.dts
+@@ -224,6 +224,18 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN fmc */
++	
++	nand-controller@4,0 {
++			status = "okay";
++
++			nand@0 {
++					reg = <0>;
++					nand-on-flash-bbt;
++					#address-cells = <1>;
++					#size-cells = <1>;
++			};
++	};
++
+ 	/* USER CODE END fmc */
+ };
+ 

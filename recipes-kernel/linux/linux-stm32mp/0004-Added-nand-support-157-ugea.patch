@@ -1,0 +1,67 @@
+From f88044dcebe41cc98e59b7ce5eabdfb175cf249f Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Mon, 30 Jan 2023 11:34:54 +0100
+Subject: [PATCH] Added nand support 157 ugea
+
+---
+ .../boot/dts/stm32mp157a-ugea-microdev-mx.dts | 35 ++++++++++++++++---
+ 1 file changed, 30 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts b/arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts
+index 12740153d..54f79cdc4 100644
+--- a/arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts
+@@ -740,23 +740,48 @@
+ 				#size-cells = <1>;
+ 
+ 				partition@0 {
+-					label = "fsbl";
+-					reg = <0x00000000 0x200000>;
++					label = "fsbl1";
++					reg = <0x00000000 0x80000>;
++				};
++
++				partition@80000 {
++					label = "fsbl2";
++					reg = <0x80000 0x80000>;
++				};
++
++				partition@100000 {
++					label = "metadata1";
++					reg = <0x100000 0x80000>;
++				};
++
++				partition@180000 {
++					label = "metadata2";
++					reg = <0x180000 0x80000>;
+ 				};
+ 
+ 				partition@200000 {
+-					label = "fip1";
++					label = "fip-a1";
+ 					reg = <0x200000 0x400000>;
+ 				};
+ 
+ 				partition@600000 {
+-					label = "fip2";
++					label = "fip-a2";
+ 					reg = <0x600000 0x400000>;
+ 				};
+ 
+ 				partition@A00000 {
++					label = "fip-b1";
++					reg = <0xA00000 0x400000>;
++				};
++
++				partition@E00000 {
++					label = "fip-b2";
++					reg = <0xE00000 0x400000>;
++				};
++
++				partition@1200000 {
+ 					label = "UBI";
+-					reg = <0xA00000 0x1F600000>;
++					reg = <0x1200000 0x1EE00000>;
+ 				};
+ 		};
+ 	};	
