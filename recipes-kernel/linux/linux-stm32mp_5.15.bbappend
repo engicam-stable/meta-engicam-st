@@ -8,7 +8,8 @@ SRC_URI += "file://0001-Initial-commit-157-ugea.patch \
             file://0006-Initial-commit-157-icore.patch \
             file://0007-157-icore-Added-support-for-openframe-CTouch2.0.patch \
             file://0008-135-Gea-Added-support-for-EDIMM-1.0.patch \
-            file://0002-135-uGea-Added-support-for-microdev.patch \
+            file://0009-135-uGea-Added-support-for-microdev.patch \
+            file://0010-135-Gea-Updated-scmi_regu-node.patch \
             "
 
 SRC_URI += "file://${LINUX_VERSION}/fragment-07-engicam.config;subdir=fragments"

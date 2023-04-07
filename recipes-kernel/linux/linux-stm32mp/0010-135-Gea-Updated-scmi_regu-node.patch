@@ -1,0 +1,39 @@
+From c1158559854fd001a5ae36604f0cac4aa7de9e59 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Fri, 7 Apr 2023 15:30:14 +0200
+Subject: [PATCH] 135 Gea - Updated scmi_regu node
+
+---
+ .../arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
+index f754fc9d7..ea390fd5f 100644
+--- a/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
++++ b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
+@@ -839,22 +839,14 @@
+ 		voltd-name = "vddcore";
+ 		regulator-name = "vddcore";
+ 	};
+-	scmi_vdd_adc: voltd-vdd_adc {
+-		voltd-name = "vdd_adc";
+-		regulator-name = "vdd_adc";
++	scmi_v1v8_som: voltd-v1v8_som {
++		voltd-name = "v1v8_som";
++		regulator-name = "v1v8_som";
+ 	};
+ 	scmi_vdd_usb: voltd-vdd_usb {
+ 		voltd-name = "vdd_usb";
+ 		regulator-name = "vdd_usb";
+ 	};
+-	scmi_vdd_sd: voltd-vdd_sd {
+-		voltd-name = "vdd_sd";
+-		regulator-name = "vdd_sd";
+-	};
+-	scmi_v1v8_periph: voltd-v1v8_periph {
+-		voltd-name = "v1v8_periph";
+-		regulator-name = "v1v8_periph";
+-	};
+ 	scmi_v3v3_sw: voltd-v3v3_sw {
+ 		voltd-name = "v3v3_sw";
+ 		regulator-name = "v3v3_sw";

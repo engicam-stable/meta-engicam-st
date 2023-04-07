@@ -1,0 +1,121 @@
+From 1eaa2392f1020293792cf333d43eb0cbfde8a512 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Fri, 7 Apr 2023 15:28:18 +0200
+Subject: [PATCH] 135 Gea - Added v1v8 pmic regulator and disabled unused
+ regulators
+
+---
+ .../arm/dts/stm32mp135d-gea-starterkit-mx.dts | 65 +++++--------------
+ 1 file changed, 15 insertions(+), 50 deletions(-)
+
+diff --git a/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts b/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
+index cef97c0f..86fb0b34 100644
+--- a/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
++++ b/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
+@@ -199,10 +199,8 @@
+ 			buck2-supply = <&vin>;
+ 			buck3-supply = <&vin>;
+ 			buck4-supply = <&vin>;
+-			ldo1-supply = <&vin>;
++			ldo3-supply = <&v3v3_ao>;
+ 			ldo4-supply = <&vin>;
+-			ldo5-supply = <&vin>;
+-			ldo6-supply = <&vin>;
+ 			vref_ddr-supply = <&vin>;
+ 			pwr_sw1-supply = <&bst_out>;
+ 			pwr_sw2-supply = <&v3v3_ao>;
+@@ -273,25 +271,19 @@
+ 				};
+ 			};
+ 
+-			vdd_adc: ldo1 {
+-				regulator-name = "vdd_adc";
+-				regulator-min-microvolt = <3300000>;
+-				regulator-max-microvolt = <3300000>;
+-
+-				standby-ddr-sr {
+-					regulator-off-in-suspend;
+-				};
+-				standby-ddr-off {
+-					regulator-off-in-suspend;
+-				};
++			unused0: ldo1 {
++				regulator-name = "ldo1";
+ 			};
+ 
+ 			unused1: ldo2 {
+ 				regulator-name = "ldo2";
+ 			};
+ 
+-			unused2: ldo3 {
+-				regulator-name = "ldo3";
++			v1v8_som: ldo3 {
++				regulator-name = "v1v8_som";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
+ 			};
+ 
+ 			vdd_usb: ldo4 {
+@@ -307,31 +299,12 @@
+ 				};
+ 			};
+ 
+-			vdd_sd: ldo5 {
+-				regulator-name = "vdd_sd";
+-				regulator-min-microvolt = <3300000>;
+-				regulator-max-microvolt = <3300000>;
+-				regulator-boot-on;
+-
+-				standby-ddr-sr {
+-					regulator-off-in-suspend;
+-				};
+-				standby-ddr-off {
+-					regulator-off-in-suspend;
+-				};
++			unused2: ldo5 {
++				regulator-name = "ldo5";
+ 			};
+ 
+-			v1v8_periph: ldo6 {
+-				regulator-name = "v1v8_periph";
+-				regulator-min-microvolt = <1800000>;
+-				regulator-max-microvolt = <1800000>;
+-
+-				standby-ddr-sr {
+-					regulator-off-in-suspend;
+-				};
+-				standby-ddr-off {
+-					regulator-off-in-suspend;
+-				};
++			unused3: ldo6 {
++				regulator-name = "ldo6";
+ 			};
+ 
+ 			vref_ddr: vref_ddr {
+@@ -598,22 +571,14 @@
+ 		voltd-name = "vddcore";
+ 		regulator-name = "vddcore";
+ 	};
+-	scmi_vdd_adc: voltd-vdd_adc {
+-		voltd-name = "vdd_adc";
+-		regulator-name = "vdd_adc";
++	scmi_v1v8_som: voltd-v1v8_som {
++		voltd-name = "v1v8_som";
++		regulator-name = "v1v8_som";
+ 	};
+ 	scmi_vdd_usb: voltd-vdd_usb {
+ 		voltd-name = "vdd_usb";
+ 		regulator-name = "vdd_usb";
+ 	};
+-	scmi_vdd_sd: voltd-vdd_sd {
+-		voltd-name = "vdd_sd";
+-		regulator-name = "vdd_sd";
+-	};
+-	scmi_v1v8_periph: voltd-v1v8_periph {
+-		voltd-name = "v1v8_periph";
+-		regulator-name = "v1v8_periph";
+-	};
+ 	scmi_v3v3_sw: voltd-v3v3_sw {
+ 		voltd-name = "v3v3_sw";
+ 		regulator-name = "v3v3_sw";
