@@ -1,0 +1,25 @@
+From 8f5a1bcd9f7a85a43062abb710017653d83e2b56 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Wed, 19 Apr 2023 12:05:55 +0200
+Subject: [PATCH] vdd_usb regulator always on for u-boot usb enabling
+
+---
+ core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts b/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
+index 35941ecf..f31ad251 100644
+--- a/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
++++ b/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
+@@ -122,9 +122,11 @@
+ 	};
+ 
+ 	vdd_usb: vdd_usb {
++		compatible = "regulator-fixed";
+ 		regulator-name = "vdd_usb";
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
+ 	};
+ 
+ 	vdd_sd: ldo5 {
