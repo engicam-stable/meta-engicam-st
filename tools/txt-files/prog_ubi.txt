@@ -1,0 +1,19 @@
+setenv mtdids 'nand0=gpmi-nand'
+setenv mtdparts 'mtdparts=gpmi-nand:2m(fsbl),4m(fip1),4m(fip2),-(UBI)'
+setenv loadaddr '0xc0000000'
+
+
+#UBI:
+nand erase.part UBI       
+ubi part UBI
+ubi createvol uboot_config 0x00040000
+ubi createvol uboot_config_r 0x00040000
+ubi createvol boot 0x04240000
+ubi createvol rootfs
+tftp ${loadaddr} fs.bootfs.ubifs
+ubi write ${loadaddr} boot ${filesize}
+tftp ${loadaddr} fs.rootfs.ubifs
+ubi write ${loadaddr} rootfs ${filesize}
+
+
+
