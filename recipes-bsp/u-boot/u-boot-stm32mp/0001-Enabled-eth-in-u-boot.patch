@@ -1,0 +1,133 @@
+From 08681e98f715b722616be0c4030bb81bf08d6fde Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Fri, 26 May 2023 17:25:25 +0200
+Subject: [PATCH] Enabled eth in u-boot
+
+---
+ arch/arm/dts/stm32mp157a-ugea512-mx.dts | 21 +++++----------
+ board/st/stm32mp1/stm32mp1.c            | 34 +++++++++++++++++++++++++
+ configs/stm32mp15_trusted_defconfig     |  2 ++
+ 3 files changed, 42 insertions(+), 15 deletions(-)
+
+diff --git a/arch/arm/dts/stm32mp157a-ugea512-mx.dts b/arch/arm/dts/stm32mp157a-ugea512-mx.dts
+index 682c25d32b..a0d4dfc2f1 100644
+--- a/arch/arm/dts/stm32mp157a-ugea512-mx.dts
++++ b/arch/arm/dts/stm32mp157a-ugea512-mx.dts
+@@ -24,6 +24,10 @@
+ 	model = "STMicroelectronics custom STM32CubeMX board";
+ 	compatible = "st,stm32mp157a-ugea512-mx", "st,stm32mp157";
+ 
++	config {
++	    st,reset-phy-gpios = <&gpioa 13 GPIO_ACTIVE_LOW>;
++	};
++
+ 	memory@c0000000 {
+ 		device_type = "memory";
+ 		reg = <0xc0000000 0x20000000>;
+@@ -692,16 +696,6 @@
+ 
+ 	/* USER CODE BEGIN pinctrl */
+ 	
+-	eth_res: eth_res-0 {
+-		pins {
+-			pinmux = <STM32_PINMUX('A', 13, GPIO)>;
+-			bias-disable;
+-			drive-push-pull;
+-			output-high;
+-			slew-rate = <0>;
+-		};
+-	};
+-	
+ //	rtc_pins_mx: rtc_mx-0 {
+ //		pins {
+ //			pinmux = <STM32_PINMUX('I', 8, ANALOG)>; /* RTC_LSCO */
+@@ -809,12 +803,12 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN ethernet0 */
+-	pinctrl-0 = <&eth1_pins_mx &eth_res>;
++	pinctrl-0 = <&eth1_pins_mx>;
+ 	phy-mode = "rmii";
+ 	max-speed = <100>;
+ 	phy-handle = <&phy0>;
+ 	snps,ps-speed = <100>;
+-	st,eth-ref-clk-sel;
++	st,eth_ref_clk_sel;
+ 
+ 	clock-names = "stmmaceth",
+ 							"mac-clk-tx",
+@@ -834,9 +828,6 @@
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		compatible = "snps,dwmac-mdio";
+-		snps,reset-gpio = <&gpioa 13 0>;
+-		snps,reset-delays-us = <25>;
+-		snps,reset-active-low;
+ 
+ 		phy0: ethernet-phy-0 {
+ 			reg = <0>;
+diff --git a/board/st/stm32mp1/stm32mp1.c b/board/st/stm32mp1/stm32mp1.c
+index 9a02e14ba5..84c6d7aa34 100644
+--- a/board/st/stm32mp1/stm32mp1.c
++++ b/board/st/stm32mp1/stm32mp1.c
+@@ -729,6 +729,38 @@ void board_quiesce_devices(void)
+ 	setup_led(LEDST_OFF);
+ }
+ 
++int reset_eth_phy(void)
++{
++	ofnode node;
++	struct gpio_desc gpio;
++
++	node = ofnode_path("/config");
++	if (!ofnode_valid(node)) 
++	{
++		return -1;
++	}
++
++	if (gpio_request_by_name_nodev(node, "st,reset-phy-gpios", 0,
++						 &gpio, GPIOD_IS_OUT)) 
++	{
++		return -2;
++	}
++
++	if (dm_gpio_set_value(&gpio,1)) 
++	{
++		return -3;
++	}
++
++	udelay(20000);
++
++	if (dm_gpio_set_value(&gpio,0))
++	{
++		return -4;
++	}
++
++	return 0;
++}
++
+ /* eth init function : weak called in eqos driver */
+ int board_interface_eth_init(struct udevice *dev,
+ 			     phy_interface_t interface_type)
+@@ -750,6 +782,8 @@ int board_interface_eth_init(struct udevice *dev,
+ 	if (!syscfg)
+ 		return -ENODEV;
+ 
++	reset_eth_phy();
++	
+ 	switch (interface_type) {
+ 	case PHY_INTERFACE_MODE_MII:
+ 		value = SYSCFG_PMCSETR_ETH_SEL_GMII_MII |
+diff --git a/configs/stm32mp15_trusted_defconfig b/configs/stm32mp15_trusted_defconfig
+index 5b4cfc4ca3..515b1602a1 100644
+--- a/configs/stm32mp15_trusted_defconfig
++++ b/configs/stm32mp15_trusted_defconfig
+@@ -88,6 +88,8 @@ CONFIG_SPI_FLASH_WINBOND=y
+ CONFIG_SPI_FLASH_MTD=y
+ CONFIG_PHY_REALTEK=y
+ CONFIG_DM_ETH=y
++CONFIG_DM_MDIO=y
++CONFIG_NET_RANDOM_ETHADDR=y
+ CONFIG_DWC_ETH_QOS=y
+ CONFIG_PHY=y
+ CONFIG_PHY_STM32_USBPHYC=y
