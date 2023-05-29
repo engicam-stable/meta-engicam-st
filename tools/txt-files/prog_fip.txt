@@ -5,11 +5,11 @@ setenv loadaddr '0xc0000000'
 #fip1:
 tftp ${loadaddr} fip.bin
 nand erase 0x00200000 0x00400000
-nand write loadaddr 0x00200000 0x00400000
+nand write ${loadaddr} 0x00200000 0x00400000
 
 #fip2:
 nand erase 0x00600000 0x00400000
-nand write loadaddr 0x00600000 0x00400000
+nand write ${loadaddr} 0x00600000 0x00400000
 
 
 

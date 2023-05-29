@@ -5,7 +5,7 @@ setenv loadaddr '0xc0000000'
 #fsbl
 tftp ${loadaddr} tf-a-nand.stm32
 nand erase 0x00000000 0x00200000
-nand write loadaddr 0x0 0x00200000
+nand write ${loadaddr} 0x0 0x00200000
 
 
 
