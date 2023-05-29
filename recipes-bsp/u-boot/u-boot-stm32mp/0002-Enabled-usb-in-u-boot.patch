@@ -1,0 +1,29 @@
+From f2fc3722eac20e641d0ca5d97c24c4c02988f0d5 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Mon, 29 May 2023 09:27:13 +0200
+Subject: [PATCH] Enabled usb in u-boot
+
+---
+ arch/arm/dts/stm32mp157a-ugea512-mx.dts | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/dts/stm32mp157a-ugea512-mx.dts b/arch/arm/dts/stm32mp157a-ugea512-mx.dts
+index a0d4dfc2f1..b8744b9aad 100644
+--- a/arch/arm/dts/stm32mp157a-ugea512-mx.dts
++++ b/arch/arm/dts/stm32mp157a-ugea512-mx.dts
+@@ -1100,6 +1100,7 @@
+ 
+ 	/* USER CODE BEGIN usbphyc_port0 */
+ 	st,phy-tuning = <&usb_phy_tuning>;
++	phy-supply = <&vdd_usb>;
+ 	/* USER CODE END usbphyc_port0 */
+ };
+ 
+@@ -1108,6 +1109,7 @@
+ 
+ 	/* USER CODE BEGIN usbphyc_port1 */
+ 	st,phy-tuning = <&usb_phy_tuning>;
++	phy-supply = <&vdd_usb>;
+ 	/* USER CODE END usbphyc_port1 */
+ };
+ 
