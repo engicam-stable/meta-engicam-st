@@ -1,0 +1,53 @@
+From 0b33734513ea599b9452e4f648c282a3919c3d94 Mon Sep 17 00:00:00 2001
+From: Franesco Utel <francesco.utel@engicam.com>
+Date: Fri, 16 Jun 2023 15:55:41 +0200
+Subject: [PATCH] Enabled usb otg in u-boot
+
+---
+ arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts b/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
+index 894f9fb445..4fcb4ae78f 100644
+--- a/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
++++ b/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
+@@ -120,7 +120,7 @@
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
+ 		regulator-always-on;
+-	};	
++	};
+ 	/* USER CODE END root */
+ 
+ 	clocks {
+@@ -470,6 +470,18 @@
+ 		pins {
+ 			pinmux = <STM32_PINMUX('E', 2, GPIO)>;
+ 		};
++	};
++
++	usb_otg_hs_pins_mx: usb_otg_hs_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('A', 10, ANALOG)>; /* USB_OTG_HS_ID */
++		};
++	};
++
++	usb_otg_hs_sleep_pins_mx: usb_otg_hs_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('A', 10, ANALOG)>; /* USB_OTG_HS_ID */
++		};
+ 	};	
+ 	/* USER CODE END pinctrl */
+ };
+@@ -695,6 +707,11 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN usbotg_hs */
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&usb_otg_hs_pins_mx>;
++	pinctrl-1 = <&usb_otg_hs_sleep_pins_mx>;
++	phys = <&usbphyc_port1 0>;	/* 0: UTMI switch selects the OTG controller */
++	phy-names = "usb2-phy";
+ 	/* USER CODE END usbotg_hs */
+ };
+ 
