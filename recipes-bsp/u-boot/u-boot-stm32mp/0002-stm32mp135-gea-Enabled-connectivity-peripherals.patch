@@ -1,4 +1,4 @@
-From f743b47f38b32224817ed659b70314665f3314fd Mon Sep 17 00:00:00 2001
+From 5a101ec46252d4f6dd8e7f7427ae8857a298fc0e Mon Sep 17 00:00:00 2001
 From: Franesco Utel <francesco.utel@engicam.com>
 Date: Wed, 27 Jul 2022 11:11:26 +0200
 Subject: [PATCH] stm32mp135 gea - Enabled connectivity peripherals

@@ -1,4 +1,4 @@
-From 551169ffd9b14067ef7949fb36f6c41bf67c5b93 Mon Sep 17 00:00:00 2001
+From 234c91c12cad5357ad84b0a4a30aa008d5ee8c58 Mon Sep 17 00:00:00 2001
 From: Franesco Utel <francesco.utel@engicam.com>
 Date: Fri, 29 Jul 2022 16:55:45 +0200
 Subject: [PATCH] stm32mp135 gea on starterkit - Enabled parallel display and
