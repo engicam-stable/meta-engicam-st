@@ -1,4 +1,4 @@
-From 132187d8d763729cfae6747ac9d38170e745b628 Mon Sep 17 00:00:00 2001
+From aafd7b156dad9db43aa0774193ee552404c9c729 Mon Sep 17 00:00:00 2001
 From: Franesco Utel <francesco.utel@engicam.com>
 Date: Wed, 10 Aug 2022 16:47:39 +0200
 Subject: [PATCH] stm32mp135 gea on starterkit - Ported eMMC

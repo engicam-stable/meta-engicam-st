@@ -1,4 +1,4 @@
-From 8d23908422f9202a01faeab0f806778ce10f3961 Mon Sep 17 00:00:00 2001
+From 8467951986cfb6b740f44dc48c1b99c5cfa49b72 Mon Sep 17 00:00:00 2001
 From: Franesco Utel <francesco.utel@engicam.com>
 Date: Fri, 22 Jul 2022 17:14:42 +0200
 Subject: [PATCH] stm32mp135 gea - Basic porting
@@ -10,11 +10,11 @@ Subject: [PATCH] stm32mp135 gea - Basic porting
  create mode 100644 arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
 
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 09460432d..fe9f72c7a 100644
+index 1f07bf84c..c671ec315 100644
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -1154,6 +1154,7 @@ dtb-$(CONFIG_ARCH_STM32) += \
- 	stm32mp135d-dk-a7-examples.dtb \
+@@ -1155,6 +1155,7 @@ dtb-$(CONFIG_ARCH_STM32) += \
+ 	stm32h750i-art-pi.dtb \
  	stm32mp135f-dk.dtb \
  	stm32mp135f-dk-a7-examples.dtb \
 +	stm32mp135d-gea-starterkit-mx.dtb \
@@ -23,7 +23,7 @@ index 09460432d..fe9f72c7a 100644
  	stm32mp157a-dhcor-avenger96.dtb \
 diff --git a/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
 new file mode 100644
-index 000000000..a7401bac2
+index 000000000..7cfad4c49
 --- /dev/null
 +++ b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
 @@ -0,0 +1,354 @@

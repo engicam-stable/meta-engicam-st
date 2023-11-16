@@ -1,4 +1,4 @@
-From fe54090134ae6a76270325a954dd514685e9f48a Mon Sep 17 00:00:00 2001
+From 3df0d1cc2f9efb893058c26cbbc5872512edb77e Mon Sep 17 00:00:00 2001
 From: Franesco Utel <francesco.utel@engicam.com>
 Date: Wed, 27 Jul 2022 11:14:01 +0200
 Subject: [PATCH] stm32mp135 gea - Enabled connectivity peripherals
@@ -8,7 +8,7 @@ Subject: [PATCH] stm32mp135 gea - Enabled connectivity peripherals
  1 file changed, 336 insertions(+), 3 deletions(-)
 
 diff --git a/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
-index a7401bac2..0d193ead6 100644
+index 7cfad4c49..a2702e207 100644
 --- a/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
 +++ b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
 @@ -15,6 +15,10 @@
@@ -22,7 +22,7 @@ index a7401bac2..0d193ead6 100644
  /* USER CODE END includes */
  
  / {
-@@ -49,8 +53,8 @@
+@@ -49,8 +53,8 @@ optee@de000000 {
  
  	/* USER CODE BEGIN root */
  	aliases {
@@ -33,7 +33,7 @@ index a7401bac2..0d193ead6 100644
  		serial0 = &uart4;
  		serial1 = &uart8;
  		serial2 = &usart2;
-@@ -90,6 +94,124 @@
+@@ -90,6 +94,124 @@ clocks {
  
  &pinctrl {
  
@@ -158,7 +158,7 @@ index a7401bac2..0d193ead6 100644
  	sdmmc1_pins_mx: sdmmc1_mx-0 {
  		pins1 {
  			pinmux = <STM32_PINMUX('C', 8, AF12)>, /* SDMMC1_D0 */
-@@ -218,6 +340,62 @@
+@@ -218,6 +340,62 @@ pins {
  		};
  	};
  
@@ -221,7 +221,7 @@ index a7401bac2..0d193ead6 100644
  	/* USER CODE BEGIN pinctrl */
  	/* USER CODE END pinctrl */
  };
-@@ -253,6 +431,85 @@
+@@ -253,6 +431,85 @@ &dmamux1{
  	/* USER CODE END dmamux1 */
  };
  
@@ -307,7 +307,7 @@ index a7401bac2..0d193ead6 100644
  &mdma{
  	status = "okay";
  
-@@ -286,7 +543,6 @@
+@@ -286,7 +543,6 @@ &sdmmc1{
  	disable-wp;
  	st,neg-edge;
  	bus-width = <4>;
@@ -315,7 +315,7 @@ index a7401bac2..0d193ead6 100644
  	vmmc-supply = <&v3v3_ao>;
  	/* USER CODE END sdmmc1 */
  };
-@@ -316,6 +572,83 @@
+@@ -316,6 +572,83 @@ &uart4{
  	/* USER CODE END uart4 */
  };
  

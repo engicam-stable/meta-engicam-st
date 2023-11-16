@@ -1,4 +1,4 @@
-From ebfc7b88574e6ca58695fda1d1849dbf96814b81 Mon Sep 17 00:00:00 2001
+From 9f6a05037ef8bdb5a6b6ea720e255123e455f78b Mon Sep 17 00:00:00 2001
 From: Franesco Utel <francesco.utel@engicam.com>
 Date: Wed, 10 Aug 2022 16:51:58 +0200
 Subject: [PATCH] stm32mp135 gea on starterkit - Ported eMMC
@@ -8,10 +8,10 @@ Subject: [PATCH] stm32mp135 gea on starterkit - Ported eMMC
  1 file changed, 23 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
-index 765706c99..6590e674a 100644
+index f943f6d30..40ccb553f 100644
 --- a/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
 +++ b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
-@@ -399,6 +399,15 @@
+@@ -399,6 +399,15 @@ pins1 {
  			slew-rate = <1>;
  		};
  		pins2 {
@@ -27,7 +27,7 @@ index 765706c99..6590e674a 100644
  			pinmux = <STM32_PINMUX('E', 3, AF10)>; /* SDMMC2_CK */
  			bias-pull-up;
  			drive-push-pull;
-@@ -417,12 +426,21 @@
+@@ -417,12 +426,21 @@ pins1 {
  			slew-rate = <1>;
  		};
  		pins2 {
@@ -50,7 +50,7 @@ index 765706c99..6590e674a 100644
  			pinmux = <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
  			bias-pull-up;
  			drive-open-drain;
-@@ -434,9 +452,13 @@
+@@ -434,9 +452,13 @@ sdmmc2_sleep_pins_mx: sdmmc2_sleep_mx-0 {
  		pins {
  			pinmux = <STM32_PINMUX('B', 3, ANALOG)>, /* SDMMC2_D2 */
  					 <STM32_PINMUX('B', 4, ANALOG)>, /* SDMMC2_D3 */

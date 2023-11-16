@@ -1,4 +1,4 @@
-From 9df7c7d4cf48dc90397de9d0a7b261c4271f1348 Mon Sep 17 00:00:00 2001
+From a33e0d2e7bfd453ddc2639c3b39dc5505364bb36 Mon Sep 17 00:00:00 2001
 From: Franesco Utel <francesco.utel@engicam.com>
 Date: Fri, 29 Jul 2022 16:53:54 +0200
 Subject: [PATCH] stm32mp135 gea on starterkit - Enabled parallel display and
@@ -9,7 +9,7 @@ Subject: [PATCH] stm32mp135 gea on starterkit - Enabled parallel display and
  1 file changed, 20 insertions(+), 1 deletion(-)
 
 diff --git a/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts b/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
-index b3041448..3237eac5 100644
+index 570e947c5..990235865 100644
 --- a/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
 +++ b/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
 @@ -152,6 +152,7 @@

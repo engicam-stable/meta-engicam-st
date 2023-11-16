@@ -1,17 +1,17 @@
-From 77f79964d3f06cf477ac58ee65045e569f42c21b Mon Sep 17 00:00:00 2001
+From 4e21105ef6857837aa9ee3333216b6ccae8e6285 Mon Sep 17 00:00:00 2001
 From: Franesco Utel <francesco.utel@engicam.com>
 Date: Fri, 22 Jul 2022 17:14:20 +0200
 Subject: [PATCH] stm32mp135 gea - Basic porting
 
 ---
  .../arm/dts/stm32mp135d-gea-starterkit-mx.dts | 524 ++++++++++++++++++
- core/arch/arm/plat-stm32mp1/conf.mk           |   2 +
- 2 files changed, 526 insertions(+)
+ core/arch/arm/plat-stm32mp1/conf.mk           |   4 +-
+ 2 files changed, 527 insertions(+), 1 deletion(-)
  create mode 100644 core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
 
 diff --git a/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts b/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
 new file mode 100644
-index 00000000..6118bed5
+index 000000000..c40ab1629
 --- /dev/null
 +++ b/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
 @@ -0,0 +1,524 @@
@@ -540,22 +540,24 @@ index 00000000..6118bed5
 +};
 +/* USER CODE END addons */
 diff --git a/core/arch/arm/plat-stm32mp1/conf.mk b/core/arch/arm/plat-stm32mp1/conf.mk
-index 23e82adb..d3f79412 100644
+index 05229e61e..18be82d1e 100644
 --- a/core/arch/arm/plat-stm32mp1/conf.mk
 +++ b/core/arch/arm/plat-stm32mp1/conf.mk
-@@ -12,6 +12,7 @@ flavor_dts_file-157F_DK2 = stm32mp157f-dk2.dts
- flavor_dts_file-157F_ED1 = stm32mp157f-ed1.dts
- flavor_dts_file-157F_EV1 = stm32mp157f-ev1.dts
- flavor_dts_file-135D_DK = stm32mp135d-dk.dts
+@@ -6,6 +6,7 @@ flavor_dts_file-157C_DK2 = stm32mp157c-dk2.dts
+ flavor_dts_file-157C_ED1 = stm32mp157c-ed1.dts
+ flavor_dts_file-157C_EV1 = stm32mp157c-ev1.dts
+ flavor_dts_file-157D_DK1 = stm32mp157d-dk1.dts
 +flavor_dts_file-135D_EN_STARTERKIT = stm32mp135d-gea-starterkit-mx.dts
- flavor_dts_file-135F_DK = stm32mp135f-dk.dts
- 
- flavorlist-512M = $(flavor_dts_file-157A_DK1) \
-@@ -19,6 +20,7 @@ flavorlist-512M = $(flavor_dts_file-157A_DK1) \
+ flavor_dts_file-157D_ED1 = stm32mp157d-ed1.dts
+ flavor_dts_file-157D_EV1 = stm32mp157d-ev1.dts
+ flavor_dts_file-157F_DK2 = stm32mp157f-dk2.dts
+@@ -17,7 +18,8 @@ flavorlist-512M = $(flavor_dts_file-157A_DK1) \
+ 		  $(flavor_dts_file-157C_DK2) \
  		  $(flavor_dts_file-157D_DK1) \
  		  $(flavor_dts_file-157F_DK2) \
- 		  $(flavor_dts_file-135D_DK) \
-+			$(flavor_dts_file-135D_EN_STARTERKIT) \
- 		  $(flavor_dts_file-135F_DK)
+-		  $(flavor_dts_file-135F_DK)
++		  $(flavor_dts_file-135F_DK) \
++		  $(flavor_dts_file-135D_EN_STARTERKIT)
  
  flavorlist-1G = $(flavor_dts_file-157A_ED1) \
+ 		$(flavor_dts_file-157A_EV1) \

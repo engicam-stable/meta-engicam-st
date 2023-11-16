@@ -1,4 +1,4 @@
-From cc03e18972f8ba08c6eea1a11564b7c414607070 Mon Sep 17 00:00:00 2001
+From 38eb33802bdfaa5c401617e835794207fffecedc Mon Sep 17 00:00:00 2001
 From: frautel <francesco.utel@engicam.com>
 Date: Thu, 10 Feb 2022 14:24:28 +0100
 Subject: [PATCH] Added I2C touchscreen driver EDT FocalTech FT5x26
@@ -11,10 +11,10 @@ Subject: [PATCH] Added I2C touchscreen driver EDT FocalTech FT5x26
  create mode 100644 drivers/input/touchscreen/edt-ft5x26.c
 
 diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
-index cc18f54ea..d68af9968 100644
+index d4e74738c..f810f3e93 100644
 --- a/drivers/input/touchscreen/Kconfig
 +++ b/drivers/input/touchscreen/Kconfig
-@@ -731,6 +731,19 @@ config TOUCHSCREEN_EDT_FT5X06
+@@ -741,6 +741,19 @@ config TOUCHSCREEN_EDT_FT5X06
  	  To compile this driver as a module, choose M here: the
  	  module will be called edt-ft5x06.
  
@@ -35,10 +35,10 @@ index cc18f54ea..d68af9968 100644
  	tristate "Raspberry Pi's firmware base touch screen support"
  	depends on RASPBERRYPI_FIRMWARE || (RASPBERRYPI_FIRMWARE=n && COMPILE_TEST)
 diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
-index 6233541e9..8be01f2c3 100644
+index 7d34100f7..39e915107 100644
 --- a/drivers/input/touchscreen/Makefile
 +++ b/drivers/input/touchscreen/Makefile
-@@ -32,6 +32,7 @@ obj-$(CONFIG_TOUCHSCREEN_DA9034)	+= da9034-ts.o
+@@ -33,6 +33,7 @@ obj-$(CONFIG_TOUCHSCREEN_DA9034)	+= da9034-ts.o
  obj-$(CONFIG_TOUCHSCREEN_DA9052)	+= da9052_tsi.o
  obj-$(CONFIG_TOUCHSCREEN_DYNAPRO)	+= dynapro.o
  obj-$(CONFIG_TOUCHSCREEN_EDT_FT5X06)	+= edt-ft5x06.o

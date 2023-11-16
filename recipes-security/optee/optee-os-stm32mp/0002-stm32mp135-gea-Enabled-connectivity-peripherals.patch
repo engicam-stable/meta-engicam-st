@@ -1,4 +1,4 @@
-From 1470c92a6e9d0e4083c228b7338873a179c26656 Mon Sep 17 00:00:00 2001
+From f358336002ba115ce5f979fd8038cd6f13b24893 Mon Sep 17 00:00:00 2001
 From: Franesco Utel <francesco.utel@engicam.com>
 Date: Wed, 27 Jul 2022 11:10:15 +0200
 Subject: [PATCH] stm32mp135 gea - Enabled connectivity peripherals
@@ -8,7 +8,7 @@ Subject: [PATCH] stm32mp135 gea - Enabled connectivity peripherals
  1 file changed, 67 insertions(+), 1 deletion(-)
 
 diff --git a/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts b/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
-index 6118bed5..b3041448 100644
+index c40ab1629..570e947c5 100644
 --- a/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
 +++ b/core/arch/arm/dts/stm32mp135d-gea-starterkit-mx.dts
 @@ -150,8 +150,13 @@
