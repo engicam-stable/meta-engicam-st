@@ -1,4 +1,4 @@
-From aff389efb3f4e6844094c8a54d38c280b81e10ac Mon Sep 17 00:00:00 2001
+From ccfc5e63d8044cafc2276f81a95761eca6797ae0 Mon Sep 17 00:00:00 2001
 From: Franesco Utel <francesco.utel@engicam.com>
 Date: Tue, 4 Oct 2022 17:48:15 +0200
 Subject: [PATCH] stm32mp135-ugea-porting-on-microdev2.0
@@ -10,10 +10,10 @@ Subject: [PATCH] stm32mp135-ugea-porting-on-microdev2.0
  create mode 100644 arch/arm/boot/dts/stm32mp135d-microgea-microdev-mx.dts
 
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index fe9f72c7a..0ced9aaf0 100644
+index c671ec315..6aa05bbed 100644
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -1155,6 +1155,7 @@ dtb-$(CONFIG_ARCH_STM32) += \
+@@ -1156,6 +1156,7 @@ dtb-$(CONFIG_ARCH_STM32) += \
  	stm32mp135f-dk.dtb \
  	stm32mp135f-dk-a7-examples.dtb \
  	stm32mp135d-gea-starterkit-mx.dtb \
@@ -23,7 +23,7 @@ index fe9f72c7a..0ced9aaf0 100644
  	stm32mp157a-dhcor-avenger96.dtb \
 diff --git a/arch/arm/boot/dts/stm32mp135d-microgea-microdev-mx.dts b/arch/arm/boot/dts/stm32mp135d-microgea-microdev-mx.dts
 new file mode 100644
-index 000000000..8ac462d72
+index 000000000..0b80acae6
 --- /dev/null
 +++ b/arch/arm/boot/dts/stm32mp135d-microgea-microdev-mx.dts
 @@ -0,0 +1,731 @@
