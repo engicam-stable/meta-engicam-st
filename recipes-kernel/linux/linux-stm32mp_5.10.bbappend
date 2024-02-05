@@ -9,6 +9,8 @@ SRC_URI += "file://0001-add-edt-ft5x26-touch-screen-driver.patch \
             file://0001-Added-pwm-to-panel-backlight-for-brightness-level-co.patch \
             file://0001-Enabled-can-peripheral-on-Microdev-expander.patch \
             file://0001-Added-SIM7600G-modem-device-in-usb-serial-option-ker.patch \
+            file://0007-Added-device-tree-gpio-export-function.patch \
+            file://0008-157-ugea-Added-gpio-overvoltage-node.patch \
             "
 
 KERNEL_CONFIG_FRAGMENTS += "${WORKDIR}/fragments/${LINUX_VERSION}/fragment-06.config"
