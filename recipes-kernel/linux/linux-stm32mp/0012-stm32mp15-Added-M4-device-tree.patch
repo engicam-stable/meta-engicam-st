@@ -1,0 +1,132 @@
+From 1eec07b5d186afdb521fe973a1a5f9742387f114 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Mon, 6 May 2024 12:41:37 +0200
+Subject: [PATCH] stm32mp15: Added M4 device tree
+
+---
+ .../boot/dts/stm32mp157a-ugea-microdev-m4.dts | 115 ++++++++++++++++++
+ 1 file changed, 115 insertions(+)
+ create mode 100644 arch/arm/boot/dts/stm32mp157a-ugea-microdev-m4.dts
+
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugea-microdev-m4.dts b/arch/arm/boot/dts/stm32mp157a-ugea-microdev-m4.dts
+new file mode 100644
+index 000000000..864933769
+--- /dev/null
++++ b/arch/arm/boot/dts/stm32mp157a-ugea-microdev-m4.dts
+@@ -0,0 +1,115 @@
++/dts-v1/;
++
++#include "stm32mp157a-ugea-microdev-mx.dts"
++
++/ {
++		model = "Engicam MicroGEA STM32MP1 microdev, M4 examples";
++		compatible = "st,stm32mp157a-ugeast-mx", "st,stm32mp157";
++
++		reserved-memory {
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges;
++
++			mcuram2: mcuram2@10000000 {
++				compatible = "shared-dma-pool";
++				reg = <0x10000000 0x40000>;
++				no-map;
++			};
++
++			vdev0vring0: vdev0vring0@10040000 {
++				compatible = "shared-dma-pool";
++				reg = <0x10040000 0x1000>;
++				no-map;
++			};
++
++			vdev0vring1: vdev0vring1@10041000 {
++				compatible = "shared-dma-pool";
++				reg = <0x10041000 0x1000>;
++				no-map;
++			};
++
++			vdev0buffer: vdev0buffer@10042000 {
++				compatible = "shared-dma-pool";
++				reg = <0x10042000 0x4000>;
++				no-map;
++			};
++
++			mcu_rsc_table: mcu_rsc_table@10048000 {
++				compatible = "shared-dma-pool";
++				reg = <0x10048000 0x8000>;
++				no-map;
++			};
++
++			mcuram: mcuram@30000000 {
++				compatible = "shared-dma-pool";
++				reg = <0x30000000 0x40000>;
++				no-map;
++			};
++
++			retram: retram@38000000 {
++				compatible = "shared-dma-pool";
++				reg = <0x38000000 0x10000>;
++				no-map;
++			};
++
++			gpu_reserved: gpu@d4000000 {
++				reg = <0xd4000000 0x4000000>;
++				no-map;
++			};
++
++			optee@de000000 {
++				reg = <0xde000000 0x2000000>;
++				no-map;
++			};
++		};
++};
++
++&adc {
++	status = "disabled";
++};
++
++&dac {
++	status = "disabled";
++};
++
++&dma2 {
++	status = "disabled";
++};
++
++&timers1 {
++	status = "disabled";
++};
++
++&ipcc {
++	status = "okay";
++};
++
++&sram {
++	dma_pool: dma_pool@0 {
++		reg = <0x50000 0x10000>;
++		pool;
++	};
++};
++
++&dmamux1 {
++	dma-masters = <&dma1>;
++	dma-channels = <8>;
++};
++
++&m4_rproc {	
++	memory-region = <&retram>, <&mcuram>, <&mcuram2>, <&vdev0vring0>,
++			<&vdev0vring1>, <&vdev0buffer>;
++	mboxes = <&ipcc 0>, <&ipcc 1>, <&ipcc 2>;
++	mbox-names = "vq0", "vq1", "shutdown";
++	interrupt-parent = <&exti>;
++	interrupts = <68 1>;
++	wakeup-source;
++	status = "okay";
++	
++	m4_system_resources {
++		status = "okay";
++	};
++};
++ 
++/* USER CODE END addons */
+\ No newline at end of file
