@@ -12,6 +12,7 @@ SRC_URI += "file://0001-Initial-commit-157-ugea.patch \
             file://0010-135-Gea-Updated-scmi_regu-node.patch \
             file://0011-157-ugea-Added-support-for-YES10-display-on-Microdev.patch \
             file://0012-stm32mp15-Added-M4-device-tree.patch \
+            file://0013-135-ugea-Added-support-for-F-version.patch \
             "
 
 SRC_URI += "file://${LINUX_VERSION}/fragment-07-engicam.config;subdir=fragments"
