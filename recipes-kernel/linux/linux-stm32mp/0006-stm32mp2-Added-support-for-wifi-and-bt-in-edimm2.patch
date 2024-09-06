@@ -1,0 +1,133 @@
+From df33454133726112b51c71dbd9ce1e624431071f Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Wed, 4 Sep 2024 09:52:41 +0200
+Subject: [PATCH] stm32mp2 - Added support for wifi and bt in edimm2
+
+---
+ .../dts/st/stm32mp257f-icore-edimm2-mx.dts    | 99 +++++++++++++++++++
+ 1 file changed, 99 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts b/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
+index fde13c99a..53b6a8f32 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
+@@ -156,6 +156,24 @@ sound: sound {
+ 		dais = <&i2s2_port>;
+ 		status = "disabled";
+ 	};
++
++	wifi_pwrseq: wifi-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		reset-gpios = <&gpioc 11 1>;
++		startup-delay-us = <10000>;
++		enable-active-high;
++	};
++
++	bt_reg_on: regulator-bt-reg-on {
++		compatible = "regulator-fixed";
++		regulator-name = "BT_REG_ON";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&gpioi 2 GPIO_ACTIVE_HIGH>;
++		startup-delay-us = <100>;
++		enable-active-high;
++		regulator-always-on;
++	};
+ 	/* USER CODE END root */
+ 
+ 	clocks{
+@@ -410,6 +428,60 @@ pins {
+ 		};
+ 	};
+ 
++	sdmmc3_pins_mx: sdmmc3_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('B', 12, AF10)>, /* SDMMC3_D2 */
++					 <STM32_PINMUX('B', 14, AF10)>, /* SDMMC3_D0 */
++					 <STM32_PINMUX('D', 12, AF10)>, /* SDMMC3_CMD */
++					 <STM32_PINMUX('D', 13, AF10)>, /* SDMMC3_D1 */
++					 <STM32_PINMUX('D', 14, AF12)>; /* SDMMC3_D3 */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <2>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('B', 13, AF10)>; /* SDMMC3_CK */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <3>;
++		};
++	};
++
++	sdmmc3_opendrain_pins_mx: sdmmc3_opendrain_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('B', 12, AF10)>, /* SDMMC3_D2 */
++					 <STM32_PINMUX('B', 14, AF10)>, /* SDMMC3_D0 */
++					 <STM32_PINMUX('D', 13, AF10)>, /* SDMMC3_D1 */
++					 <STM32_PINMUX('D', 14, AF12)>; /* SDMMC3_D3 */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('B', 13, AF10)>; /* SDMMC3_CK */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <3>;
++		};
++		pins3 {
++			pinmux = <STM32_PINMUX('D', 12, AF10)>; /* SDMMC3_CMD */
++			bias-pull-up;
++			drive-open-drain;
++			slew-rate = <1>;
++		};
++	};
++
++	sdmmc3_sleep_pins_mx: sdmmc3_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('B', 12, ANALOG)>, /* SDMMC3_D2 */
++					 <STM32_PINMUX('B', 13, ANALOG)>, /* SDMMC3_CK */
++					 <STM32_PINMUX('B', 14, ANALOG)>, /* SDMMC3_D0 */
++					 <STM32_PINMUX('D', 12, ANALOG)>, /* SDMMC3_CMD */
++					 <STM32_PINMUX('D', 13, ANALOG)>, /* SDMMC3_D1 */
++					 <STM32_PINMUX('D', 14, ANALOG)>; /* SDMMC3_D3 */
++		};
++	};
++
+ 	tim8_pins_mx: tim8_mx-0 {
+ 		pins {
+ 			pinmux = <STM32_PINMUX('J', 4, AF8)>, /* TIM8_CH4 */
+@@ -971,6 +1043,33 @@ &sdmmc2{
+ 	/* USER CODE END sdmmc2 */
+ };
+ 
++&sdmmc3{
++	pinctrl-names = "default", "opendrain", "sleep";
++	pinctrl-0 = <&sdmmc3_pins_mx>;
++	pinctrl-1 = <&sdmmc3_opendrain_pins_mx>;
++	pinctrl-2 = <&sdmmc3_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN sdmmc3 */
++	non-removable;
++	st,neg-edge;
++	bus-width = <4>;
++	vmmc-supply = <&scmi_v3v3>;
++	mmc-pwrseq = <&wifi_pwrseq>;
++	status = "okay";
++
++	max-frequency = <25000000>;
++	u-boot,dm-pre-reloc;
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	brcmf: bcrmf@1 {
++		reg = <1>;
++		compatible = "brcm,bcm4329-fmac";		
++	};
++	/* USER CODE END sdmmc3 */
++};
++
+ &timers8{
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&tim8_pins_mx>;

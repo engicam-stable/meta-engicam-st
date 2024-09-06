@@ -1,0 +1,31 @@
+From 7fbccf8b1c82188a4461f9512923badf46012695 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Mon, 2 Sep 2024 14:34:23 +0200
+Subject: [PATCH] Fix edt-ft5x26 ts driver
+
+---
+ drivers/input/touchscreen/edt-ft5x26.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/input/touchscreen/edt-ft5x26.c b/drivers/input/touchscreen/edt-ft5x26.c
+index b9c233936..b9271d5e6 100644
+--- a/drivers/input/touchscreen/edt-ft5x26.c
++++ b/drivers/input/touchscreen/edt-ft5x26.c
+@@ -1102,14 +1102,14 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client,
+ 	return error;
+ }
+ 
+-static int edt_ft5x06_ts_remove(struct i2c_client *client)
++static void edt_ft5x06_ts_remove(struct i2c_client *client)
+ {
+ 	struct edt_ft5x06_ts_data *tsdata = i2c_get_clientdata(client);
+ 
+ 	edt_ft5x06_ts_teardown_debugfs(tsdata);
+-	sysfs_remove_group(&client->dev.kobj, &edt_ft5x06_attr_group);
++/*	sysfs_remove_group(&client->dev.kobj, &edt_ft5x06_attr_group);
+ 
+-	return 0;
++	return 0;*/
+ }
+ 
+ static int __maybe_unused edt_ft5x06_ts_suspend(struct device *dev)

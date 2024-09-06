@@ -1,0 +1,75 @@
+From 6c35ca1ba2df443d793899c50a43da4a8998b17b Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 30 Aug 2024 12:43:09 +0200
+Subject: [PATCH] stm32mp2 - Fixed sdmmc1 node pwr supply
+
+---
+ .../dts/st/stm32mp257f-icore-edimm2-mx.dts    | 24 +++++++++----------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts b/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
+index 25702bf10..0ef78a5e6 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
+@@ -524,13 +524,18 @@ pins {
+ 	};
+ 
+ 	usart6_pins_mx: usart6_mx-0 {
+-		pins {
++		pins1 {
+ 			pinmux = <STM32_PINMUX('C', 0, AF5)>, /* USART6_TX */
+ 					 <STM32_PINMUX('G', 5, AF3)>; /* USART6_DE */
+ 			bias-disable;
+ 			drive-push-pull;
+ 			slew-rate = <0>;
+ 		};
++		pins2 {
++			pinmux = <STM32_PINMUX('F', 14, AF3)>; /* USART6_RX */
++			bias-pull-up;
++			drive-push-pull;
++		};
+ 	};
+ 
+ 	usart6_idle_pins_mx: usart6_idle_mx-0 {
+@@ -538,6 +543,11 @@ pins1 {
+ 			pinmux = <STM32_PINMUX('C', 0, ANALOG)>; /* USART6_TX */
+ 		};
+ 		pins2 {
++			pinmux = <STM32_PINMUX('F', 14, AF3)>; /* USART6_RX */
++			bias-pull-up;
++			drive-push-pull;
++		};
++		pins3 {
+ 			pinmux = <STM32_PINMUX('G', 5, AF3)>; /* USART6_DE */
+ 			bias-disable;
+ 			drive-push-pull;
+@@ -963,7 +973,7 @@ &sdmmc1{
+ 	disable-wp;
+ 	st,neg-edge;
+ 	bus-width = <4>;
+-	vmmc-supply = <&scmi_vdd_sdcard>;
++	vmmc-supply = <&scmi_v3v3>;
+ 	vqmmc-supply = <&scmi_vddio1>;
+ 	sd-uhs-sdr12;
+ 	sd-uhs-sdr25;
+@@ -1259,20 +1269,10 @@ scmi_v3v3:regulator@16{
+ 		regulator-name = "v3v3";
+ 	};
+ 
+-	/*scmi_vdd_emmc:regulator@18{
+-		reg = <VOLTD_SCMI_STPMIC2_LDO2>;
+-		regulator-name = "vdd_emmc";
+-	};*/
+-
+ 	scmi_vdd3v3_usb:regulator@20{
+ 		reg = <VOLTD_SCMI_STPMIC2_LDO4>;
+ 		regulator-name = "vdd3v3_usb";
+ 	};
+-
+-	scmi_vdd_sdcard:regulator@23{
+-		reg = <VOLTD_SCMI_STPMIC2_LDO8>;
+-		regulator-name = "vdd_sdcard";
+-	};
+ };
+ /* USER CODE END addons */
+ 

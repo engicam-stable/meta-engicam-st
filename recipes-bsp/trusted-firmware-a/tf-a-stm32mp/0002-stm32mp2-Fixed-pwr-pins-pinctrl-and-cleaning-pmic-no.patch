@@ -1,0 +1,44 @@
+From 183bc44c887010e37dfc2bb3101806ca9586d545 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 30 Aug 2024 12:33:30 +0200
+Subject: [PATCH] stm32mp2 - Fixed pwr pins pinctrl and cleaning pmic node
+
+---
+ fdts/stm32mp257f-icore-edimm2-mx.dts | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/fdts/stm32mp257f-icore-edimm2-mx.dts b/fdts/stm32mp257f-icore-edimm2-mx.dts
+index e6515d5d5..f87dd021d 100644
+--- a/fdts/stm32mp257f-icore-edimm2-mx.dts
++++ b/fdts/stm32mp257f-icore-edimm2-mx.dts
+@@ -71,11 +71,7 @@
+ 
+ 	pwr_pins_mx: pwr_mx-0 {
+ 		pins {
+-			pinmux = <STM32_PINMUX('A', 0, ANALOG)>, /* PWR_WKUP1 */
+-					 <STM32_PINMUX('G', 1, ANALOG)>, /* PWR_WKUP3 */
+-					 <STM32_PINMUX('G', 2, ANALOG)>, /* PWR_WKUP5 */
+-					 <STM32_PINMUX('G', 3, ANALOG)>, /* PWR_WKUP6 */
+-					 <STM32_PINMUX('I', 6, ANALOG)>; /* PWR_WKUP4 */
++			pinmux = <STM32_PINMUX('A', 0, ANALOG)>; /* PWR_WKUP1 */
+ 		};
+ 	};
+ 
+@@ -255,7 +251,7 @@
+ 				regulator-always-on;
+ 			};
+ 
+-			vpp_ddr:ldo5{
++			/*vpp_ddr:ldo5{
+ 				regulator-name = "vpp_ddr";
+ 				regulator-min-microvolt = <2500000>;
+ 				regulator-max-microvolt = <2500000>;
+@@ -267,7 +263,7 @@
+ 				regulator-min-microvolt = <3300000>;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-always-on;
+-			};
++			};*/
+ 
+ 			vddio_sdcard:ldo8{
+ 				regulator-name = "vddio_sdcard";

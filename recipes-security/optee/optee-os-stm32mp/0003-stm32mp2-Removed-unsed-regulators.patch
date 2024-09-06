@@ -1,0 +1,79 @@
+From 5fc4c9691c1fe46027c7bf7a49b9cca89ecb376d Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 30 Aug 2024 12:35:30 +0200
+Subject: [PATCH] stm32mp2 - Removed unsed regulators
+
+---
+ .../arm/dts/stm32mp257f-icore-edimm2-mx.dts   | 48 -------------------
+ 1 file changed, 48 deletions(-)
+
+diff --git a/core/arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts b/core/arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts
+index b63c67473..8d277f774 100644
+--- a/core/arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts
++++ b/core/arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts
+@@ -367,44 +367,6 @@
+ 				regulator-over-current-protection;
+ 			};
+ 
+-			vpp_ddr:ldo5{
+-				regulator-name = "vpp_ddr";
+-				regulator-min-microvolt = <2500000>;
+-				regulator-max-microvolt = <2500000>;
+-				regulator-always-on;
+-				st,pwrctrl-sel = <1>;
+-				st,pwrctrl-enable;
+-
+-				default{
+-					regulator-on-in-suspend;
+-					regulator-suspend-microvolt = <2500000>;
+-				};
+-
+-				lplv{
+-					regulator-on-in-suspend;
+-					regulator-suspend-microvolt = <2500000>;
+-				};
+-
+-				standby{
+-					regulator-on-in-suspend;
+-					regulator-suspend-microvolt = <2500000>;
+-				};
+-
+-				off{
+-					regulator-off-in-suspend;
+-				};
+-			};
+-
+-			vdd_sdcard:ldo7{
+-				regulator-name = "vdd_sdcard";
+-				regulator-min-microvolt = <3300000>;
+-				regulator-max-microvolt = <3300000>;
+-				regulator-over-current-protection;
+-				st,regulator-bypass-microvolt = <3300000>;
+-				st,pwrctrl-sel = <3>;
+-				st,pwrctrl-reset;
+-			};
+-
+ 			vddio_sdcard:ldo8{
+ 				regulator-name = "vddio_sdcard";
+ 				regulator-min-microvolt = <1800000>;
+@@ -618,20 +580,10 @@
+ 		voltd-supply = <&v3v3>;
+ 	};
+ 
+-	/*scmi_vdd_emmc:voltd-vdd-emmc{
+-		reg = <VOLTD_SCMI_STPMIC2_LDO2>;
+-		voltd-supply = <&vdd_emmc>;
+-	};*/
+-
+ 	scmi_vdd3v3_usb:voltd-vdd3v3-usb{
+ 		reg = <VOLTD_SCMI_STPMIC2_LDO4>;
+ 		voltd-supply = <&vdd3v3_usb>;
+ 	};
+-
+-	scmi_vdd_sdcard:voltd-vdd_sdcard{
+-		reg = <VOLTD_SCMI_STPMIC2_LDO7>;
+-		voltd-supply = <&vdd_sdcard>;
+-	};
+ };
+ 
+ &tamp{

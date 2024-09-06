@@ -1,0 +1,206 @@
+From ab69f9826e383de44e13e8ec413427e6aa36d047 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Thu, 29 Aug 2024 17:55:27 +0200
+Subject: [PATCH] stm32mp2 - enabled usart1, usart6 and m_can1
+
+---
+ .../dts/st/stm32mp257f-icore-edimm2-mx.dts    | 137 +++++++++++++++++-
+ 1 file changed, 136 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts b/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
+index 2790cf5e7..25702bf10 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
+@@ -43,6 +43,7 @@ aliases{
+ 		serial0 = &usart2;
+ 		serial1 = &usart6;
+ 		serial2 = &lpuart1;
++		serial3 = &usart1;
+ 	};
+ 
+ 	chosen{
+@@ -251,6 +252,27 @@ pins {
+ 		};
+ 	};
+ 
++	fdcan1_pins_mx: fdcan1_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('B', 11, AF7)>; /* FDCAN1_RX */
++			bias-disable;
++			drive-push-pull;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('B', 9, AF7)>; /* FDCAN1_TX */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++	};
++
++	fdcan1_sleep_pins_mx: fdcan1_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('B', 9, ANALOG)>, /* FDCAN1_TX */
++					 <STM32_PINMUX('B', 11, ANALOG)>; /* FDCAN1_RX */
++		};
++	};
++
+ 	i2c1_pins_mx: i2c1_mx-0 {
+ 		pins {
+ 			pinmux = <STM32_PINMUX('G', 13, AF9)>, /* I2C1_SCL */
+@@ -437,6 +459,38 @@ pins {
+ 		};
+ 	};
+ 
++	usart1_pins_mx: usart1_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('B', 10, AF6)>; /* USART1_RX */
++			bias-disable;
++			drive-push-pull;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('B', 8, AF6)>; /* USART1_TX */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++	};
++
++	usart1_idle_pins_mx: usart1_idle_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('B', 10, AF6)>; /* USART1_RX */
++			bias-disable;
++			drive-push-pull;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('B', 8, ANALOG)>; /* USART1_TX */
++		};
++	};
++
++	usart1_sleep_pins_mx: usart1_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('B', 8, ANALOG)>, /* USART1_TX */
++					 <STM32_PINMUX('B', 10, ANALOG)>; /* USART1_RX */
++		};
++	};
++
+ 	usart2_pins_mx: usart2_mx-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('A', 4, AF6)>; /* USART2_TX */
+@@ -469,6 +523,36 @@ pins {
+ 		};
+ 	};
+ 
++	usart6_pins_mx: usart6_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('C', 0, AF5)>, /* USART6_TX */
++					 <STM32_PINMUX('G', 5, AF3)>; /* USART6_DE */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++	};
++
++	usart6_idle_pins_mx: usart6_idle_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('C', 0, ANALOG)>; /* USART6_TX */
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('G', 5, AF3)>; /* USART6_DE */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++	};
++
++	usart6_sleep_pins_mx: usart6_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('C', 0, ANALOG)>, /* USART6_TX */
++					 <STM32_PINMUX('F', 14, ANALOG)>, /* USART6_RX */
++					 <STM32_PINMUX('G', 5, ANALOG)>; /* USART6_DE */
++		};
++	};
++
+ 	/* USER CODE BEGIN pinctrl */
+ 	eth1_rmii_pins_a: eth1-rmii-0 {
+ 		pins1 {
+@@ -523,7 +607,22 @@ pinctrl_edt_ft5x26: pinctrl_edt_ft5x26-0 {
+ 		pins {
+ 				pinmux = <STM32_PINMUX('F', 11, GPIO)>;
+ 		};
+-	};	
++	};
++
++
++	usart6_pins_mx: usart6_mx-0 {
++		pins2 {
++			pinmux = <STM32_PINMUX('F', 14, AF3)>; /* USART6_RX */
++			bias-pull-up;
++		};
++	};
++
++	usart6_idle_pins_mx: usart6_idle_mx-0 {
++		pins3 {
++			pinmux = <STM32_PINMUX('F', 14, AF3)>; /* USART6_RX */
++			bias-pull-up;
++		};
++	};
+ 	/* USER CODE END pinctrl */
+ };
+ 
+@@ -805,6 +904,16 @@ lvds_out0:endpoint{
+ 	/* USER CODE END lvds */
+ };
+ 
++&m_can1{
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&fdcan1_pins_mx>;
++	pinctrl-1 = <&fdcan1_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN m_can1 */
++	/* USER CODE END m_can1 */
++};
++
+ &m33_rproc{
+ 	status = "okay";
+ 
+@@ -894,6 +1003,19 @@ &timers8{
+ 	/* USER CODE END timers8 */
+ };
+ 
++&usart1{
++	pinctrl-names = "default", "idle", "sleep";
++	pinctrl-0 = <&usart1_pins_mx>;
++	pinctrl-1 = <&usart1_idle_pins_mx>;
++	pinctrl-2 = <&usart1_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN usart1 */
++	/delete-property/dmas;
++	/delete-property/dma-names;	
++	/* USER CODE END usart1 */
++};
++
+ &usart2{
+ 	pinctrl-names = "default", "idle", "sleep";
+ 	pinctrl-0 = <&usart2_pins_mx>;
+@@ -907,6 +1029,19 @@ &usart2{
+ 	/* USER CODE END usart2 */
+ };
+ 
++&usart6{
++	pinctrl-names = "default", "idle", "sleep";
++	pinctrl-0 = <&usart6_pins_mx>;
++	pinctrl-1 = <&usart6_idle_pins_mx>;
++	pinctrl-2 = <&usart6_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN usart6 */
++	//uart-has-rtscts;
++	linux,rs485-enabled-at-boot-time;	
++	/* USER CODE END usart6 */
++};
++
+ &usb2_phy1{
+ 	status = "okay";
+ 

@@ -1,0 +1,42 @@
+From bb5c0df00fe0629dedb120b6996ec0b914091bf5 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 30 Aug 2024 12:37:25 +0200
+Subject: [PATCH] stm32mp2 - Fixed sdmmc1 node pwr supply
+
+---
+ arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts b/arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts
+index bf720e2a1c..4a8ffc7d77 100644
+--- a/arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts
++++ b/arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts
+@@ -497,11 +497,10 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN sdmmc1 */
+-	//cd-gpios = <&gpiod 9 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+ 	disable-wp;
+ 	st,neg-edge;
+ 	bus-width = <4>;
+-	vmmc-supply = <&scmi_vdd_sdcard>;
++	vmmc-supply = <&scmi_v3v3>;
+ 	vqmmc-supply = <&scmi_vddio1>;
+ 	sd-uhs-sdr12;
+ 	sd-uhs-sdr25;
+@@ -519,6 +518,15 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN sdmmc2 */
++	non-removable;
++	no-sd;
++	no-sdio;
++	st,neg-edge;
++	bus-width = <8>;
++	vmmc-supply = <&scmi_v3v3>;
++	vqmmc-supply = <&scmi_vddio2>;
++	mmc-ddr-1_8v;
++	mmc-hs200-1_8v;		
+ 	/* USER CODE END sdmmc2 */
+ };
+ 
