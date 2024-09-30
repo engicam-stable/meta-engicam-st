@@ -6,6 +6,7 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0004-stm32mp2-Added-edt-ft5x26-ts-driver-and-setup-lvds-d.patch \
             file://0005-Fix-edt-ft5x26-ts-driver.patch \
             file://0006-stm32mp2-Added-support-for-wifi-and-bt-in-edimm2.patch \
+            file://0007-stm32mp2-Added-device-tree-for-K.Touch10.patch \
             "
 
 SRC_URI += "file://${LINUX_VERSION}/fragment-05-engicam.config;subdir=fragments"
