@@ -1,0 +1,99 @@
+From a681d3c3d1f04db746bf9206c0910cb7cd2538aa Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Wed, 16 Oct 2024 16:46:43 +0200
+Subject: [PATCH] stm32mp2 -  enable sdmmc1
+
+---
+ fdts/stm32mp257f-icore-edimm2-mx-rcc.dtsi |  1 +
+ fdts/stm32mp257f-icore-edimm2-mx.dts      | 52 +++++++++++++++++++++++
+ 2 files changed, 53 insertions(+)
+
+diff --git a/fdts/stm32mp257f-icore-edimm2-mx-rcc.dtsi b/fdts/stm32mp257f-icore-edimm2-mx-rcc.dtsi
+index 2935957f4..8cef22753 100644
+--- a/fdts/stm32mp257f-icore-edimm2-mx-rcc.dtsi
++++ b/fdts/stm32mp257f-icore-edimm2-mx-rcc.dtsi
+@@ -60,6 +60,7 @@
+ 		FLEXGEN_CFG(43, XBAR_SRC_PLL4, 0, 23)
+ 		FLEXGEN_CFG(44, XBAR_SRC_PLL4, 0, 5)
+ 		FLEXGEN_CFG(45, XBAR_SRC_PLL4, 0, 2)
++		FLEXGEN_CFG(51, XBAR_SRC_PLL4, 0, 5)
+ 		FLEXGEN_CFG(52, XBAR_SRC_PLL4, 0, 5)
+ 		FLEXGEN_CFG(59, XBAR_SRC_PLL4, 0, 1)
+ 		FLEXGEN_CFG(63, XBAR_SRC_PLL4, 0, 2)
+diff --git a/fdts/stm32mp257f-icore-edimm2-mx.dts b/fdts/stm32mp257f-icore-edimm2-mx.dts
+index 9ddda198f..7351e36f5 100644
+--- a/fdts/stm32mp257f-icore-edimm2-mx.dts
++++ b/fdts/stm32mp257f-icore-edimm2-mx.dts
+@@ -75,6 +75,25 @@
+ 		};
+ 	};
+ 
++	sdmmc1_pins_mx: sdmmc1_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('E', 0, AF10)>, /* SDMMC1_D2 */
++					 <STM32_PINMUX('E', 1, AF10)>, /* SDMMC1_D3 */
++					 <STM32_PINMUX('E', 2, AF10)>, /* SDMMC1_CMD */
++					 <STM32_PINMUX('E', 4, AF10)>, /* SDMMC1_D0 */
++					 <STM32_PINMUX('E', 5, AF10)>; /* SDMMC1_D1 */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('E', 3, AF10)>; /* SDMMC1_CK */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <3>;
++		};
++	};
++
+ 	sdmmc2_pins_mx: sdmmc2_mx-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('E', 6, AF12)>, /* SDMMC2_D6 */
+@@ -113,6 +132,24 @@
+ 	};
+ 
+ 	/* USER CODE BEGIN pinctrl */
++	sdmmc1_pins_a: sdmmc1_a-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('E', 0, AF10)>, /* SDMMC1_D2 */
++					 <STM32_PINMUX('E', 1, AF10)>, /* SDMMC1_D3 */
++					 <STM32_PINMUX('E', 2, AF10)>, /* SDMMC1_CMD */
++					 <STM32_PINMUX('E', 4, AF10)>, /* SDMMC1_D0 */
++					 <STM32_PINMUX('E', 5, AF10)>; /* SDMMC1_D1 */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('E', 3, AF10)>; /* SDMMC1_CK */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <3>;
++		};
++	};
+ 	/* USER CODE END pinctrl */
+ };
+ 
+@@ -339,6 +376,21 @@
+ 	/* USER CODE END saes */
+ };
+ 
++&sdmmc1{
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc1_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN sdmmc1 */
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc1_pins_a>;
++	st,neg-edge;
++	bus-width = <4>;
++	vmmc-supply = <&v3v3>;
++	vqmmc-supply = <&vddio1>;
++	/* USER CODE END sdmmc1 */
++};
++
+ &sdmmc2{
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&sdmmc2_pins_mx>;

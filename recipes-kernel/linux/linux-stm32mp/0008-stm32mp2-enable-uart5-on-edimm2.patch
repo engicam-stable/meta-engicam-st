@@ -1,0 +1,96 @@
+From 8dc1217b72b88c638b1b680ae0425ee1709558e1 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Wed, 16 Oct 2024 16:52:11 +0200
+Subject: [PATCH] stm32mp2: enable uart5 on edimm2
+
+---
+ .../dts/st/stm32mp257f-icore-edimm2-mx.dts    | 48 ++++++++++++++++++-
+ 1 file changed, 46 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts b/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
+index 53b6a8f32..c6748551f 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
+@@ -44,6 +44,7 @@ aliases{
+ 		serial1 = &usart6;
+ 		serial2 = &lpuart1;
+ 		serial3 = &usart1;
++		serial4 = &uart5;
+ 	};
+ 
+ 	chosen{
+@@ -455,7 +456,7 @@ pins1 {
+ 					 <STM32_PINMUX('D', 14, AF12)>; /* SDMMC3_D3 */
+ 			bias-pull-up;
+ 			drive-push-pull;
+-			slew-rate = <1>;
++			slew-rate = <2>;
+ 		};
+ 		pins2 {
+ 			pinmux = <STM32_PINMUX('B', 13, AF10)>; /* SDMMC3_CK */
+@@ -467,7 +468,7 @@ pins3 {
+ 			pinmux = <STM32_PINMUX('D', 12, AF10)>; /* SDMMC3_CMD */
+ 			bias-pull-up;
+ 			drive-open-drain;
+-			slew-rate = <1>;
++			slew-rate = <2>;
+ 		};
+ 	};
+ 
+@@ -499,6 +500,38 @@ pins {
+ 		};
+ 	};
+ 
++	uart5_pins_mx: uart5_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('G', 10, AF5)>; /* UART5_RX */
++			bias-disable;
++			drive-push-pull;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('G', 9, AF5)>; /* UART5_TX */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++	};
++
++	uart5_idle_pins_mx: uart5_idle_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('G', 10, AF5)>; /* UART5_RX */
++			bias-disable;
++			drive-push-pull;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('G', 9, ANALOG)>; /* UART5_TX */
++		};
++	};
++
++	uart5_sleep_pins_mx: uart5_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('G', 9, ANALOG)>, /* UART5_TX */
++					 <STM32_PINMUX('G', 10, ANALOG)>; /* UART5_RX */
++		};
++	};
++
+ 	usart1_pins_mx: usart1_mx-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('B', 10, AF6)>; /* USART1_RX */
+@@ -1080,6 +1113,17 @@ &timers8{
+ 	/* USER CODE END timers8 */
+ };
+ 
++&uart5{
++	pinctrl-names = "default", "idle", "sleep";
++	pinctrl-0 = <&uart5_pins_mx>;
++	pinctrl-1 = <&uart5_idle_pins_mx>;
++	pinctrl-2 = <&uart5_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN uart5 */
++	/* USER CODE END uart5 */
++};
++
+ &usart1{
+ 	pinctrl-names = "default", "idle", "sleep";
+ 	pinctrl-0 = <&usart1_pins_mx>;
