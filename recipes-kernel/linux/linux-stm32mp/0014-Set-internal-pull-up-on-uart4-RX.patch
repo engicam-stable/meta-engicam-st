@@ -1,0 +1,106 @@
+From 4a3c9834588e1f6d60e68cabf2d1544c35208213 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 25 Oct 2024 10:36:10 +0200
+Subject: [PATCH] Set internal pull-up on uart4 RX
+
+---
+ arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts      | 2 +-
+ arch/arm/boot/dts/stm32mp135d-ugea-microdev-mx.dts       | 2 +-
+ arch/arm/boot/dts/stm32mp135f-ugea-microdev-mx.dts       | 2 +-
+ arch/arm/boot/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts | 2 +-
+ arch/arm/boot/dts/stm32mp157a-icore-starterkit-mx.dts    | 2 +-
+ arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts       | 2 +-
+ arch/arm/boot/dts/stm32mp157a-ugea-microdev-yes10.dts    | 2 +-
+ 7 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
+index ea390fd5f..599132f95 100644
+--- a/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
++++ b/arch/arm/boot/dts/stm32mp135d-gea-starterkit-mx.dts
+@@ -472,7 +472,7 @@ pins1 {
+ 		};
+ 		pins2 {
+ 			pinmux = <STM32_PINMUX('D', 8, AF8)>; /* UART4_RX */
+-			bias-disable;
++			bias-pull-up;
+ 		};
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/stm32mp135d-ugea-microdev-mx.dts b/arch/arm/boot/dts/stm32mp135d-ugea-microdev-mx.dts
+index 894f9fb44..466ae2525 100644
+--- a/arch/arm/boot/dts/stm32mp135d-ugea-microdev-mx.dts
++++ b/arch/arm/boot/dts/stm32mp135d-ugea-microdev-mx.dts
+@@ -392,7 +392,7 @@ pins1 {
+ 		};
+ 		pins2 {
+ 			pinmux = <STM32_PINMUX('H', 14, AF8)>; /* UART4_RX */
+-			bias-disable;
++			bias-pull-up;
+ 		};
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/stm32mp135f-ugea-microdev-mx.dts b/arch/arm/boot/dts/stm32mp135f-ugea-microdev-mx.dts
+index 121b36ade..1181380d0 100644
+--- a/arch/arm/boot/dts/stm32mp135f-ugea-microdev-mx.dts
++++ b/arch/arm/boot/dts/stm32mp135f-ugea-microdev-mx.dts
+@@ -392,7 +392,7 @@ pins1 {
+ 		};
+ 		pins2 {
+ 			pinmux = <STM32_PINMUX('H', 14, AF8)>; /* UART4_RX */
+-			bias-disable;
++			bias-pull-up;
+ 		};
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts b/arch/arm/boot/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts
+index 9aa0b42d5..adfff74f9 100644
+--- a/arch/arm/boot/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-icore-ctouch2-amp10-mx.dts
+@@ -576,7 +576,7 @@ pins {
+ 	uart4_pins_mx: uart4_mx-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('B', 2, AF8)>; /* UART4_RX */
+-			bias-disable;
++			bias-pull-up;
+ 		};
+ 		pins2 {
+ 			pinmux = <STM32_PINMUX('G', 11, AF6)>; /* UART4_TX */
+diff --git a/arch/arm/boot/dts/stm32mp157a-icore-starterkit-mx.dts b/arch/arm/boot/dts/stm32mp157a-icore-starterkit-mx.dts
+index 41dde6a40..c79779f15 100644
+--- a/arch/arm/boot/dts/stm32mp157a-icore-starterkit-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-icore-starterkit-mx.dts
+@@ -592,7 +592,7 @@ pins {
+ 	uart4_pins_mx: uart4_mx-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('B', 2, AF8)>; /* UART4_RX */
+-			bias-disable;
++			bias-pull-up;
+ 		};
+ 		pins2 {
+ 			pinmux = <STM32_PINMUX('G', 11, AF6)>; /* UART4_TX */
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts b/arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts
+index 54f79cdc4..13a05321f 100644
+--- a/arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts
++++ b/arch/arm/boot/dts/stm32mp157a-ugea-microdev-mx.dts
+@@ -480,7 +480,7 @@ pins {
+ 	uart4_pins_mx: uart4_mx-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('B', 2, AF8)>; /* UART4_RX */
+-			bias-disable;
++			bias-pull-up;
+ 		};
+ 		pins2 {
+ 			pinmux = <STM32_PINMUX('G', 11, AF6)>; /* UART4_TX */
+diff --git a/arch/arm/boot/dts/stm32mp157a-ugea-microdev-yes10.dts b/arch/arm/boot/dts/stm32mp157a-ugea-microdev-yes10.dts
+index cc2e93ef4..85ab72f10 100644
+--- a/arch/arm/boot/dts/stm32mp157a-ugea-microdev-yes10.dts
++++ b/arch/arm/boot/dts/stm32mp157a-ugea-microdev-yes10.dts
+@@ -480,7 +480,7 @@ pins {
+ 	uart4_pins_mx: uart4_mx-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('B', 2, AF8)>; /* UART4_RX */
+-			bias-disable;
++			bias-pull-up;
+ 		};
+ 		pins2 {
+ 			pinmux = <STM32_PINMUX('G', 11, AF6)>; /* UART4_TX */
