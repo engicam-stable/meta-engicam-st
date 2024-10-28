@@ -1,0 +1,22 @@
+From af126df79e299b09ecb926942bd2e05fb101bb3a Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Mon, 28 Oct 2024 17:20:05 +0100
+Subject: [PATCH] stm32mp2 - Set sai MCLK to 12MHz
+
+---
+ core/arch/arm/dts/stm32mp257f-icore-edimm2-mx-rcc.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/arch/arm/dts/stm32mp257f-icore-edimm2-mx-rcc.dtsi b/core/arch/arm/dts/stm32mp257f-icore-edimm2-mx-rcc.dtsi
+index e1028ff29..c212f6ac0 100644
+--- a/core/arch/arm/dts/stm32mp257f-icore-edimm2-mx-rcc.dtsi
++++ b/core/arch/arm/dts/stm32mp257f-icore-edimm2-mx-rcc.dtsi
+@@ -61,7 +61,7 @@
+ 		FLEXGEN_CFG(15, XBAR_SRC_PLL4, 0, 9)
+ 		FLEXGEN_CFG(19, XBAR_SRC_HSI_KER, 0, 0)
+ 		FLEXGEN_CFG(20, XBAR_SRC_HSI_KER, 0, 0)
+-		FLEXGEN_CFG(23, XBAR_SRC_PLL4, 3, 5)
++		FLEXGEN_CFG(23, XBAR_SRC_PLL4, 3, 24)
+ 		FLEXGEN_CFG(26, XBAR_SRC_PLL4, 0, 9)
+ 		FLEXGEN_CFG(27, XBAR_SRC_PLL8, 0, 1)
+ 		FLEXGEN_CFG(32, XBAR_SRC_PLL5, 0, 19)

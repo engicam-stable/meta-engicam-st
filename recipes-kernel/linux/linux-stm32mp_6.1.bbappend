@@ -9,6 +9,8 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0007-stm32mp2-Added-device-tree-for-K.Touch10.patch \
             file://0008-stm32mp2-enable-uart5-on-edimm2.patch \
             file://0009-stm32mp2-Added-support-for-sgtl5000.patch \
+            file://0010-stm32mp2-fixed-sdmmc1-and-sai-nodes.patch \
+            file://0011-Changing-sai-master-clock-tolerance.patch \
             "
 
 SRC_URI += "file://${LINUX_VERSION}/fragment-05-engicam.config;subdir=fragments"

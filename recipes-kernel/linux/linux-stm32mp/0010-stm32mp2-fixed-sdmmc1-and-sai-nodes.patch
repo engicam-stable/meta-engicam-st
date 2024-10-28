@@ -1,0 +1,69 @@
+From 3c5ab5156e0b11d9d0ed59174ab1bd9779fd8351 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Mon, 28 Oct 2024 17:23:05 +0100
+Subject: [PATCH] stm32mp2 - fixed sdmmc1 and sai nodes
+
+---
+ .../dts/st/stm32mp257f-icore-edimm2-mx.dts    | 28 ++++++-------------
+ 1 file changed, 9 insertions(+), 19 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts b/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
+index 52ff99936..6a0da02c8 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
+@@ -153,9 +153,13 @@ panel_lvds_backlight:panel-lvds-backlight{
+ 	
+ 	sound: sound {
+ 		compatible = "audio-graph-card";
+-		label = "STM32MP25-EV1";
+-		dais = <&i2s2_port>;
+-		status = "disabled";
++		label = "i.Core STM32MP2";
++		routing =
++			"MIC_IN", "Capture",
++			"Capture", "Mic Bias",
++			"Playback", "HP_OUT";
++		dais = <&sai1a_port &sai1b_port>;
++		status = "okay";
+ 	};
+ 
+ 	wifi_pwrseq: wifi-pwrseq {
+@@ -175,17 +179,6 @@ bt_reg_on: regulator-bt-reg-on {
+ 		enable-active-high;
+ 		regulator-always-on;
+ 	};
+-
+-	sound-card {
+-		compatible = "audio-graph-card";
+-		label = "i.Core STM32MP1";
+-		routing =
+-			"MIC_IN", "Capture",
+-			"Capture", "Mic Bias",
+-			"Playback", "HP_OUT";
+-		dais = <&sai1a_port &sai1b_port>;
+-		status = "okay";
+-	};
+ 	/* USER CODE END root */
+ 
+ 	clocks{
+@@ -914,6 +907,8 @@ sgtl5000_port: port {
+ 			sgtl5000_tx_endpoint: endpoint@0 {
+ 				reg = <0>;
+ 				remote-endpoint = <&sai1a_endpoint>;
++				frame-master;    /* Set codec as master of SAI1B for FS clock. */
++				bitclock-master; /* Set codec as master of SAI1B for SCK clock. */
+ 			};
+ 
+ 			sgtl5000_rx_endpoint: endpoint@1 {
+@@ -1169,11 +1164,6 @@ &sdmmc1{
+ 	bus-width = <4>;
+ 	vmmc-supply = <&scmi_v3v3>;
+ 	vqmmc-supply = <&scmi_vddio1>;
+-	sd-uhs-sdr12;
+-	sd-uhs-sdr25;
+-	sd-uhs-sdr50;
+-	sd-uhs-ddr50;
+-	sd-uhs-sdr104;
+ 	/* USER CODE END sdmmc1 */
+ };
+ 
