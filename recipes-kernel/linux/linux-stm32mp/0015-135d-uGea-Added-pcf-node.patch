@@ -1,0 +1,73 @@
+From cc2b9c779d9bf90ee39be2461d5abf63393efbcf Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Wed, 30 Oct 2024 11:00:35 +0100
+Subject: [PATCH] 135d uGea - Added pcf node
+
+---
+ .../boot/dts/stm32mp135d-ugea-microdev-mx.dts | 40 ++++++++++++++++++-
+ 1 file changed, 38 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stm32mp135d-ugea-microdev-mx.dts b/arch/arm/boot/dts/stm32mp135d-ugea-microdev-mx.dts
+index 466ae2525..a7a1624ea 100644
+--- a/arch/arm/boot/dts/stm32mp135d-ugea-microdev-mx.dts
++++ b/arch/arm/boot/dts/stm32mp135d-ugea-microdev-mx.dts
+@@ -470,7 +470,24 @@ pinctrl_edt_ft5x26: pinctrl_edt_ft5x26-0 {
+ 		pins {
+ 			pinmux = <STM32_PINMUX('E', 2, GPIO)>;
+ 		};
+-	};	
++	};
++
++	i2c5_pins_a: i2c5_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('D', 1, AF4)>, /* I2C5_SCL */
++					 <STM32_PINMUX('F', 3, AF4)>; /* I2C5_SDA */
++			bias-disable;
++			drive-open-drain;
++			slew-rate = <0>;
++		};
++	};
++
++	i2c5_sleep_pins_a: i2c5_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('D', 1, ANALOG)>, /* I2C5_SCL */
++					 <STM32_PINMUX('F', 3, ANALOG)>; /* I2C5_SDA */
++		};
++	};
+ 	/* USER CODE END pinctrl */
+ };
+ 
+@@ -597,7 +614,7 @@ &rcc{
+ };
+ 
+ &rtc{
+-	status = "okay";
++	status = "disabled";
+ 
+ 	/* USER CODE BEGIN rtc */
+ 	/* USER CODE END rtc */
+@@ -728,5 +745,24 @@ scmi_vdd_usb: voltd-vdd_usb {
+ 		regulator-name = "vdd_usb";
+ 	};
+ };
++
++&i2c5{
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&i2c5_pins_a>;
++	pinctrl-1 = <&i2c5_sleep_pins_a>;
++	status = "okay";
++
++	i2c-scl-rising-time-ns = <300>;
++	i2c-scl-falling-time-ns = <300>;
++	clock-frequency = <400000>;
++	/delete-property/dmas;
++	/delete-property/dma-names;
++
++	pcf8523: rtc@68 {
++		compatible = "nxp,pcf8523";
++		reg = <0x68>;
++	};
++
++};
+ /* USER CODE END addons */
+ 

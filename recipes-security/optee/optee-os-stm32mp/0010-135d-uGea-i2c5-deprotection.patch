@@ -1,0 +1,29 @@
+From 9a439fab80f636f484b1e6ff497243c4ecc3adfd Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Wed, 30 Oct 2024 11:02:24 +0100
+Subject: [PATCH] 135d uGea - i2c5 deprotection
+
+---
+ core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts b/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
+index f31ad251..0d35f6c3 100644
+--- a/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
++++ b/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
+@@ -207,6 +207,7 @@
+ 	DECPROT(STM32MP1_ETZPC_DDRCTRLPHY_ID, DECPROT_NS_R_S_W, DECPROT_LOCK)
+ 	/*"Non Secured" peripherals*/
+ 	DECPROT(STM32MP1_ETZPC_ETH1_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++    DECPROT(STM32MP1_ETZPC_I2C5_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_LTDC_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_SDMMC1_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_SDMMC2_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+@@ -254,6 +255,7 @@
+ 		CLK_USBPHY_HSE
+ 		CLK_USBO_USBPHY
+ 		CLK_I2C12_PCLK1
++		CLK_I2C5_PCLK6
+ 		CLK_UART2_PCLK6
+ 		CLK_UART4_HSI
+ 		CLK_UART35_PCLK1

@@ -9,6 +9,7 @@ SRC_URI += "file://0001-Initial-commit-157-ugea.patch \
             file://0007-135-Gea-Added-v1v8-pmic-regulator-and-disabled-unuse.patch \
             file://0001-vdd_usb-regulator-always-on-for-u-boot-usb-enabling.patch \
             file://0009-135-ugea-Added-support-for-F-version.patch \
+            file://0010-135d-uGea-i2c5-deprotection.patch \
             "
 
 EXTRA_OEMAKE +=  "CFG_STM32_CRYP=n"

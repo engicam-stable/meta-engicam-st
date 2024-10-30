@@ -14,6 +14,7 @@ SRC_URI += "file://0001-Initial-commit-157-ugea.patch \
             file://0012-stm32mp15-Added-M4-device-tree.patch \
             file://0013-135-ugea-Added-support-for-F-version.patch \
             file://0014-Set-internal-pull-up-on-uart4-RX.patch \
+            file://0015-135d-uGea-Added-pcf-node.patch \
             "
 
 SRC_URI += "file://${LINUX_VERSION}/fragment-07-engicam.config;subdir=fragments"
