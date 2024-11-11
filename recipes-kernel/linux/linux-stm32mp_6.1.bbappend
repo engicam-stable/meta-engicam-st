@@ -12,6 +12,7 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0010-stm32mp2-fixed-sdmmc1-and-sai-nodes.patch \
             file://0011-Changing-sai-master-clock-tolerance.patch \
             file://0012-Added-device-tree-for-stm32mp2-iCore-for-C.Touch3-wi.patch \
+            file://0013-stm32mp2-iCore-set-pwm-backlight-for-ctouch10-kit.patch \
             "
 
 SRC_URI += "file://${LINUX_VERSION}/fragment-05-engicam.config;subdir=fragments"

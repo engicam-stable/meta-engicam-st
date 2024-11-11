@@ -1,0 +1,78 @@
+From 020d993ee5d8cd8e6b5b40e62afd672e904c21db Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Mon, 11 Nov 2024 16:48:05 +0100
+Subject: [PATCH] stm32mp2 iCore: set pwm backlight for ctouch10 kit
+
+---
+ .../st/stm32mp257f-icore-ctouch3-ampire10.dts | 25 ++++++++++---------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-icore-ctouch3-ampire10.dts b/arch/arm64/boot/dts/st/stm32mp257f-icore-ctouch3-ampire10.dts
+index a08260031..e1c4bb8e8 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-icore-ctouch3-ampire10.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-icore-ctouch3-ampire10.dts
+@@ -76,7 +76,7 @@ hdmi_connector_in:endpoint{
+ 
+ 	panel_lvds:panel-lvds{
+ 		compatible = "panel-lvds";
+-		backlight = <&panel_lvds_backlight>;
++		backlight = <&panel_backlight>;
+ 		status = "okay";
+ 		width-mm = <217>;
+ 		height-mm = <136>;
+@@ -102,12 +102,13 @@ lvds_panel_in:endpoint{
+ 		};
+ 	};
+ 
+-	panel_lvds_backlight:panel-lvds-backlight{
+-		compatible = "gpio-backlight";
+-		gpios = <&gpioi 7 GPIO_ACTIVE_HIGH>;
+-		default-on;
+-		default-brightness-level = <1>;
++	panel_backlight: panel-backlight {
++		compatible = "pwm-backlight";
++		pwms = <&{/soc@0/rifsc@42080000/timer@40000000/pwm} 0 1000000 0>;
++		brightness-levels = <0 4 8 16 32 64 128 255>;
++		default-brightness-level = <6>;
+ 		status = "okay";
++		power-supply = <&lcd_pwr_en>;
+ 	};
+ 
+ 	lcd_pwr_en: regulator-lcd_pwr_en {
+@@ -524,7 +525,7 @@ pins {
+ 		};
+ 	};
+ 
+-	tim4_pwm_pins_mx: tim4_pwm_mx-0 {
++	tim2_pwm_pins_mx: tim2_pwm_mx-0 {
+ 		pins {
+ 			pinmux = <STM32_PINMUX('I', 7, AF7)>; /* TIM2_CH1 */
+ 			bias-disable;
+@@ -533,7 +534,7 @@ pins {
+ 		};
+ 	};
+ 
+-	tim4_pwm_sleep_pins_mx: tim8_pwm_sleep_mx-0 {
++	tim2_pwm_sleep_pins_mx: tim2_pwm_sleep_mx-0 {
+ 		pins {
+ 			pinmux = <STM32_PINMUX('I', 7, ANALOG)>; /* TIM2_CH1 */
+ 		};
+@@ -1198,14 +1199,14 @@ &sdmmc3{
+ };
+ 
+ &timers2{
+-	status = "disabled";
++	status = "okay";
+ 
+ 	/* USER CODE BEGIN timers2 */
+ 	pwm {
+ 		pinctrl-names = "default", "sleep";
+-		pinctrl-0 = <&tim4_pwm_pins_mx>;
+-		pinctrl-1 = <&tim4_pwm_sleep_pins_mx>;
+-		status = "disabled";
++		pinctrl-0 = <&tim2_pwm_pins_mx>;
++		pinctrl-1 = <&tim2_pwm_sleep_pins_mx>;
++		status = "okay";
+ 
+ 		/* USER CODE BEGIN timers2_pwm */
+ 		/* USER CODE END timers2_pwm */

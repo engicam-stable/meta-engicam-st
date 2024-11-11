@@ -7,5 +7,6 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0005-stm32mp2-desec-uart5-pins.patch \
             file://0006-stm32mp2-desec-sai-pins-and-enable-sai-clk.patch \
             file://0007-stm32mp2-Set-sai-MCLK-to-12MHz.patch \
+            file://0008-stm32mp2-added-pmic-wake-up-pin-and-configure-PI7-fo.patch \
             "
 
