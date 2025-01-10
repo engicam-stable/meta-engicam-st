@@ -1,0 +1,191 @@
+From 911f60197223bc59075487f1e2a5a898fbd200c2 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 10 Jan 2025 11:37:01 +0100
+Subject: [PATCH] stm32mp2 SmarCore: porting Ampire10 with USB touch
+
+---
+ .../st/stm32mp257f-smarcore-xtouch10-mx.dts   | 100 +++++-------------
+ 1 file changed, 24 insertions(+), 76 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-smarcore-xtouch10-mx.dts b/arch/arm64/boot/dts/st/stm32mp257f-smarcore-xtouch10-mx.dts
+index 867f3ae37..45b02a62d 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-smarcore-xtouch10-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-smarcore-xtouch10-mx.dts
+@@ -60,28 +60,6 @@ framebuffer {
+ 		};
+ 	};
+ 
+-	gpio-keys{
+-		compatible = "gpio-keys";
+-		button-wake-up{
+-			label = "wake-up";
+-			linux,code = <KEY_WAKEUP>;
+-			interrupts-extended = <&optee 0>;
+-			status = "okay";
+-		};
+-	};
+-
+-	gpio-leds{
+-		compatible = "gpio-leds";
+-
+-		led-blue{
+-			function = LED_FUNCTION_HEARTBEAT;
+-			color = <LED_COLOR_ID_BLUE>;
+-			gpios = <&gpioj 7 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
+-			default-state = "off";
+-		};
+-	};
+-
+ 	hdmi:connector{
+ 		compatible = "hdmi-connector";
+ 		label = "hdmi";
+@@ -91,6 +69,7 @@ hdmi:connector{
+ 	panel_lvds:panel-lvds{
+ 		compatible = "panel-lvds";
+ 		backlight = <&panel_backlight>;
++		enable-gpios = <&gpioz 1 0>;
+ 		status = "okay";
+ 		width-mm = <217>;
+ 		height-mm = <136>;
+@@ -118,31 +97,21 @@ lvds_panel_in:endpoint{
+ 
+ 	panel_backlight: panel-backlight {
+ 		compatible = "pwm-backlight";
+-		pwms = <&{/soc@0/rifsc@42080000/timer@40010000/pwm} 0 1000000 0>;
++		pwms = <&{/soc@0/rifsc@42080000/timer@40000000/pwm} 0 1000000 0>;
+ 		brightness-levels = <0 4 8 16 32 64 128 255>;
+ 		default-brightness-level = <6>;
+-		status = "okay";
+-		power-supply = <&lcd_pwr_en>;
+-	};
++ 		status = "okay";
++		power-supply = <&lcd_bk_en>;
++ 	};
+ 
+ 	lcd_bk_en: regulator-lcd_bk_en {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "lcd_bk_en";
+-		regulator-min-microvolt = <3300000>;
+-		regulator-max-microvolt = <3300000>;
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
+ 		gpio = <&gpioi 1 0>;
+ 		enable-active-high;
+ 		regulator-always-on;
+-	};	
+-
+-	lcd_pwr_en: regulator-lcd_pwr_en {
+-		compatible = "regulator-fixed";
+-		regulator-name = "lcd_pwr_en";
+-		regulator-min-microvolt = <3300000>;
+-		regulator-max-microvolt = <3300000>;
+-		gpio = <&gpioz 1 0>;
+-		enable-active-high;
+-		regulator-always-on;
+ 	};
+ 	
+ 	panel_lvds_fhd: panel-lvds-fhd {
+@@ -569,18 +538,18 @@ pins {
+ 		};
+ 	};
+ 
+-	tim3_pins_mx: tim3_mx-0 {
++	tim2_pwm_pins_mx: tim2_pwm_mx-0 {
+ 		pins {
+-			pinmux = <STM32_PINMUX('I', 7, AF8)>; /* TIM3_CH2 */
++			pinmux = <STM32_PINMUX('I', 7, AF7)>; /* TIM2_CH1 */
+ 			bias-disable;
+ 			drive-push-pull;
+ 			slew-rate = <0>;
+ 		};
+ 	};
+ 
+-	tim3_sleep_pins_mx: tim3_sleep_mx-0 {
++	tim2_pwm_sleep_pins_mx: tim2_pwm_sleep_mx-0 {
+ 		pins {
+-			pinmux = <STM32_PINMUX('I', 7, ANALOG)>; /* TIM3_CH2 */
++			pinmux = <STM32_PINMUX('I', 7, ANALOG)>; /* TIM2_CH1 */
+ 		};
+ 	};
+ 
+@@ -1201,17 +1170,21 @@ &sdmmc3{
+ 	/* USER CODE END sdmmc3 */
+ };
+ 
+-&timers3{
++&timers2{
+ 	status = "okay";
+ 
+-	/* USER CODE BEGIN timers3 */
++	/* USER CODE BEGIN timers2 */
+ 	pwm {
+ 		pinctrl-names = "default", "sleep";
+-		pinctrl-0 = <&tim3_pins_mx>;
+-		pinctrl-1 = <&tim3_sleep_pins_mx>;
++		pinctrl-0 = <&tim2_pwm_pins_mx>;
++		pinctrl-1 = <&tim2_pwm_sleep_pins_mx>;
+ 		status = "okay";
+-	};		
+-	/* USER CODE END timers3 */
++
++		/* USER CODE BEGIN timers2_pwm */
++		/* USER CODE END timers2_pwm */
++	};
++
++	/* USER CODE END timers2 */
+ };
+ 
+ &timers8{
+@@ -1299,20 +1272,13 @@ &usb2_phy2{
+ };
+ 
+ &usb3dr{
+-	pinctrl-names = "default", "sleep";
+-	pinctrl-0 = <&usb3dr_pins_mx>;
+-	pinctrl-1 = <&usb3dr_sleep_pins_mx>;
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN usb3dr */
+ 	dwc3: usb@48300000 {
+ 		maximum-speed = "high-speed";
+ 		usb-role-switch;
+-		port {
+-			dwc3_ep: endpoint {
+-				remote-endpoint = <&typec_ep>;
+-			};
+-		};
++		role-switch-default-mode = "host";
+ 	};	
+ 	/* USER CODE END usb3dr */
+ };
+@@ -1485,27 +1451,9 @@ i2c_rpmsg:i2c@2{
+ 		rpmsg,dev-id = "rpmsg_i2c";
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		status = "okay";
+-
+-		typec@35{
+-			compatible = "st,stm32mp25-typec";
+-			reg = <0x35>;
+-			interrupts-extended = <&intc_rpmsg 0>;
+-			status = "okay";
+-
+-			connector{
+-				compatible = "usb-c-connector";
+-				label = "USB-C";
+-
+-				port{
+-
+-					typec_ep:endpoint{
+-						remote-endpoint = <&dwc3_ep>;
+-					};
+-				};
+-			};
+-		};
++		status = "disabled";
+ 	};
++
+ };
+ 
+ &scmi_regu{
