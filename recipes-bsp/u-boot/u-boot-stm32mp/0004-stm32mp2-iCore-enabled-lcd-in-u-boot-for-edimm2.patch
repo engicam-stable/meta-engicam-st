@@ -1,0 +1,134 @@
+From 1e36f7e663afa9849630b244fc9ee47b4add9453 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 10 Jan 2025 14:23:31 +0100
+Subject: [PATCH] stm32mp2 iCore: enabled lcd in u-boot for edimm2
+
+---
+ arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts | 80 +++++++++++++++++++-
+ configs/stm32mp25_defconfig                  |  1 +
+ 2 files changed, 80 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts b/arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts
+index 4a8ffc7d77..37d1918a97 100644
+--- a/arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts
++++ b/arch/arm/dts/stm32mp257f-icore-edimm2-mx.dts
+@@ -26,7 +26,7 @@
+ 
+ / {
+ 	model = "STMicroelectronics STM32MP257F-EV1 STM32CubeMX board - openstlinux-6.1-yocto-mickledore-mpu-v24.06.26";
+-	compatible = "st,stm32mp257f-icore-edimm2-mx", "st,stm32mp257f-ev1", "st,stm32mp257";
++	compatible = "st,stm32mp257f-icore-edimm2-mx", "st,stm32mp257";
+ 
+ 	memory@80000000 {
+ 		device_type = "memory";
+@@ -80,6 +80,46 @@
+ 		};
+ 	};
+ 
++	panel_lvds:panel-lvds{
++		compatible = "panel-lvds";
++		backlight = <&panel_lvds_backlight>;
++		status = "okay";
++		width-mm = <156>;
++		height-mm = <92>;
++		data-mapping = "vesa-24";
++
++		panel-timing {
++			/* 1024x600 @65Hz */
++			clock-frequency = <65000000>;
++			hactive = <1024>;
++			vactive = <600>;
++			hback-porch = <160>;
++			hfront-porch = <20>;
++			vback-porch = <29>;
++			vfront-porch = <3>;
++			hsync-len = <136>;
++			vsync-len = <6>;
++			hsync-active = <0>;
++			vsync-active = <0>;
++			de-active = <1>;
++			pixelclk-active = <0>;
++		};
++
++		port{
++
++			lvds_panel_in:endpoint{
++				remote-endpoint = <&lvds_out0>;
++			};
++		};
++	};
++
++	panel_lvds_backlight:panel-lvds-backlight{
++		compatible = "gpio-backlight";
++		gpios = <&gpioi 7 GPIO_ACTIVE_HIGH>;
++		default-on;
++		default-brightness-level = <7>;
++		status = "okay";
++	};
+ 	/* USER CODE END root */
+ 
+ }; /*root*/
+@@ -460,6 +500,23 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN ltdc */
++	default-on;
++	rotation-memory = <&ltdc_sec_rotation>;
++
++	port{
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ltdc_ep0_out:endpoint@0{
++			reg = <0>;
++			//remote-endpoint = <&dsi_in>;
++		};
++
++		ltdc_ep1_out:endpoint@1{
++			reg = <1>;
++			remote-endpoint = <&lvds_in>;
++		};
++	};
+ 	/* USER CODE END ltdc */
+ };
+ 
+@@ -661,6 +718,27 @@
+ 	vdd-supply = <&scmi_vddcore>;
+ 	vdda18-supply = <&scmi_v1v8>;
+ 	status = "okay";
++
++	ports{
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@0{
++			reg = <0>;
++
++			lvds_in:endpoint{
++				remote-endpoint = <&ltdc_ep1_out>;
++			};
++		};
++
++		port@1{
++			reg = <1>;
++
++			lvds_out0:endpoint{
++				remote-endpoint = <&lvds_panel_in>;
++			};
++		};
++	};
+ };
+ 
+ &m_can1{
+diff --git a/configs/stm32mp25_defconfig b/configs/stm32mp25_defconfig
+index d977b9dd02..9db4402f8a 100644
+--- a/configs/stm32mp25_defconfig
++++ b/configs/stm32mp25_defconfig
+@@ -157,6 +157,7 @@ CONFIG_USB_GADGET_VENDOR_NUM=0x0483
+ CONFIG_USB_GADGET_PRODUCT_NUM=0x5720
+ CONFIG_DM_VIDEO=y
+ # CONFIG_VIDEO_LOGO is not set
++CONFIG_SIMPLE_PANEL=y
+ CONFIG_BACKLIGHT_GPIO=y
+ CONFIG_VIDEO_LCD_ORISETECH_OTM8009A=y
+ CONFIG_VIDEO_LCD_RAYDIUM_RM68200=y

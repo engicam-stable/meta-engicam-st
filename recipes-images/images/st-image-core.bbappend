@@ -5,6 +5,7 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     can-utils \
     devmem2 \
     eng-emmc-tools \
+    u-boot-stm32mp-splash \
     "
 
 
