@@ -1,0 +1,22 @@
+From 0255b7e4fe03db72f57ad5f9209f55cfe5f8dad7 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Tue, 21 Jan 2025 14:12:22 +0100
+Subject: [PATCH] stm32mp2 SmarCore: changed vmmc-supply for sdcard
+
+---
+ arch/arm/dts/stm32mp257f-smarcore-xtouch10-mx.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/stm32mp257f-smarcore-xtouch10-mx.dts b/arch/arm/dts/stm32mp257f-smarcore-xtouch10-mx.dts
+index ce7de80f6a..61d64d9a83 100644
+--- a/arch/arm/dts/stm32mp257f-smarcore-xtouch10-mx.dts
++++ b/arch/arm/dts/stm32mp257f-smarcore-xtouch10-mx.dts
+@@ -569,7 +569,7 @@
+ 	disable-wp;
+ 	st,neg-edge;
+ 	bus-width = <4>;
+-	vmmc-supply = <&scmi_vdd_sdcard>;
++	vmmc-supply = <&scmi_v3v3>;
+ 	vqmmc-supply = <&scmi_vddio1>;
+ 	sd-uhs-sdr12;
+ 	sd-uhs-sdr25;
