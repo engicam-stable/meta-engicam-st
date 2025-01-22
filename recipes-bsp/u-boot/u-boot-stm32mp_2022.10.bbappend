@@ -5,5 +5,7 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0003-stm32mp2-SmarCore-Porting-for-XTouch2.0-board.patch \
             file://0004-stm32mp2-iCore-enabled-lcd-in-u-boot-for-edimm2.patch \
             file://0005-stm32mp2-SmarCore-changed-vmmc-supply-for-sdcard.patch \
+            file://0006-stm32mp2-enabled-env-overwrite.patch \
+            file://0007-stm32mp2-iCore-Added-device-tree-for-mask-D.patch \
             "
 

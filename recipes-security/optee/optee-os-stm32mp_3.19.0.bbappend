@@ -10,5 +10,8 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0008-stm32mp2-added-pmic-wake-up-pin-and-configure-PI7-fo.patch \
             file://0009-stm32mp2-SmarCore-Porting-for-XTouch2.0-board.patch \
             file://0010-stm32mp2-SmarCore-enabled-Ampire10-display-for-XTouc.patch \
+            file://0011-stm32mp2-iCore-decprot-gpio-for-userspace-usage.patch \
+            file://0012-stm32mp2-SmarCore-changed-OTP-124-for-1.8V-vddio.patch \
+            file://0013-stm32mp2-iCore-Added-device-tree-for-mask-D.patch \
             "
 

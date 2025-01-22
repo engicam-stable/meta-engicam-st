@@ -1,0 +1,22 @@
+From 226be1777290342add206cdd16f1a60e6be2bb98 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Tue, 21 Jan 2025 14:31:35 +0100
+Subject: [PATCH] stm32mp2 SmarCore: changed OTP 124 for 1.8V vddio
+
+---
+ core/arch/arm/dts/stm32mp257f-smarcore-xtouch10-mx.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/arch/arm/dts/stm32mp257f-smarcore-xtouch10-mx.dts b/core/arch/arm/dts/stm32mp257f-smarcore-xtouch10-mx.dts
+index 6acfc1120..c458695f7 100644
+--- a/core/arch/arm/dts/stm32mp257f-smarcore-xtouch10-mx.dts
++++ b/core/arch/arm/dts/stm32mp257f-smarcore-xtouch10-mx.dts
+@@ -68,7 +68,7 @@
+ 
+ 		hconf1_prov{
+ 			nvmem-cells = <&hconf1_otp>;
+-			st,shadow-value = <0x00018DB6>;
++			st,shadow-value = <0x0003EDB6>;
+ 		};
+ 	};
+ 	/* USER CODE END root */

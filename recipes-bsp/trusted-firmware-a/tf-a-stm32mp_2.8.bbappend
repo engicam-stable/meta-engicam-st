@@ -4,5 +4,5 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0002-stm32mp2-Fixed-pwr-pins-pinctrl-and-cleaning-pmic-no.patch \
             file://0003-stm32mp2-enable-sdmmc1.patch \
             file://0004-stm32mp2-SmarCore-Porting-for-XTouch2.0-board.patch \
+            file://0005-stm32mp2-iCore-Added-device-tree-for-mask-D.patch \
             "
-

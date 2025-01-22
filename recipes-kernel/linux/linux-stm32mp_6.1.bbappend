@@ -16,6 +16,7 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0014-Added-mxl-86110-driver.patch \
             file://0015-stm32mp2-SmarCore-Porting-for-XTouch2.0-board.patch \
             file://0016-stm32mp2-SmarCore-porting-Ampire10-with-USB-touch.patch \
+            file://0017-stm32mp2-iCore-Added-device-tree-for-mask-D.patch \
             "
 
 SRC_URI += "file://${LINUX_VERSION}/fragment-05-engicam.config;subdir=fragments"
