@@ -1,0 +1,44 @@
+From b43a626019d053e191ad60aa29a77fc79d0014d9 Mon Sep 17 00:00:00 2001
+From: Domenico Acri <domenico.acri@engicam.com>
+Date: Wed, 2 Apr 2025 12:02:31 +0200
+Subject: [PATCH] stm32mp2 iCore: disabled unsupported low-power modes
+
+---
+ fdts/stm32mp257d-icore-edimm2-mx.dts | 6 ++++++
+ fdts/stm32mp257f-icore-edimm2-mx.dts | 6 ++++++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/fdts/stm32mp257d-icore-edimm2-mx.dts b/fdts/stm32mp257d-icore-edimm2-mx.dts
+index 03d9fa43c..4cea29dd2 100644
+--- a/fdts/stm32mp257d-icore-edimm2-mx.dts
++++ b/fdts/stm32mp257d-icore-edimm2-mx.dts
+@@ -38,6 +38,12 @@
+ 
+ 	/* USER CODE BEGIN root */
+ 
++	cpus {
++		domain-idle-states {
++			/delete-node/ lp-stop2;
++		};
++	};
++
+ 	aliases{
+ 		serial0 = &usart2;
+ 	};
+diff --git a/fdts/stm32mp257f-icore-edimm2-mx.dts b/fdts/stm32mp257f-icore-edimm2-mx.dts
+index 7351e36f5..28a5e266a 100644
+--- a/fdts/stm32mp257f-icore-edimm2-mx.dts
++++ b/fdts/stm32mp257f-icore-edimm2-mx.dts
+@@ -38,6 +38,12 @@
+ 
+ 	/* USER CODE BEGIN root */
+ 
++	cpus {
++		domain-idle-states {
++			/delete-node/ lp-stop2;
++		};
++	};
++
+ 	aliases{
+ 		serial0 = &usart2;
+ 	};
