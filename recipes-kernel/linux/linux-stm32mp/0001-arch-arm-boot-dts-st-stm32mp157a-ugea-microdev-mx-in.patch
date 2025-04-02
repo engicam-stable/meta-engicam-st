@@ -1,4 +1,4 @@
-From 28746362e9d8e1579060b34d85a3e8e12e58412a Mon Sep 17 00:00:00 2001
+From 5e9a001871d67ca5b596568008b91c879bb662bb Mon Sep 17 00:00:00 2001
 From: Fabio Aiuto <fabio.aiuto@engicam.com>
 Date: Thu, 20 Feb 2025 11:32:13 +0100
 Subject: [PATCH] arch: arm: boot: dts: st: stm32mp157a-ugea-microdev-mx:
@@ -7,8 +7,8 @@ Subject: [PATCH] arch: arm: boot: dts: st: stm32mp157a-ugea-microdev-mx:
 Initial commit for stm32mp157a-ugea-microdev-mx board.
 ---
  arch/arm/boot/dts/st/Makefile                 |   1 +
- .../dts/st/stm32mp157a-ugea-microdev-mx.dts   | 842 ++++++++++++++++++
- 2 files changed, 843 insertions(+)
+ .../dts/st/stm32mp157a-ugea-microdev-mx.dts   | 857 ++++++++++++++++++
+ 2 files changed, 858 insertions(+)
  create mode 100644 arch/arm/boot/dts/st/stm32mp157a-ugea-microdev-mx.dts
 
 diff --git a/arch/arm/boot/dts/st/Makefile b/arch/arm/boot/dts/st/Makefile
@@ -25,10 +25,10 @@ index 1c201b5b5..7168d1d14 100644
  	stm32mp157c-dk2.dtb \
 diff --git a/arch/arm/boot/dts/st/stm32mp157a-ugea-microdev-mx.dts b/arch/arm/boot/dts/st/stm32mp157a-ugea-microdev-mx.dts
 new file mode 100644
-index 000000000..c1de17526
+index 000000000..19e399aed
 --- /dev/null
 +++ b/arch/arm/boot/dts/st/stm32mp157a-ugea-microdev-mx.dts
-@@ -0,0 +1,842 @@
+@@ -0,0 +1,857 @@
 +// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-3-Clause)
 +/*
 + * Copyright (C) 2025, STMicroelectronics - All Rights Reserved
@@ -583,15 +583,30 @@ index 000000000..c1de17526
 +	phy-mode = "rmii";
 +	max-speed = <100>;
 +	phy-handle = <&phy0>;
-+	snps,ps-speed = <100>;
++	nvmem-cells = <&ethernet_mac_address>;
++	nvmem-cell-names = "mac-address";
 +	st,ext-phyclk;
++	clock-names = "stmmaceth",
++		      "mac-clk-tx",
++		      "mac-clk-rx",
++		      "eth-ck",
++		      "ptp_ref",
++		      "ethstp",
++		      "syscfg-clk";
++	clocks = <&rcc ETHMAC>,
++		 <&rcc ETHTX>,
++		 <&rcc ETHRX>,
++		 <&rcc ETHCK_K>,
++		 <&rcc ETHPTP_K>,
++		 <&rcc ETHSTP>,
++		 <&rcc SYSCFG>;
 +
 +	mdio {
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +		compatible = "snps,dwmac-mdio";
 +		snps,reset-gpio = <&gpioa 13 0>;
-+		snps,reset-delay-us = <25>;
++		snps,reset-delays-us = <0 30000 50000>;
 +		snps,reset-active-low;
 +
 +		phy0: ethernet-phy-0 {
