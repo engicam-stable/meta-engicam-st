@@ -18,6 +18,8 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0016-stm32mp2-SmarCore-porting-Ampire10-with-USB-touch.patch \
             file://0017-stm32mp2-iCore-Added-device-tree-for-mask-D.patch \
             file://0018-stm32mp2-MicroGEA-Porting-for-EDIMM2.0-starterkit.patch \
+            file://0019-stm32mp2-MicroGEA-Enabled-sgtl-audio-codec.patch \
+            file://0020-stm32mp2-MicroGEA-Fixed-sgtl-node-power-supply.patch \
             "
 
 SRC_URI += "file://${LINUX_VERSION}/fragment-05-engicam.config;subdir=fragments"

@@ -14,5 +14,7 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0012-stm32mp2-SmarCore-changed-OTP-124-for-1.8V-vddio.patch \
             file://0013-stm32mp2-iCore-Added-device-tree-for-mask-D.patch \
             file://0014-stm32mp2-MicroGEA-Porting-for-EDIMM2.0-starterkit.patch \
+            file://0015-stm32mp2-MicroGEA-Set-SAI1-clock-Configured-protecti.patch \
             "
 
+ST_OPTEE_DEBUG_LOG_LEVEL = "2"

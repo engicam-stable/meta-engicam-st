@@ -1,0 +1,103 @@
+From cac12ff995cb29c7697d5e102db81e4d23d6fcfc Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Mon, 14 Apr 2025 18:01:18 +0200
+Subject: [PATCH] stm32mp2 MicroGEA: Enabled sgtl audio codec
+
+---
+ .../dts/st/stm32mp257f-microgea-edimm2-mx.dts | 28 +++++++------------
+ 1 file changed, 10 insertions(+), 18 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-microgea-edimm2-mx.dts b/arch/arm64/boot/dts/st/stm32mp257f-microgea-edimm2-mx.dts
+index 034cb25e0..82c47dd4c 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-microgea-edimm2-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-microgea-edimm2-mx.dts
+@@ -135,13 +135,6 @@ panel_lvds_backlight:panel-lvds-backlight{
+ 		status = "okay";
+ 	};
+ 
+-	sound: sound {
+-		compatible = "audio-graph-card";
+-		label = "STM32MP25-EV1";
+-		dais = <&i2s2_port>;
+-		status = "disabled";
+-	};
+-
+ 	wifi_pwrseq: wifi-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&gpioz 1 1>;
+@@ -181,7 +174,7 @@ disp0_pwd: disp0-pwd {
+ 		regulator-always-on;		
+ 	};
+ 
+-	sound-card {
++	sound: sound {
+ 		compatible = "audio-graph-card";
+ 		label = "uGea STM32MP2";
+ 		routing =
+@@ -214,6 +207,7 @@ pad_clk:pad-clk{
+ 			compatible = "fixed-clock";
+ 			clock-frequency = <100000000>;
+ 		};
++
+ 		/* USER CODE END clocks */
+ 	};
+ 
+@@ -875,9 +869,9 @@ sgtl5000: codec@a {
+ 		#sound-dai-cells = <0>;
+ 		clocks = <&sai1a>;     /* The codec is a consumer of SAI1A master clock */
+ 		clock-names = "MCLK"; /* Feed MCLK codec clock with SAI1A master clock provider */
+-		VDDA-supply = <&scmi_v3v3>;
++		VDDA-supply = <&scmi_v1v8>;
+ 		VDDIO-supply = <&scmi_v3v3>;
+-		VDDD-supply = <&scmi_v1v8>;
++		//VDDD-supply = <&scmi_v1v8>;
+ 
+ 		sgtl5000_port: port {
+ 			#address-cells = <1>;
+@@ -891,12 +885,10 @@ sgtl5000_tx_endpoint: endpoint@0 {
+ 			sgtl5000_rx_endpoint: endpoint@1 {
+ 				reg = <1>;
+ 				remote-endpoint = <&sai1b_endpoint>;
+-				frame-master;    /* Set codec as master of SAI1B for FS clock. */
+-				bitclock-master; /* Set codec as master of SAI1B for SCK clock. */
+ 			};
+ 		};
+ 
+-	};		
++	};
+ 	/* USER CODE END i2c1 */
+ };
+ 
+@@ -1081,11 +1073,11 @@ &sai1{
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&sai1a_pins_mx>, <&sai1b_pins_mx>;
+ 	pinctrl-1 = <&sai1a_sleep_pins_mx>, <&sai1b_sleep_pins_mx>;
+-	status = "disabled";
++	status = "okay";
+ 
+ 	/* USER CODE BEGIN sai1 */
+-	//clocks = <&rcc CK_KER_SAI1>, <&rcc CK_KER_SAI1>, <&rcc CK_KER_LTDC>;
+-	//clock-names = "pclk", "x8k", "x11k"; /* Peripheral and parent clock configuration.  */
++	clocks = <&rcc CK_KER_SAI1>;
++	clock-names = "pclk";
+ 	/* USER CODE END sai1 */
+ 
+ 	sai1a:audio-controller@40290004{
+@@ -1098,7 +1090,7 @@ sai1a_port: port {
+ 			sai1a_endpoint: endpoint {
+ 					remote-endpoint = <&sgtl5000_tx_endpoint>;
+ 					format = "i2s";
+-					mclk-fs = <256>; /* Set mclk/fs ratio. (256 or 512) */
++					mclk-fs = <512>; /* Set mclk/fs ratio. (256 or 512) */
+ 			};
+ 		};
+ 		/* USER CODE END sai1a */
+@@ -1117,7 +1109,7 @@ sai1b_port: port {
+ 			sai1b_endpoint: endpoint {
+ 				remote-endpoint = <&sgtl5000_rx_endpoint>;
+ 				format = "i2s";
+-				mclk-fs = <256>; /* Set mclk/fs ratio. (256 or 512) */
++				mclk-fs = <512>; /* Set mclk/fs ratio. (256 or 512) */
+ 			};
+ 		};
+ 		/* USER CODE END sai1b */

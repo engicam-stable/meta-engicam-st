@@ -1,0 +1,46 @@
+From 23e2a7be435c1c4a515d2af92148e064078a9beb Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Tue, 15 Apr 2025 11:02:13 +0200
+Subject: [PATCH] stm32mp2 MicroGEA: Set SAI1 clock - Configured protection for
+ bt_reg_on pin and i2c1_sda
+
+---
+ core/arch/arm/dts/stm32mp257f-microgea-edimm2-mx-rcc.dtsi | 2 +-
+ core/arch/arm/dts/stm32mp257f-microgea-edimm2-mx-rif.dtsi | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/core/arch/arm/dts/stm32mp257f-microgea-edimm2-mx-rcc.dtsi b/core/arch/arm/dts/stm32mp257f-microgea-edimm2-mx-rcc.dtsi
+index c7092f0c9..4bf3ba99e 100644
+--- a/core/arch/arm/dts/stm32mp257f-microgea-edimm2-mx-rcc.dtsi
++++ b/core/arch/arm/dts/stm32mp257f-microgea-edimm2-mx-rcc.dtsi
+@@ -60,7 +60,7 @@
+ 		FLEXGEN_CFG(15, XBAR_SRC_PLL4, 0, 9)
+ 		FLEXGEN_CFG(19, XBAR_SRC_HSI_KER, 0, 0)
+ 		FLEXGEN_CFG(20, XBAR_SRC_HSI_KER, 0, 0)
+-		FLEXGEN_CFG(23, XBAR_SRC_PLL4, 3, 5)
++		FLEXGEN_CFG(23, XBAR_SRC_PLL4, 1, 24)
+ 		FLEXGEN_CFG(26, XBAR_SRC_PLL4, 0, 9)
+ 		FLEXGEN_CFG(27, XBAR_SRC_PLL8, 0, 1)
+ 		FLEXGEN_CFG(32, XBAR_SRC_PLL5, 0, 19)
+diff --git a/core/arch/arm/dts/stm32mp257f-microgea-edimm2-mx-rif.dtsi b/core/arch/arm/dts/stm32mp257f-microgea-edimm2-mx-rif.dtsi
+index 16e373765..30a90cec1 100644
+--- a/core/arch/arm/dts/stm32mp257f-microgea-edimm2-mx-rif.dtsi
++++ b/core/arch/arm/dts/stm32mp257f-microgea-edimm2-mx-rif.dtsi
+@@ -796,7 +796,7 @@
+ 	st,protreg = <
+ 		RIFPROT(RIF_IOPORT_PIN(0), EMPTY_SEMWL,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* PA0 */
+ 		RIFPROT(RIF_IOPORT_PIN(1), RIF_UNUSED,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* PA1 */
+-		RIFPROT(RIF_IOPORT_PIN(2), RIF_UNUSED,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* PA2 */
++		RIFPROT(RIF_IOPORT_PIN(2), RIF_UNUSED,  RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* PA2 */
+ 		RIFPROT(RIF_IOPORT_PIN(3), RIF_UNUSED,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* PA3 */
+ 		RIFPROT(RIF_IOPORT_PIN(4), RIF_UNUSED,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* PA4 */
+ 		RIFPROT(RIF_IOPORT_PIN(5), RIF_UNUSED,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* PA5 */
+@@ -950,7 +950,7 @@
+ 		RIFPROT(RIF_IOPORT_PIN(3), RIF_UNUSED,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* PH3 */
+ 		RIFPROT(RIF_IOPORT_PIN(4), RIF_UNUSED,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* PH4 */
+ 		RIFPROT(RIF_IOPORT_PIN(5), RIF_UNUSED,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* PH5 */
+-		RIFPROT(RIF_IOPORT_PIN(6), EMPTY_SEMWL,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* PH6 */
++		RIFPROT(RIF_IOPORT_PIN(6), RIF_UNUSED,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* PH6 */
+ 		RIFPROT(RIF_IOPORT_PIN(7), RIF_UNUSED,  RIF_UNLOCK, RIF_SEC, RIF_PRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* PH7 */
+ 		RIFPROT(RIF_IOPORT_PIN(8), RIF_UNUSED,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* PH8 */
+ 		RIFPROT(RIF_IOPORT_PIN(9), EMPTY_SEMWL,  RIF_UNLOCK, RIF_NSEC, RIF_PRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* PH9 */

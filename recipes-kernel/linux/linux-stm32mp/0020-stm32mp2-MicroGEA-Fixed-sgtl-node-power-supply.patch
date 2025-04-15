@@ -1,0 +1,25 @@
+From f0e867d474e9932bc469407d0ffb8434ee583475 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Tue, 15 Apr 2025 14:08:31 +0200
+Subject: [PATCH] stm32mp2 MicroGEA: Fixed sgtl node power supply
+
+---
+ arch/arm64/boot/dts/st/stm32mp257f-microgea-edimm2-mx.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-microgea-edimm2-mx.dts b/arch/arm64/boot/dts/st/stm32mp257f-microgea-edimm2-mx.dts
+index 82c47dd4c..9bd910b30 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-microgea-edimm2-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-microgea-edimm2-mx.dts
+@@ -869,9 +869,9 @@ sgtl5000: codec@a {
+ 		#sound-dai-cells = <0>;
+ 		clocks = <&sai1a>;     /* The codec is a consumer of SAI1A master clock */
+ 		clock-names = "MCLK"; /* Feed MCLK codec clock with SAI1A master clock provider */
+-		VDDA-supply = <&scmi_v1v8>;
++		VDDA-supply = <&scmi_v3v3>;
+ 		VDDIO-supply = <&scmi_v3v3>;
+-		//VDDD-supply = <&scmi_v1v8>;
++		VDDD-supply = <&scmi_v1v8>;
+ 
+ 		sgtl5000_port: port {
+ 			#address-cells = <1>;
