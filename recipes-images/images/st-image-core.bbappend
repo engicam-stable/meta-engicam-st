@@ -6,6 +6,7 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     iperf3 \
     libsocketcan  \
     minicom \
+    mmc-utils \
     mtd-utils-ubifs \
     u-boot-stm32mp-splash \
     "

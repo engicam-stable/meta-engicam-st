@@ -56,7 +56,7 @@ Ex. First build
 -----------
 
 ```
-DISTRO=openstlinux-weston MACHINE=stm32mp157-ugea source layers/meta-st/scripts/envsetup.sh build
+DISTRO=openstlinux-weston MACHINE=stm32mp15-ugea source layers/meta-st/scripts/envsetup.sh build
 bitbake-layers add-layer ../sources/meta-engicam-st
 bitbake st-image-weston
 ```

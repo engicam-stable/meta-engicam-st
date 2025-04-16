@@ -1,12 +1,13 @@
 CORE_IMAGE_EXTRA_INSTALL += " \
-    minicom \
-    mtd-utils-ubifs \
-    libsocketcan  \
+    brcm-patchram-plus \
     can-utils \
-    iperf3 \
     devmem2 \
     eng-emmc-tools \
-    brcm-patchram-plus \    
+    iperf3 \
+    libsocketcan  \
+    minicom \
+    mmc-utils \
+    mtd-utils-ubifs \
     u-boot-stm32mp-splash \
     "
 

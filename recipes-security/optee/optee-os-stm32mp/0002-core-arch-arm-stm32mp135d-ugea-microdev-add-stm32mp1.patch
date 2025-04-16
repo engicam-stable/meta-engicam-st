@@ -1,0 +1,507 @@
+From 6819d7db2220a1e80137ee9065e81776948f60f8 Mon Sep 17 00:00:00 2001
+From: Fabio Aiuto <fabio.aiuto@engicam.com>
+Date: Wed, 2 Apr 2025 11:41:00 +0200
+Subject: [PATCH] core: arch: arm: stm32mp135d-ugea-microdev: add stm32mp135
+ microdev board
+
+Add stm32mp135 ugea microdev board.
+---
+ .../arm/dts/stm32mp135d-ugea-microdev-mx.dts  | 471 ++++++++++++++++++
+ core/arch/arm/plat-stm32mp1/conf.mk           |   2 +
+ 2 files changed, 473 insertions(+)
+ create mode 100644 core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
+
+diff --git a/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts b/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
+new file mode 100644
+index 000000000..74186e4f2
+--- /dev/null
++++ b/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
+@@ -0,0 +1,471 @@
++// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-3-Clause)
++/*
++ * Copyright (C) 2025, STMicroelectronics - All Rights Reserved
++ * Author: STM32CubeMX code generation for STMicroelectronics.
++ */
++
++/* For more information on Device Tree configuration, please refer to
++ * https://wiki.st.com/stm32mpu/wiki/Category:Device_tree_configuration
++ */
++
++/dts-v1/;
++
++#include <dt-bindings/pinctrl/stm32-pinfunc.h>
++#include <dt-bindings/clock/stm32mp13-clksrc.h>
++#include <dt-bindings/soc/stm32mp13-etzpc.h>
++#include "stm32mp135.dtsi"
++
++/* USER CODE BEGIN includes */
++#include <dt-bindings/gpio/stm32mp_gpio.h>
++#include <dt-bindings/power/stm32mp1-power.h>
++#include <dt-bindings/soc/stm32mp-tzc400-macro.h>
++/* USER CODE END includes */
++
++/ {
++	model = "STMicroelectronics custom STM32CubeMX board - openstlinux-6.6-yocto-scarthgap-mpu-v24.11.06";
++	compatible = "st,stm32mp135d-ugea-microdev-mx", "st,stm32mp135";
++
++	memory@c0000000 {
++		device_type = "memory";
++		reg = <0xc0000000 0x20000000>;
++
++		/* USER CODE BEGIN memory */
++		/* USER CODE END memory */
++	};
++
++	reserved-memory {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		/* USER CODE BEGIN reserved-memory */
++		optee_framebuffer: optee-framebuffer@dd000000 {
++			/* Secure framebuffer memory */
++			reg = <0xdd000000 0x1000000>;
++			st,protreg = <TZC_REGION_S_RDWR 0>;
++		};
++		/* USER CODE END reserved-memory */
++	};
++
++	/* USER CODE BEGIN root */
++	vdd: vdd {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
++	};
++
++	vddcpu: vddcpu {
++		compatible = "regulator-gpio";
++		regulator-name = "vddcpu";
++		regulator-min-microvolt = <1250000>;
++		regulator-max-microvolt = <1350000>;
++		regulator-type = "voltage";
++		regulator-always-on;
++
++		gpios = <&gpiof 14 GPIO_ACTIVE_LOW>;
++		states = <1250000 0x0>,
++			 <1350000 0x1>;
++		/* 360uV per uS */
++		regulator-ramp-delay = <360>;
++	};
++
++	vddcore: vddcore {
++		compatible = "regulator-fixed";
++		regulator-name = "vddcore";
++		regulator-min-microvolt = <1250000>;
++		regulator-max-microvolt = <1250000>;
++		regulator-always-on;
++	};
++
++	vdd_adc: ldo1 {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd_adc";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++	};
++
++	vdd_sd: ldo5 {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd_sd";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-boot-on;
++	};
++
++	v1v8_periph: ldo6 {
++		compatible = "regulator-fixed";
++		regulator-name = "v1v8_periph";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++	};
++
++	vdd_usb: vdd_usb {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd_usb";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
++	};
++
++	v3v3_sw: pwr_sw2 {
++		compatible = "regulator-fixed";
++		regulator-name = "v3v3_sw";
++		regulator-active-discharge = <1>;
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++	};
++	/* USER CODE END root */
++
++	clocks {
++		/* USER CODE BEGIN clocks */
++		/* USER CODE END clocks */
++
++		clk_hsi: clk-hsi {
++			clock-frequency = <64000000>;
++
++			/* USER CODE BEGIN clk_hsi */
++			/* USER CODE END clk_hsi */
++		};
++		clk_lse: clk-lse {
++			clock-frequency = <32768>;
++
++			/* USER CODE BEGIN clk_lse */
++			/* USER CODE END clk_lse */
++		};
++		clk_hse: clk-hse {
++			clock-frequency = <24000000>;
++
++			/* USER CODE BEGIN clk_hse */
++			/* USER CODE END clk_hse */
++		};
++		clk_i2sin: clk-i2sin {
++			status = "disabled";
++
++			/* USER CODE BEGIN clk_i2sin */
++			/* USER CODE END clk_i2sin */
++		};
++	};
++
++}; /*root*/
++
++/*Warning: the configuration of the secured GPIOs should be added in (addons) User Section*/
++&pinctrl {
++	/* USER CODE BEGIN pinctrl */
++	/* USER CODE END pinctrl */
++};
++
++&bsec {
++	status = "okay";
++
++	/* USER CODE BEGIN bsec */
++	board_id: board_id@f0 {
++		reg = <0xf0 0x4>;
++		st,non-secure-otp;
++	};
++	/* USER CODE END bsec */
++};
++
++&etzpc {
++	status = "okay";
++	st,decprot = <
++	/*"NS_R S_W" peripherals*/
++	DECPROT(STM32MP1_ETZPC_DDRCTRLPHY_ID, DECPROT_NS_R_S_W, DECPROT_LOCK)
++	/*"Non Secured" peripherals*/
++	DECPROT(STM32MP1_ETZPC_ETH1_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_SDMMC1_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_SDMMC2_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_USART2_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_USBPHYCTRL_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	/*"Secured" peripherals*/
++	DECPROT(STM32MP1_ETZPC_RNG_ID, DECPROT_S_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_STGENC_ID, DECPROT_S_RW, DECPROT_UNLOCK)
++
++	/*Restriction: following IDs are not managed  - please to use User-Section if needed:
++		  STM32MP1_ETZPC_SRAMx_ID  STM32MP1_ETZPC_BKPSRAM_ID*/
++
++	/* USER CODE BEGIN etzpc_decprot */
++		/*STM32CubeMX generates a basic and standard configuration for ETZPC.
++		Additional device configurations can be added here if needed.
++		"etzpc" node could be also overloaded in "addons" User-Section.*/
++	/* USER CODE END etzpc_decprot */
++	>;
++
++	/* USER CODE BEGIN etzpc */
++	/* USER CODE END etzpc */
++};
++
++&rcc {
++	status = "okay";
++	clocks = <&clk_hse>, <&clk_hsi>, <&clk_lse>, <&clk_lsi>, <&clk_csi>;
++	clock-names = "clk-hse", "clk-hsi", "clk-lse", "clk-lsi", "clk-csi";
++
++	/* USER CODE BEGIN rcc */
++	/* USER CODE END rcc */
++
++	st,clksrc = <
++		CLK_MPU_PLL1P
++		CLK_AXI_PLL2P
++		CLK_MLAHBS_PLL3
++		CLK_RTC_LSI
++		CLK_MCO1_DISABLED
++		CLK_MCO2_DISABLED
++		CLK_CKPER_DISABLED
++		CLK_ETH1_PLL4P
++		CLK_SDMMC1_HCLK6
++		CLK_SDMMC2_HCLK6
++		CLK_STGEN_HSI
++		CLK_USBPHY_HSE
++		CLK_UART2_PCLK6
++		CLK_UART4_PCLK1
++		CLK_UART35_PCLK1
++		CLK_FDCAN_HSE
++		CLK_RNG1_CSI
++	>;
++	st,clkdiv = <
++		DIV(DIV_MPU, 1)
++		DIV(DIV_AXI, 0)
++		DIV(DIV_MLAHB, 0)
++		DIV(DIV_APB1, 0)
++		DIV(DIV_APB2, 0)
++		DIV(DIV_APB3, 0)
++		DIV(DIV_APB4, 0)
++		DIV(DIV_APB5, 0)
++		DIV(DIV_APB6, 0)
++		DIV(DIV_RTC, 0)
++		DIV(DIV_MCO1, 0)
++		DIV(DIV_MCO2, 0)
++	>;
++	st,pll_vco {
++		pll1_vco_1300Mhz: pll1-vco-1300Mhz {
++			src = < CLK_PLL12_HSE >;
++			divmn = < 2 80 >;
++			frac = < 0x800 >;
++		};
++		pll2_vco_1040Mhz: pll2-vco-1040Mhz {
++			src = < CLK_PLL12_HSE >;
++			divmn = < 2 64 >;
++		};
++		pll3_vco_600Mhz: pll3-vco-600Mhz {
++			src = < CLK_PLL3_HSE >;
++			divmn = < 1 49 >;
++		};
++		pll4_vco_600Mhz: pll4-vco-600Mhz {
++			src = < CLK_PLL4_HSE >;
++			divmn = < 1 49 >;
++		};
++		/* USER CODE BEGIN rcc_st-pll_vco */
++		pll1_vco_2000Mhz: pll1-vco-2000Mhz {
++			src = < CLK_PLL12_HSE >;
++			divmn = < 1 82 >;
++			frac = < 0xAAA >;
++		};
++		/* USER CODE END rcc_st-pll_vco */
++	};
++
++	pll1:st,pll@0 {
++		compatible = "st,stm32mp1-pll";
++		reg = <0>;
++
++		st,pll = < &pll1_cfg1 >;
++
++		pll1_cfg1: pll1_cfg1 {
++			st,pll_vco = < &pll1_vco_1300Mhz >;
++			st,pll_div_pqr = < 0 1 1 >;
++		};
++		/* USER CODE BEGIN pll1 */
++		pll1_cfg2: pll1_cfg2 {
++			st,pll_vco = < &pll1_vco_2000Mhz >;
++			st,pll_div_pqr = < 0 1 1 >;
++		};
++		/* USER CODE END pll1 */
++	};
++
++	pll2:st,pll@1 {
++		compatible = "st,stm32mp1-pll";
++		reg = <1>;
++
++		st,pll = < &pll2_cfg1 >;
++
++		pll2_cfg1: pll2_cfg1 {
++			st,pll_vco = < &pll2_vco_1040Mhz >;
++			st,pll_div_pqr = < 7 1 0 >;
++		};
++		/* USER CODE BEGIN pll2 */
++		/* USER CODE END pll2 */
++	};
++
++	pll3:st,pll@2 {
++		compatible = "st,stm32mp1-pll";
++		reg = <2>;
++
++		st,pll = < &pll3_cfg1 >;
++
++		pll3_cfg1: pll3_cfg1 {
++			st,pll_vco = < &pll3_vco_600Mhz >;
++			st,pll_div_pqr = < 9 1 1 >;
++		};
++		/* USER CODE BEGIN pll3 */
++		/* USER CODE END pll3 */
++	};
++
++	pll4:st,pll@3 {
++		compatible = "st,stm32mp1-pll";
++		reg = <3>;
++
++		st,pll = < &pll4_cfg1 >;
++
++		pll4_cfg1: pll4_cfg1 {
++			st,pll_vco = < &pll4_vco_600Mhz >;
++			st,pll_div_pqr = < 11 59 0 >;
++		};
++		/* USER CODE BEGIN pll4 */
++		/* USER CODE END pll4 */
++	};
++
++	st,clk_opp {
++		/* CK_MPU clock config for MP13 */
++		st,ck_mpu {
++
++			cfg_1 {
++				hz = < 650000000 >;
++				st,clksrc = < CLK_MPU_PLL1P >;
++				st,pll = < &pll1_cfg1 >;
++			};
++			/* USER CODE BEGIN rcc_st-ck_mpu */
++			cfg_2 {
++				hz = < 1000000000 >;
++				st,clksrc = < CLK_MPU_PLL1P >;
++				st,pll = < &pll1_cfg2 >;
++			};
++			/* USER CODE END rcc_st-ck_mpu */
++		};
++
++		/* CK_AXI clock config for MP13 */
++		st,ck_axi {
++
++			cfg_1 {
++				hz = < 65000000 >;
++				st,clksrc = < CLK_AXI_PLL2P >;
++				st,clkdiv = < DIV(DIV_AXI, 0) >;
++				st,pll = < &pll2_cfg1 >;
++			};
++			/* USER CODE BEGIN rcc_st-ck_axi */
++			/* USER CODE END rcc_st-ck_axi */
++		};
++
++		/* CK_MLAHBS clock config for MP13 */
++		st,ck_mlahbs {
++
++			cfg_1 {
++				hz = < 60000000 >;
++				st,clksrc = < CLK_MLAHBS_PLL3 >;
++				st,clkdiv = < DIV(DIV_MLAHB, 0) >;
++				st,pll = < &pll3_cfg1 >;
++			};
++
++			/* USER CODE BEGIN rcc_st-ck_mlahbs */
++			/* USER CODE END rcc_st-ck_mlahbs */
++		};
++	};
++
++	/* USER CODE BEGIN rcc */
++	/* USER CODE END rcc */
++};
++
++&rng {
++	status = "okay";
++
++	/* USER CODE BEGIN rng */
++	/* USER CODE END rng */
++};
++
++&rtc {
++	status = "okay";
++
++	/* USER CODE BEGIN rtc */
++	/* USER CODE END rtc */
++};
++
++/* USER CODE BEGIN addons */
++&cpu0 {
++	cpu-supply = <&vddcpu>;
++};
++
++&cpu0_opp_table {
++	opp-900000000 {
++		/delete-property/st,opp-default;
++	};
++
++	opp-1000000000 {
++		st,opp-default;
++	};
++};
++
++&gpiof {
++	st,protreg = < (TZPROT(14)) >;
++};
++
++&pwr_regulators {
++	system_suspend_supported_soc_modes = <
++		STM32_PM_CSLEEP_RUN
++		STM32_PM_CSTOP_ALLOW_LP_STOP
++		STM32_PM_CSTOP_ALLOW_LPLV_STOP
++		STM32_PM_CSTOP_ALLOW_LPLV_STOP2
++		STM32_PM_CSTOP_ALLOW_STANDBY_DDR_SR
++	>;
++
++	system_off_soc_mode = <STM32_PM_SHUTDOWN>;
++	vdd-supply = <&vdd>;
++	vdd_3v3_usbfs-supply = <&vdd_usb>;
++};
++
++&scmi_regu {
++	voltd-vddcpu {
++		reg = <VOLTD_SCMI_STPMIC1_BUCK1>;
++		voltd-supply = <&vddcpu>;
++	};
++	voltd-vdd {
++		reg = <VOLTD_SCMI_STPMIC1_BUCK3>;
++		voltd-supply = <&vdd>;
++	};
++	voltd-vddcore {
++		reg = <VOLTD_SCMI_STPMIC1_BUCK4>;
++		voltd-supply = <&vddcore>;
++	};
++	voltd-vdd-adc {
++		reg = <VOLTD_SCMI_STPMIC1_LDO1>;
++		voltd-supply = <&vdd_adc>;
++	};
++	voltd-vdd-usb {
++		reg = <VOLTD_SCMI_STPMIC1_LDO4>;
++		voltd-supply = <&vdd_usb>;
++	};
++	voltd-vdd-sd {
++		reg = <VOLTD_SCMI_STPMIC1_LDO5>;
++		voltd-supply = <&vdd_sd>;
++	};
++	voltd-v1v8-periph {
++		reg = <VOLTD_SCMI_STPMIC1_LDO6>;
++		voltd-supply = <&v1v8_periph>;
++	};
++	voltd-v3v3-sw {
++		reg = <VOLTD_SCMI_STPMIC1_PWR_SW2>;
++		voltd-supply = <&v3v3_sw>;
++	};
++};
++
++&sdmmc1_io {
++	vddsd1-supply = <&vdd>;
++};
++
++&sdmmc2_io {
++	vddsd2-supply = <&vdd>;
++};
++
++&tzc400 {
++	memory-region = <&optee_framebuffer>;
++};
++/* USER CODE END addons */
++
+diff --git a/core/arch/arm/plat-stm32mp1/conf.mk b/core/arch/arm/plat-stm32mp1/conf.mk
+index 60a15bd1b..43205f05b 100644
+--- a/core/arch/arm/plat-stm32mp1/conf.mk
++++ b/core/arch/arm/plat-stm32mp1/conf.mk
+@@ -15,10 +15,12 @@ flavor_dts_file-157F_DK2 = stm32mp157f-dk2.dts
+ flavor_dts_file-157F_ED1 = stm32mp157f-ed1.dts
+ flavor_dts_file-157F_EV1 = stm32mp157f-ev1.dts
+ 
++flavor_dts_file-135D_UGEAM = stm32mp135d-ugea-microdev-mx.dts
+ flavor_dts_file-135F_DK = stm32mp135f-dk.dts
+ 
+ flavorlist-cryp-512M = $(flavor_dts_file-157C_DK2) \
+ 		       $(flavor_dts_file-157F_DK2) \
++		       $(flavor_dts_file-135D_UGEAM) \
+ 		       $(flavor_dts_file-135F_DK)
+ 
+ flavorlist-no_cryp-512M = $(flavor_dts_file-157A_DK1) \
