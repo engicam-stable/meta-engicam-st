@@ -8,5 +8,6 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0006-stm32mp2-enabled-env-overwrite.patch \
             file://0007-stm32mp2-iCore-Added-device-tree-for-mask-D.patch \
             file://0008-stm32mp2-MicroGEA-Porting-for-EDIMM2.0-starterkit.patch \
+            file://0009-stm32mp2-MicroGea-Config-default-device-tree.patch \
             "
 

@@ -1,0 +1,23 @@
+From 5025fb6a313880207d5d9670040312c2d708e1d0 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Tue, 29 Apr 2025 11:54:24 +0200
+Subject: [PATCH] stm32mp2 MicroGea Config default device tree
+
+---
+ arch/arm/dts/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index 4ca65d07d3..9e1395bf97 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -1211,7 +1211,8 @@ dtb-$(CONFIG_STM32MP15X) += \
+ dtb-$(CONFIG_STM32MP25X) += \
+ 	stm32mp257f-dk.dtb \
+ 	stm32mp257f-ev1.dtb \
+-	stm32mp257f-smarcore-xtouch10-mx.dtb
++	stm32mp257f-smarcore-xtouch10-mx.dtb \
++	stm32mp257f-microgea-edimm2-mx.dtb
+ 
+ dtb-$(CONFIG_SOC_K3_AM654) += \
+ 	k3-am654-base-board.dtb \
