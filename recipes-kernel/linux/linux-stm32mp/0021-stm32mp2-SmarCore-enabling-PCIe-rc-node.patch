@@ -1,0 +1,86 @@
+From 0fc8e640c73aaa86246f4431313f9fdd0df3c6d2 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Tue, 6 May 2025 17:18:09 +0200
+Subject: [PATCH] stm32mp2 SmarCore: enabling PCIe rc node
+
+---
+ .../st/stm32mp257f-smarcore-xtouch10-mx.dts   | 45 ++++++++++++++++---
+ 1 file changed, 39 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-smarcore-xtouch10-mx.dts b/arch/arm64/boot/dts/st/stm32mp257f-smarcore-xtouch10-mx.dts
+index 86d775237..9abbf6368 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-smarcore-xtouch10-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-smarcore-xtouch10-mx.dts
+@@ -156,6 +156,20 @@ sound: sound {
+ 		dais = <&i2s1_port>;
+ 		status = "okay";
+ 	};
++
++	CPU_PCIE_CLK_EN_N: CPU_PCIE_CLK_EN_N {
++		compatible = "regulator-fixed";
++		regulator-name = "CPU_PCIE_CLK_EN_N";
++		gpio = <&gpioh 3 GPIO_ACTIVE_LOW>;
++		regulator-always-on;
++	};
++
++	WAKE_ON_WWAN_N: WAKE_ON_WWAN_N {
++		compatible = "regulator-fixed";
++		regulator-name = "WAKE_ON_WWAN_N";
++		gpio = <&gpiog 1 GPIO_ACTIVE_LOW>;
++		regulator-always-on;
++	};
+ 	/* USER CODE END root */
+ 
+ 	clocks{
+@@ -179,6 +193,12 @@ pad_clk:pad-clk{
+ 			compatible = "fixed-clock";
+ 			clock-frequency = <100000000>;
+ 		};
++
++		ref25_xtal_pcie: ref25m-xtal-pcie {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <25000000>;
++		};
+ 		/* USER CODE END clocks */
+ 	};
+ 
+@@ -988,7 +1008,23 @@ &i2c6{
+ 	pcf8523: rtc@68 {
+ 		compatible = "nxp,pcf8523";
+ 		reg = <0x68>;
+-	};	
++	};
++
++	rs9: clock-generator@6a {
++		compatible = "renesas,9fgv0241";
++		reg = <0x6a>;
++		#clock-cells = <1>;
++
++		clocks = <&ref25_xtal_pcie>;
++
++		DIF0 {
++			renesas,slew-rate = <3000000>;
++		};
++
++		DIF1 {
++			renesas,slew-rate = <3000000>;
++		};
++	};
+ 	/* USER CODE END i2c6 */
+ };
+ 
+@@ -1096,11 +1132,8 @@ &m33_rproc{
+ };
+ 
+ &pcie_rc{
+-	pinctrl-names = "default", "init";
+-	pinctrl-0 = <&pcie_pins_mx>;
+-	pinctrl-1 = <&pcie_init_pins_mx>;
+-	status = "disabled";
+-
++	status = "okay";
++	reset-gpios = <&gpiog 13 GPIO_ACTIVE_HIGH>;
+ 	/* USER CODE BEGIN pcie_rc */
+ 	/* USER CODE END pcie_rc */
+ };
