@@ -1,0 +1,44 @@
+From 2755dfafb717ff33e8abce71ec6178f76d844efd Mon Sep 17 00:00:00 2001
+From: Fabio Aiuto <fabio.aiuto@engicam.com>
+Date: Fri, 18 Apr 2025 11:01:35 +0200
+Subject: [PATCH] core: arch: arm: dts: stm32mp157a-ugea-microdev-mx: fix cpu
+ supply
+
+Fix cpu supply desc.
+---
+ core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts b/core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts
+index 35907458c..066cdbf8b 100644
+--- a/core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts
++++ b/core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts
+@@ -51,11 +51,11 @@
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
+-	vddcpu: vddcpu {
++	vddcore: vddcore {
+ 		compatible = "regulator-fixed";
+-		regulator-name = "vddcpu";
+-		regulator-min-microvolt = <1250000>;
+-		regulator-max-microvolt = <1250000>;
++		regulator-name = "vddcore";
++		regulator-min-microvolt = <1200000>;
++		regulator-max-microvolt = <1350000>;
+ 		regulator-always-on;
+ 	};
+ 
+@@ -308,7 +308,11 @@
+ 
+ /* USER CODE BEGIN addons */
+ &cpu0 {
+-	cpu-supply = <&vddcpu>;
++	cpu-supply = <&vddcore>;
++};
++
++&cpu1 {
++	cpu-supply = <&vddcore>;
+ };
+ 
+ &pwr_regulators {

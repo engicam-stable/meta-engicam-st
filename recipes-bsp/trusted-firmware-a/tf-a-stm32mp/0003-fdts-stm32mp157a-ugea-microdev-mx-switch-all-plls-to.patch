@@ -1,0 +1,133 @@
+From 429cf395814f263691b22196938d14c479eb0d2e Mon Sep 17 00:00:00 2001
+From: Fabio Aiuto <fabio.aiuto@engicam.com>
+Date: Thu, 24 Apr 2025 11:22:20 +0200
+Subject: [PATCH] fdts: stm32mp157a-ugea-microdev-mx: switch all plls to HSE
+ source clock
+
+Switch all plls to HSE source clk.
+
+HSE has a digital bypass external oscillator.
+---
+ fdts/stm32mp157a-ugea-microdev-mx.dts | 61 ++++++++++++++++++---------
+ 1 file changed, 41 insertions(+), 20 deletions(-)
+
+diff --git a/fdts/stm32mp157a-ugea-microdev-mx.dts b/fdts/stm32mp157a-ugea-microdev-mx.dts
+index 11f4a2873..2de4b36bc 100644
+--- a/fdts/stm32mp157a-ugea-microdev-mx.dts
++++ b/fdts/stm32mp157a-ugea-microdev-mx.dts
+@@ -64,6 +64,7 @@
+ 		};
+ 		clk_hse: clk-hse {
+ 			clock-frequency = <24000000>;
++			st,digbypass;
+ 
+ 			/* USER CODE BEGIN clk_hse */
+ 			/* USER CODE END clk_hse */
+@@ -172,10 +173,10 @@
+ 			status = "okay";
+ 
+ 			nand@0 {
+-					reg = <0>;
+-					nand-on-flash-bbt;
+-					#address-cells = <1>;
+-					#size-cells = <1>;
++				reg = <0>;
++				nand-on-flash-bbt;
++				#address-cells = <1>;
++				#size-cells = <1>;
+ 			};
+ 	};
+ 	/* USER CODE END fmc */
+@@ -185,41 +186,47 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN rcc */
++	compatible = "st,stm32mp1-rcc-secure", "st,stm32mp1-rcc", "syscon";
+ 	/* USER CODE END rcc */
+ 
+ 	st,clksrc = <
+ 		CLK_CKPER_DISABLED
+ 		CLK_FMC_ACLK
+-		CLK_SDMMC12_HCLK6
++		CLK_SDMMC12_HSI
+ 		CLK_STGEN_HSI
+-		CLK_UART24_PCLK1
++		CLK_UART24_HSE
+ 		CLK_UART35_PCLK1
+ 		CLK_UART78_PCLK1
+ 		CLK_MPU_PLL1P
+-		CLK_AXI_HSI
+-		CLK_MCU_HSI
++		CLK_AXI_PLL2P
++		CLK_MCU_PLL3P
+ 	>;
+ 	st,clkdiv = <
+ 		DIV(DIV_MPU, 1)
+-		DIV(DIV_AXI, 0)
++		DIV(DIV_AXI, 1)
+ 		DIV(DIV_MCU, 0)
+-		DIV(DIV_APB1, 0)
+-		DIV(DIV_APB2, 0)
+-		DIV(DIV_APB3, 0)
+-		DIV(DIV_APB4, 0)
+-		DIV(DIV_APB5, 0)
++		DIV(DIV_APB1, 1)
++		DIV(DIV_APB2, 1)
++		DIV(DIV_APB3, 1)
++		DIV(DIV_APB4, 1)
++		DIV(DIV_APB5, 1)
+ 		DIV(DIV_RTC, 0)
+ 		DIV(DIV_MCO1, 0)
+ 		DIV(DIV_MCO2, 0)
+ 	>;
+ 	st,pll_vco {
+-		pll1_vco_800Mhz: pll1-vco-800Mhz {
+-			src = < CLK_PLL12_HSI >;
+-			divmn = < 3 24 >;
++		pll1_vco_1300Mhz: pll1-vco-1300Mhz {
++			src = < CLK_PLL12_HSE >;
++			divmn = < 2 80 >;
++			frac = < 0x800 >;
+ 		};
+ 		pll2_vco_1056Mhz: pll2-vco-1056Mhz {
+-			src = < CLK_PLL12_HSI >;
+-			divmn = < 3 32 >;
++			src = < CLK_PLL12_HSE >;
++			divmn = < 1 43 >;
++		};
++		pll3_vco_600Mhz: pll3-vco-600Mhz {
++			src = < CLK_PLL3_HSE >;
++			divmn = < 1 49 >;
+ 		};
+ 		/* USER CODE BEGIN rcc_st-pll_vco */
+ 		/* USER CODE END rcc_st-pll_vco */
+@@ -232,7 +239,7 @@
+ 		st,pll = < &pll1_cfg1 >;
+ 
+ 		pll1_cfg1: pll1_cfg1 {
+-			st,pll_vco = < &pll1_vco_800Mhz >;
++			st,pll_vco = < &pll1_vco_1300Mhz >;
+ 			st,pll_div_pqr = < 0 1 1 >;
+ 		};
+ 		/* USER CODE BEGIN pll1 */
+@@ -253,6 +260,20 @@
+ 		/* USER CODE END pll2 */
+ 	};
+ 
++	pll3:st,pll@2 {
++		compatible = "st,stm32mp1-pll";
++		reg = <2>;
++
++		st,pll = < &pll3_cfg1 >;
++
++		pll3_cfg1: pll3_cfg1 {
++			st,pll_vco = < &pll3_vco_600Mhz >;
++			st,pll_div_pqr = < 2 11 1 >;
++		};
++		/* USER CODE BEGIN pll3 */
++		/* USER CODE END pll3 */
++	};
++
+ };
+ 
+ &sdmmc1 {
