@@ -1,0 +1,22 @@
+From de6ea4f008c47ffb49e79eb045deae3d05720374 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Tue, 3 Jun 2025 15:07:24 +0200
+Subject: [PATCH] stm32mp2 SmarCore: set 125MHz clock in mxl-8611x driver
+
+---
+ drivers/net/phy/mxl-8611x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/phy/mxl-8611x.c b/drivers/net/phy/mxl-8611x.c
+index ee762448b..ac1e72fb2 100644
+--- a/drivers/net/phy/mxl-8611x.c
++++ b/drivers/net/phy/mxl-8611x.c
+@@ -185,7 +185,7 @@
+ #define MXL8611X_CLOCK_DEFAULT							3
+ 
+ 
+-#define MXL8611X_EXT_SYNCE_CFG_CLOCK_FREQ_CUSTOM	MXL8611X_CLOCK_DEFAULT
++#define MXL8611X_EXT_SYNCE_CFG_CLOCK_FREQ_CUSTOM	MXL8611X_CLOCK_FREQ_125M
+ 
+ /* Adjust RGMII timing based on min/max range defined above */
+ #define MXL8611X_EXT_RGMII_CFG1_RX_DELAY_CUSTOM \
