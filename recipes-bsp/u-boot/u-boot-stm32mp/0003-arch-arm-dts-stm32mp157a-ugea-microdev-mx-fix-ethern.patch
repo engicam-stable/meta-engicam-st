@@ -1,0 +1,75 @@
+From 3c878bcb89b0a47f3b2a640299fbcb175af223c2 Mon Sep 17 00:00:00 2001
+From: Fabio Aiuto <fabio.aiuto@engicam.com>
+Date: Fri, 18 Apr 2025 09:29:46 +0200
+Subject: [PATCH] arch: arm: dts: stm32mp157a-ugea-microdev-mx: fix ethernet
+
+Fix ethernet.
+---
+ arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts | 25 +++++++++++++++----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts b/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts
+index 4c9097e89f..ae5e2f3101 100644
+--- a/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts
++++ b/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts
+@@ -503,6 +503,10 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN m4_rproc */
++	resets = <&scmi_reset RST_SCMI_MCU>,
++		 <&scmi_reset RST_SCMI_MCU_HOLD_BOOT>;
++	reset-names = "mcu_rst", "hold_boot";
++	/delete-property/ st,syscfg-holdboot;
+ 	/* USER CODE END m4_rproc */
+ };
+ 
+@@ -548,19 +552,21 @@
+ 	phy-mode = "rmii";
+ 	max-speed = <100>;
+ 	phy-handle = <&phy0>;
+-	snps,ps-speed = <100>;
++	nvmem-cells = <&ethernet_mac_address>;
++	nvmem-cell-names = "mac-address";
++
+ 	st,ext-phyclk;
++	st,eth-ref-clk-sel;
+ 
+ 	mdio {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		compatible = "snps,dwmac-mdio";
+-		snps,reset-gpio = <&gpioa 13 0>;
+-		snps,reset-delay-us = <25>;
+-		snps,reset-active-low;
+ 
+-		phy0: ethernet-phy-0 {
++		phy0: ethernet-phy@0 {
++			compatible = "ethernet-phy-id0007.c0f1";
+ 			reg = <0>;
++			reset-gpios = <&gpioa 13 GPIO_ACTIVE_LOW>;
+ 		};
+ 	};
+ 	/* USER CODE END ethernet0 */
+@@ -651,6 +657,7 @@
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN mdma1 */
++	resets = <&scmi_reset RST_SCMI_MDMA>;
+ 	/* USER CODE END mdma1 */
+ };
+ 
+@@ -816,6 +823,14 @@
+ };
+ 
+ /* USER CODE BEGIN addons */
++&cpu0 {
++	clocks = <&scmi_clk CK_SCMI_MPU>;
++};
++
++&cpu1 {
++	clocks = <&scmi_clk CK_SCMI_MPU>;
++};
++
+ &dsi {
+ 	clocks = <&rcc DSI>, <&scmi_clk CK_SCMI_HSE>, <&rcc DSI_PX>;
+ };

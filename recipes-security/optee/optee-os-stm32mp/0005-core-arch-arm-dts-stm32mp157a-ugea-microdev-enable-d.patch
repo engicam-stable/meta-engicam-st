@@ -1,0 +1,67 @@
+From 76d5f4c7bc268358afbacb6cb14bc66592c3ca56 Mon Sep 17 00:00:00 2001
+From: Fabio Aiuto <fabio.aiuto@engicam.com>
+Date: Tue, 20 May 2025 11:35:14 +0200
+Subject: [PATCH] core: arch: arm: dts: stm32mp157a-ugea-microdev: enable
+ display
+
+Display enable. Add pll4 and pwm security setting for backlight
+control.
+---
+ .../arm/dts/stm32mp157a-ugea-microdev-mx.dts  | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts b/core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts
+index 2309ba4a1..59b1e8848 100644
+--- a/core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts
++++ b/core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts
+@@ -143,8 +143,10 @@
+ 	DECPROT(STM32MP1_ETZPC_DMAMUX_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_ETH_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_FMC_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_I2C2_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_SDMMC3_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_DLYBSD3_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_TIM4_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_UART4_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_UART7_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_UART8_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+@@ -181,6 +183,7 @@
+ 		CLK_SDMMC12_HSI
+ 		CLK_STGEN_HSI
+ 		CLK_SDMMC3_HCLK2
++		CLK_I2C12_HSI
+ 		CLK_UART24_HSE
+ 		CLK_UART35_PCLK1
+ 		CLK_UART78_PCLK1
+@@ -220,6 +223,10 @@
+ 			src = < CLK_PLL3_HSE >;
+ 			divmn = < 1 49 >;
+ 		};
++		pll4_vco_600Mhz: pll4-vco-600Mhz {
++			src = < CLK_PLL4_HSE >;
++			divmn = < 1 49 >;
++		};
+ 		/* USER CODE BEGIN rcc_st-pll_vco */
+ 		/* USER CODE END rcc_st-pll_vco */
+ 	};
+@@ -266,6 +273,20 @@
+ 		/* USER CODE END pll3 */
+ 	};
+ 
++	pll4:st,pll@3 {
++		compatible = "st,stm32mp1-pll";
++		reg = <3>;
++
++		st,pll = < &pll4_cfg1 >;
++
++		pll4_cfg1: pll4_cfg1 {
++			st,pll_vco = < &pll4_vco_600Mhz >;
++			st,pll_div_pqr = < 4 6 1 >;
++		};
++		/* USER CODE BEGIN pll4 */
++		/* USER CODE END pll4 */
++	};
++
+ };
+ 
+ &rng1 {
