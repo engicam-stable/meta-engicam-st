@@ -23,6 +23,7 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0021-stm32mp2-SmarCore-enabling-PCIe-rc-node.patch \
             file://0022-stm32mp2-SmarCore-set-125MHz-clock-in-mxl-8611x-driv.patch \
             file://0023-stm32mp2-SmarCore-porting-version-D-on-XTouch2.0-boa.patch \
+            file://0024-stm32mp2-MicroGEA-porting-micro5.patch \
             "
 
 SRC_URI += "file://${LINUX_VERSION}/fragment-05-engicam.config;subdir=fragments"

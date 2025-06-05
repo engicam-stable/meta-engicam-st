@@ -17,6 +17,7 @@ SRC_URI += "file://0001-stm32mp2-Initial-EDIMM-dtb-commit-boot-and-porting-e.pat
             file://0015-stm32mp2-MicroGEA-Set-SAI1-clock-Configured-protecti.patch \
             file://0016-stm32mp2-SmarCore-configured-firewall-for-CortexA-PC.patch \
             file://0017-stm32mp2-SmarCore-porting-version-D-on-XTouch2.0-boa.patch \
+            file://0018-stm32mp2-MicroGEA-changed-gpio-rif-conf-for-micro5-c.patch \
             "
 
 #ST_OPTEE_DEBUG_LOG_LEVEL = "4"
