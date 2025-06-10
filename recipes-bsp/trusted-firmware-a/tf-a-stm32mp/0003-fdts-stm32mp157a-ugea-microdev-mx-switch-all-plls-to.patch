@@ -1,4 +1,4 @@
-From 429cf395814f263691b22196938d14c479eb0d2e Mon Sep 17 00:00:00 2001
+From 7de2dd4afc21030bd39063b6e62f70c27352ac6d Mon Sep 17 00:00:00 2001
 From: Fabio Aiuto <fabio.aiuto@engicam.com>
 Date: Thu, 24 Apr 2025 11:22:20 +0200
 Subject: [PATCH] fdts: stm32mp157a-ugea-microdev-mx: switch all plls to HSE

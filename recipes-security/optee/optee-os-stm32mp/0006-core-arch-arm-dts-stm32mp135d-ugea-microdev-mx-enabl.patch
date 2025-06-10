@@ -1,0 +1,31 @@
+From 053ed5896355c7ad27e0ab686f59fdf06f171d59 Mon Sep 17 00:00:00 2001
+From: Fabio Aiuto <fabio.aiuto@engicam.com>
+Date: Mon, 9 Jun 2025 12:32:26 +0200
+Subject: [PATCH] core: arch: arm: dts: stm32mp135d-ugea-microdev-mx: enable
+ lcd
+
+Enable lcd.
+---
+ core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts b/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
+index 74186e4f2..6c3ce07c2 100644
+--- a/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
++++ b/core/arch/arm/dts/stm32mp135d-ugea-microdev-mx.dts
+@@ -174,6 +174,7 @@
+ 	DECPROT(STM32MP1_ETZPC_DDRCTRLPHY_ID, DECPROT_NS_R_S_W, DECPROT_LOCK)
+ 	/*"Non Secured" peripherals*/
+ 	DECPROT(STM32MP1_ETZPC_ETH1_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_LTDC_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_SDMMC1_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_SDMMC2_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	DECPROT(STM32MP1_ETZPC_USART2_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+@@ -217,6 +218,7 @@
+ 		CLK_SDMMC2_HCLK6
+ 		CLK_STGEN_HSI
+ 		CLK_USBPHY_HSE
++		CLK_I2C12_PCLK1
+ 		CLK_UART2_PCLK6
+ 		CLK_UART4_PCLK1
+ 		CLK_UART35_PCLK1
