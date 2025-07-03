@@ -1,0 +1,22 @@
+From 7e875dd48f970117af56730fc114af5f2bdb0153 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Wed, 2 Jul 2025 11:42:08 +0200
+Subject: [PATCH] Changing sai master clock tolerance
+
+---
+ sound/soc/stm/stm32_sai_sub.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/soc/stm/stm32_sai_sub.c b/sound/soc/stm/stm32_sai_sub.c
+index 6648b0db7..40260318d 100644
+--- a/sound/soc/stm/stm32_sai_sub.c
++++ b/sound/soc/stm/stm32_sai_sub.c
+@@ -62,7 +62,7 @@
+ #define SAI_RATE_11K			11025
+ #define SAI_MAX_SAMPLE_RATE_8K		192000
+ #define SAI_MAX_SAMPLE_RATE_11K		176400
+-#define SAI_CK_RATE_TOLERANCE		1000 /* ppm */
++#define SAI_CK_RATE_TOLERANCE		1000000 /* ppm */
+ 
+ /**
+  * struct stm32_sai_sub_data - private data of SAI sub block (block A or B)

@@ -5,8 +5,11 @@ SRC_URI += "file://0001-arch-arm-boot-dts-st-stm32mp157a-ugea-microdev-mx-in.pat
             file://0003-drivers-input-touchscreen-edt-ft5x26-add-support.patch \
             file://0004-arch-arm-boot-dts-st-stm32mp157a-ugea-microdev-mx-ad.patch \
             file://0005-arch-arm-boot-dts-st-stm32mp135d-ugea-microdev-mx-en.patch \
+            file://0006-stm32mp25D-iCore-Initial-EDIMM-dtb-commit.patch \
+            file://0007-Changing-sai-master-clock-tolerance.patch \
             "
 
 KERNEL_CONFIG_FRAGMENTS:append:stm32mp1common = " ${WORKDIR}/fragments/${LINUX_VERSION}/fragment-05-engicam.config"
+KERNEL_CONFIG_FRAGMENTS:append:stm32mp2common = " ${WORKDIR}/fragments/${LINUX_VERSION}/fragment-05-engicam.config"
 SRC_URI += "file://${LINUX_VERSION}/fragment-05-engicam.config;subdir=fragments"
 SRC_URI:class-devupstream += "file://${LINUX_VERSION}/fragment-05-engicam.config;subdir=fragments"
