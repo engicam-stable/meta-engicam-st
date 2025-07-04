@@ -1,0 +1,112 @@
+From b24522a0c8620389b850bc380eb911bba2adb965 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 4 Jul 2025 15:38:02 +0200
+Subject: [PATCH] stm32mp25d iCore: ported pcf and pcie for edimm2
+
+---
+ .../dts/st/stm32mp257d-icored-edimm2-mx.dts   | 46 ++++++++++++++++++-
+ 1 file changed, 45 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts b/arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts
+index f204c2bec..226ca7b2e 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts
+@@ -44,6 +44,8 @@ aliases{
+ 		serial2 = &lpuart1;
+ 		serial3 = &usart1;
+ 		serial4 = &uart5;
++		rtc0 = &pcf8523;
++		rtc1 = &rtc;
+ 	};
+ 
+ 	chosen{
+@@ -151,6 +153,12 @@ pad_clk:pad-clk{
+ 			compatible = "fixed-clock";
+ 			clock-frequency = <100000000>;
+ 		};
++
++		ref25_xtal_pcie: ref25m-xtal-pcie {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <25000000>;
++		};
+ 		/* USER CODE END clocks */
+ 	};
+ 
+@@ -676,9 +684,19 @@ &combophy {
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN combophy */
++
++	/**** external PCIE ref clock - Use rs9****/
+ 	clocks = <&rcc CK_BUS_USB3PCIEPHY>, <&rcc CK_KER_USB3PCIEPHY>, <&pad_clk>;
+ 	clock-names = "apb-clk", "ker-clk", "pad-clk";
+ 	st,rx_equalizer = <1>;
++	/**************************************/
++
++	/**** Internal PCIE ref clock ****/
++	//clocks = <&rcc CK_BUS_USB3PCIEPHY>, <&rcc CK_KER_USB3PCIEPHY>;
++	//clock-names = "apb-clk", "ker-clk";
++	//st,rx_equalizer = <1>;
++	/**************************************/
++
+ 	/* USER CODE END combophy */
+ };
+ 
+@@ -804,6 +822,11 @@ polytouch: edt-ft5x26@38 {
+ 		//reset-gpios= <&gpiof 3 GPIO_ACTIVE_LOW>;
+ 	};
+ 
++	pcf8523: rtc@68 {
++		compatible = "nxp,pcf8523";
++		reg = <0x68>;
++	};
++
+ 	sgtl5000: codec@a {
+ 		compatible = "fsl,sgtl5000";
+ 		reg = <0x0a>;
+@@ -821,15 +844,35 @@ sgtl5000_port: port {
+ 			sgtl5000_tx_endpoint: endpoint@0 {
+ 				reg = <0>;
+ 				remote-endpoint = <&sai1a_endpoint>;
++				frame-master;    /* Set codec as master of SAI1B for FS clock. */
++				bitclock-master; /* Set codec as master of SAI1B for SCK clock. */
+ 			};
+ 
+ 			sgtl5000_rx_endpoint: endpoint@1 {
+ 				reg = <1>;
+ 				remote-endpoint = <&sai1b_endpoint>;
++				frame-master;    /* Set codec as master of SAI1B for FS clock. */
++				bitclock-master; /* Set codec as master of SAI1B for SCK clock. */
+ 			};
+ 		};
+ 
+-	};	
++	};
++
++	rs9: clock-generator@6a {
++		compatible = "renesas,9fgv0241";
++		reg = <0x6a>;
++		#clock-cells = <1>;
++
++		clocks = <&ref25_xtal_pcie>;
++
++		DIF0 {
++			renesas,slew-rate = <3000000>;
++		};
++
++		DIF1 {
++			renesas,slew-rate = <3000000>;
++		};
++	};
+ 	/* USER CODE END i2c1 */
+ };
+ 
+@@ -933,6 +976,7 @@ &pcie_rc {
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN pcie_rc */
++	reset-gpios = <&gpioz 9 GPIO_ACTIVE_LOW>;
+ 	/* USER CODE END pcie_rc */
+ };
+ 
