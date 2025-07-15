@@ -10,8 +10,10 @@ SRC_URI += "file://0001-Initial-commit-157-ugea.patch \
             file://0001-vdd_usb-regulator-always-on-for-u-boot-usb-enabling.patch \
             file://0009-135-ugea-Added-support-for-F-version.patch \
             file://0010-135d-uGea-i2c5-deprotection.patch \
+            file://0011-135-uGea-added-1GB-RAM-version.patch \
             "
 
 EXTRA_OEMAKE +=  "CFG_STM32_CRYP=n"
 EXTRA_OEMAKE +=  "CFG_STM32_PKA=n"
 EXTRA_OEMAKE +=  "CFG_STM32_SAES=n"
+#EXTRA_OEMAKE +=  "CFG_STM32_CLK_DEBUG=y"
