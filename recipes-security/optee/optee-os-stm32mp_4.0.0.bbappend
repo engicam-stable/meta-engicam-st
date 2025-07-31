@@ -8,7 +8,8 @@ SRC_URI += "file://0001-core-arch-arm-dts-stm32mp157a-ugea-microdev-mx-initi.pat
             file://0006-core-arch-arm-dts-stm32mp135d-ugea-microdev-mx-enabl.patch \
             file://0007-stm32mp25D-iCore-Initial-EDIMM-dtb-commit.patch \
             file://0008-stm32mp25d-iCore-fixed-firewall-config-for-pcie.patch \
+            file://0009-stm32mp257f-iCore-porting-on-EDIMM2.patch \
             "
 
 #ST_OPTEE_CORE_DEBUG:stm32mp13common = "y"
-#ST_OPTEE_DEBUG_LOG_LEVEL = "4"
+#ST_OPTEE_DEBUG_LOG_LEVEL = "3"
