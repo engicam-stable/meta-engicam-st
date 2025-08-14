@@ -1,0 +1,199 @@
+From fe84cf0702133ea8e5ec5e58ae93519a5d096cef Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Thu, 14 Aug 2025 15:51:59 +0200
+Subject: [PATCH] stm32mp257f uGEA: added uart5 and uart7 - fix touchscreen
+ node
+
+---
+ .../dts/st/stm32mp257f-ugea-micro5-mx.dts     | 119 ++++++++++++++++--
+ 1 file changed, 112 insertions(+), 7 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-ugea-micro5-mx.dts b/arch/arm64/boot/dts/st/stm32mp257f-ugea-micro5-mx.dts
+index 9a2c54ad4..d2ab927bb 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-ugea-micro5-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-ugea-micro5-mx.dts
+@@ -282,6 +282,7 @@ ltdc_pins_mx: ltdc_mx-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('A', 1, AF11)>, /* LTDC_R3 */
+ 					 <STM32_PINMUX('A', 3, AF11)>, /* LTDC_B1 */
++					 <STM32_PINMUX('A', 6, AF10)>, /* LTDC_G4 */
+ 					 <STM32_PINMUX('A', 7, AF10)>, /* LTDC_B5 */
+ 					 <STM32_PINMUX('A', 9, AF12)>, /* LTDC_G7 */
+ 					 <STM32_PINMUX('A', 10, AF12)>, /* LTDC_R6 */
+@@ -298,7 +299,6 @@ pins1 {
+ 					 <STM32_PINMUX('G', 2, AF13)>, /* LTDC_HSYNC */
+ 					 <STM32_PINMUX('G', 3, AF13)>, /* LTDC_R5 */
+ 					 <STM32_PINMUX('G', 7, AF13)>, /* LTDC_R7 */
+-					 <STM32_PINMUX('G', 10, AF13)>, /* LTDC_G4 */
+ 					 <STM32_PINMUX('G', 11, AF13)>, /* LTDC_G5 */
+ 					 <STM32_PINMUX('G', 12, AF13)>, /* LTDC_G6 */
+ 					 <STM32_PINMUX('G', 15, AF13)>, /* LTDC_B2 */
+@@ -324,6 +324,7 @@ ltdc_sleep_pins_mx: ltdc_sleep_mx-0 {
+ 		pins {
+ 			pinmux = <STM32_PINMUX('A', 1, ANALOG)>, /* LTDC_R3 */
+ 					 <STM32_PINMUX('A', 3, ANALOG)>, /* LTDC_B1 */
++					 <STM32_PINMUX('A', 6, ANALOG)>, /* LTDC_G4 */
+ 					 <STM32_PINMUX('A', 7, ANALOG)>, /* LTDC_B5 */
+ 					 <STM32_PINMUX('A', 9, ANALOG)>, /* LTDC_G7 */
+ 					 <STM32_PINMUX('A', 10, ANALOG)>, /* LTDC_R6 */
+@@ -341,7 +342,6 @@ pins {
+ 					 <STM32_PINMUX('G', 2, ANALOG)>, /* LTDC_HSYNC */
+ 					 <STM32_PINMUX('G', 3, ANALOG)>, /* LTDC_R5 */
+ 					 <STM32_PINMUX('G', 7, ANALOG)>, /* LTDC_R7 */
+-					 <STM32_PINMUX('G', 10, ANALOG)>, /* LTDC_G4 */
+ 					 <STM32_PINMUX('G', 11, ANALOG)>, /* LTDC_G5 */
+ 					 <STM32_PINMUX('G', 12, ANALOG)>, /* LTDC_G6 */
+ 					 <STM32_PINMUX('G', 15, ANALOG)>, /* LTDC_B2 */
+@@ -582,6 +582,81 @@ pins {
+ 		};
+ 	};
+ 
++	uart5_pins_mx: uart5_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('G', 10, AF5)>; /* UART5_RX */
++			bias-disable;
++			drive-push-pull;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('G', 9, AF5)>; /* UART5_TX */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++	};
++
++	uart5_idle_pins_mx: uart5_idle_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('G', 10, AF5)>; /* UART5_RX */
++			bias-disable;
++			drive-push-pull;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('G', 9, ANALOG)>; /* UART5_TX */
++		};
++	};
++
++	uart5_sleep_pins_mx: uart5_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('G', 9, ANALOG)>, /* UART5_TX */
++					 <STM32_PINMUX('G', 10, ANALOG)>; /* UART5_RX */
++		};
++	};
++
++	uart7_pins_mx: uart7_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('D', 0, AF6)>, /* UART7_RX */
++					 <STM32_PINMUX('H', 8, AF6)>; /* UART7_CTS */
++			bias-disable;
++			drive-push-pull;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('D', 1, AF6)>, /* UART7_RTS */
++					 <STM32_PINMUX('D', 3, AF6)>; /* UART7_TX */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++	};
++
++	uart7_idle_pins_mx: uart7_idle_mx-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('D', 0, AF6)>; /* UART7_RX */
++			bias-disable;
++			drive-push-pull;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('D', 1, AF6)>; /* UART7_RTS */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++		pins3 {
++			pinmux = <STM32_PINMUX('D', 3, ANALOG)>, /* UART7_TX */
++					 <STM32_PINMUX('H', 8, ANALOG)>; /* UART7_CTS */
++		};
++	};
++
++	uart7_sleep_pins_mx: uart7_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('D', 0, ANALOG)>, /* UART7_RX */
++					 <STM32_PINMUX('D', 1, ANALOG)>, /* UART7_RTS */
++					 <STM32_PINMUX('D', 3, ANALOG)>, /* UART7_TX */
++					 <STM32_PINMUX('H', 8, ANALOG)>; /* UART7_CTS */
++		};
++	};
++
+ 	usart1_pins_mx: usart1_mx-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('B', 10, AF6)>; /* USART1_RX */
+@@ -905,9 +980,9 @@ &i2c2 {
+ 	status = "okay";
+ 
+ 	/* USER CODE BEGIN i2c2 */
+-	i2c-scl-rising-time-ns = <100>;
+-	i2c-scl-falling-time-ns = <13>;
+-	clock-frequency = <400000>;
++	i2c-scl-rising-time-ns = <185>;
++	i2c-scl-falling-time-ns = <20>;
++	clock-frequency = <100000>;
+ 	/delete-property/ dmas;
+ 	/delete-property/ dma-names;
+ 
+@@ -915,7 +990,7 @@ ts: touchscreen@41 {
+ 		compatible = "ilitek,ili2130";
+ 		reg = <0x41>;
+ 		interrupt-parent = <&gpiob>;
+-		interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
++		interrupts = <0 IRQ_TYPE_EDGE_FALLING>;
+ 		reset-gpios = <&gpiob 2 GPIO_ACTIVE_LOW>;
+ 		wakeup-source;
+ 	};
+@@ -1009,10 +1084,17 @@ &m33_rproc {
+ 	<&ipc_shmem_1>, <&vdev0vring0>,
+ 	<&vdev0vring1>, <&vdev0buffer>,
+ 	<&cm33_sram2>;
+-	st,syscfg-nsvtor = <&a35ss_syscfg 0xa8 0xffffff80>;	
++	st,syscfg-nsvtor = <&a35ss_syscfg 0xa8 0xffffff80>;
+ 	/* USER CODE END m33_rproc */
+ };
+ 
++&rtc {
++	status = "okay";
++
++	/* USER CODE BEGIN rtc */
++	/* USER CODE END rtc */
++};
++
+ &sai1 {
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&sai1a_pins_mx>, <&sai1b_pins_mx>;
+@@ -1132,6 +1214,29 @@ &spi1 {
+ 	/* USER CODE END spi1 */
+ };
+ 
++&uart5 {
++	pinctrl-names = "default", "idle", "sleep";
++	pinctrl-0 = <&uart5_pins_mx>;
++	pinctrl-1 = <&uart5_idle_pins_mx>;
++	pinctrl-2 = <&uart5_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN uart5 */
++	/* USER CODE END uart5 */
++};
++
++&uart7 {
++	pinctrl-names = "default", "idle", "sleep";
++	pinctrl-0 = <&uart7_pins_mx>;
++	pinctrl-1 = <&uart7_idle_pins_mx>;
++	pinctrl-2 = <&uart7_sleep_pins_mx>;
++	status = "okay";
++
++	/* USER CODE BEGIN uart7 */
++	linux,rs485-enabled-at-boot-time;
++	/* USER CODE END uart7 */
++};
++
+ &usart1 {
+ 	pinctrl-names = "default", "idle", "sleep";
+ 	pinctrl-0 = <&usart1_pins_mx>;

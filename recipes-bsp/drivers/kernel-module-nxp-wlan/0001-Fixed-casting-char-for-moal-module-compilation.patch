@@ -1,0 +1,22 @@
+From 030211a10d05bc68416c0b3968417f5c5e1f149a Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 27 Sep 2024 14:37:33 +0000
+Subject: [PATCH] Fixed casting char for moal module compilation
+
+---
+ mxm_wifiex/wlan_src/mlinux/moal_eth_ioctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mxm_wifiex/wlan_src/mlinux/moal_eth_ioctl.c b/mxm_wifiex/wlan_src/mlinux/moal_eth_ioctl.c
+index 378701e..da63854 100644
+--- a/mxm_wifiex/wlan_src/mlinux/moal_eth_ioctl.c
++++ b/mxm_wifiex/wlan_src/mlinux/moal_eth_ioctl.c
+@@ -6225,7 +6225,7 @@ static int woal_priv_get_ap(moal_private *priv, t_u8 *respbuf, t_u32 respbuflen)
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 2, 0)
+ 				sizeof(mwr->u.ap_addr.sa_data_min));
+ #else
+-				sizeof(mwr->u.ap_addr.sa_data));
++				sizeof((char*)mwr->u.ap_addr.sa_data));
+ #endif
+ 	} else {
+ 		memset(mwr->u.ap_addr.sa_data, 0, MLAN_MAC_ADDR_LENGTH);
