@@ -1,0 +1,22 @@
+From 645a561d8de0fe99ec1ee4f04168c49be4f986e0 Mon Sep 17 00:00:00 2001
+From: Engicam <support@engicam.com>
+Date: Wed, 17 Sep 2025 17:58:54 +0200
+Subject: [PATCH] stm32mp2 MicroGEA: fixed pixel clock probe for micro5 display
+
+---
+ arch/arm64/boot/dts/st/stm32mp257f-microgea-micro5.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-microgea-micro5.dts b/arch/arm64/boot/dts/st/stm32mp257f-microgea-micro5.dts
+index 14e423dd4..571031eea 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-microgea-micro5.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-microgea-micro5.dts
+@@ -84,7 +84,7 @@ panel-timing {
+                 hsync-active = <0>;
+                 vsync-active = <0>;
+                 de-active = <1>;
+-                pixelclk-active = <0>;
++                pixelclk-active = <1>;
+ 		};
+ 
+ 		port {
