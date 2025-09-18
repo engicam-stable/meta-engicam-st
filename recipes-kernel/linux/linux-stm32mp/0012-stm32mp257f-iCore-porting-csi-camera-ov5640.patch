@@ -1,0 +1,99 @@
+From 653e5c5f8a869766d4b8863a5b114b1feea73cba Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Thu, 18 Sep 2025 12:07:53 +0200
+Subject: [PATCH] stm32mp257f iCore: porting csi camera ov5640
+
+---
+ .../dts/st/stm32mp257f-icore-edimm2-mx.dts    | 65 ++++++++++++++++++-
+ 1 file changed, 64 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts b/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
+index 571559517..efea9b584 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-icore-edimm2-mx.dts
+@@ -48,7 +48,7 @@ aliases{
+ 		rtc0 = &pcf8523;
+ 		rtc1 = &rtc;
+ 		mmc0 = &sdmmc1;
+-		mmc1 = &sdmmc2;		
++		mmc1 = &sdmmc2;
+ 	};
+ 
+ 	chosen{
+@@ -710,6 +710,46 @@ &cryp1 {
+ 	/* USER CODE END cryp1 */
+ };
+ 
++&csi {
++	status = "okay";
++
++	/* USER CODE BEGIN csi */
++	vdd-supply =  <&scmi_vddcore>;
++	vdda18-supply = <&scmi_v1v8>;
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		port@0 {
++			reg = <0>;
++			csi_sink: endpoint {
++				remote-endpoint = <&ov5640_0_ep>;
++				data-lanes = <0 1>;
++				bus-type = <4>;
++			};
++		};
++		port@1 {
++			reg = <1>;
++			csi_source: endpoint {
++				remote-endpoint = <&dcmipp_0_ep>;
++			};
++		};
++	};
++	/* USER CODE END csi */
++};
++
++&dcmipp {
++	status = "okay";
++
++	/* USER CODE BEGIN dcmipp */
++	port {
++		dcmipp_0_ep: endpoint {
++			remote-endpoint = <&csi_source>;
++			bus-type = <4>;
++		};
++	};
++	/* USER CODE END dcmipp */
++};
++
+ &dts {
+ 	status = "okay";
+ 
+@@ -883,6 +923,29 @@ DIF1 {
+ 			renesas,slew-rate = <3000000>;
+ 		};
+ 	};
++
++	ov5640_0: ov5640_mipi@3c {
++		compatible = "ovti,ov5640";
++		reg = <0x3c>;
++		clocks = <&clk_ext_camera>;
++		clock-names = "xclk";
++		assigned-clock-rates = <24000000>;
++		csi_id = <0>;
++		powerdown-gpios = <&gpioh 11 GPIO_ACTIVE_HIGH>;
++		reset-gpios = <&gpioh 12 GPIO_ACTIVE_LOW>;
++		mclk = <24000000>;
++		mclk_source = <0>;
++		mipi_csi;
++		status = "okay";
++
++		port {
++			ov5640_0_ep: endpoint {
++				remote-endpoint = <&csi_sink>;
++				data-lanes = <1 2>;
++				clock-lanes = <0>;
++			};
++		};
++	};
+ 	/* USER CODE END i2c1 */
+ };
+ 
