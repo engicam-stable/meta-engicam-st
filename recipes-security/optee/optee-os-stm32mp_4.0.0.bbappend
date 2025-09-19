@@ -12,6 +12,8 @@ SRC_URI += "file://0001-core-arch-arm-dts-stm32mp157a-ugea-microdev-mx-initi.pat
             file://0010-stm32mp257f-uGEA-initial-commit-for-micro5-proting.patch \
             file://0011-stm32mp257f-uGEA-added-uart5-and-uart7.patch \
             file://0012-stm32mp257f-iCore-added-csi-and-dcmipp-support.patch \
+            file://0013-stm32mp235d-uGEA-porting-on-micro5.patch \
+            file://0014-stm32mp23-uGea-fixed-ddr-voltage-and-changed-DDR-fre.patch \
             "
 
 #ST_OPTEE_CORE_DEBUG:stm32mp13common = "y"

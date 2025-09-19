@@ -1,0 +1,45 @@
+From b83aaa36a5b2354086ffc23a33afb493b709ad8b Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 19 Sep 2025 17:10:06 +0200
+Subject: [PATCH] stm32mp2xx uGea - Fixed pixel-clock panel on micro5
+
+---
+ arch/arm64/boot/dts/st/stm32mp235d-ugead-micro5-mx.dts | 2 +-
+ arch/arm64/boot/dts/st/stm32mp257f-ugea-micro5-mx.dts  | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp235d-ugead-micro5-mx.dts b/arch/arm64/boot/dts/st/stm32mp235d-ugead-micro5-mx.dts
+index 8c34f93b2..6b2fcf8c4 100644
+--- a/arch/arm64/boot/dts/st/stm32mp235d-ugead-micro5-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp235d-ugead-micro5-mx.dts
+@@ -84,7 +84,7 @@ panel-timing {
+                 hsync-active = <0>;
+                 vsync-active = <0>;
+                 de-active = <1>;
+-                pixelclk-active = <0>;
++                pixelclk-active = <1>;
+ 		};
+ 
+ 		port {
+diff --git a/arch/arm64/boot/dts/st/stm32mp257f-ugea-micro5-mx.dts b/arch/arm64/boot/dts/st/stm32mp257f-ugea-micro5-mx.dts
+index d2ab927bb..c5f55299f 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257f-ugea-micro5-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257f-ugea-micro5-mx.dts
+@@ -84,7 +84,7 @@ panel-timing {
+                 hsync-active = <0>;
+                 vsync-active = <0>;
+                 de-active = <1>;
+-                pixelclk-active = <0>;
++                pixelclk-active = <1>;
+ 		};
+ 
+ 		port {
+@@ -1032,7 +1032,7 @@ ltdc_ep1_out:endpoint@1{
+ };
+ 
+ &lvds {
+-	status = "okay";
++	status = "disabled";
+ 
+ 	/* USER CODE BEGIN lvds */
+ 	default-on;

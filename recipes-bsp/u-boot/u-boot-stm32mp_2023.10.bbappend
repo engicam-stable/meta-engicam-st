@@ -8,5 +8,6 @@ SRC_URI += "file://0001-arch-arm-dts-stm32mp157a-ugea-microdev-mx-initial-co.pat
             file://0006-stm32mp25D-iCore-Initial-EDIMM-dtb-commit.patch \
             file://0007-stm32mp257f-iCore-porting-on-EDIMM2.patch \
             file://0008-stm32mp257f-uGEA-initial-commit-for-micro5-proting.patch \
+            file://0009-stm32mp235d-uGEA-porting-on-micro5.patch \
             "
 
