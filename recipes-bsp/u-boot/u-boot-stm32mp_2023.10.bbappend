@@ -10,5 +10,6 @@ SRC_URI += "file://0001-arch-arm-dts-stm32mp157a-ugea-microdev-mx-initial-co.pat
             file://0008-stm32mp257f-uGEA-initial-commit-for-micro5-proting.patch \
             file://0009-stm32mp235d-uGEA-porting-on-micro5.patch \
             file://0010-stm32mp257d-uGea-porting-on-micro5.patch \
+            file://0005-stm32mp257d-uGea-fixed-RAM-size.patch \
             "
 

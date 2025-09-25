@@ -1,0 +1,22 @@
+From 360af2244ec47d79ba9343877522e8e9de730a1a Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Thu, 25 Sep 2025 18:36:25 +0200
+Subject: [PATCH] stm32mp257d uGea: fixed RAM size
+
+---
+ arch/arm/dts/stm32mp257d-ugea-micro5-mx.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/stm32mp257d-ugea-micro5-mx.dts b/arch/arm/dts/stm32mp257d-ugea-micro5-mx.dts
+index 8e1d1f062de..2dd9c952a8f 100644
+--- a/arch/arm/dts/stm32mp257d-ugea-micro5-mx.dts
++++ b/arch/arm/dts/stm32mp257d-ugea-micro5-mx.dts
+@@ -29,7 +29,7 @@
+ 
+ 	memory@80000000 {
+ 		device_type = "memory";
+-		reg = <0x0 0x80000000 0x0 0x40000000>;
++		reg = <0x0 0x80000000 0x0 0x80000000>;
+ 
+ 		/* USER CODE BEGIN memory */
+ 		/* USER CODE END memory */
