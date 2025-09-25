@@ -14,6 +14,7 @@ SRC_URI += "file://0001-arch-arm-boot-dts-st-stm32mp157a-ugea-microdev-mx-in.pat
             file://0012-stm32mp257f-iCore-porting-csi-camera-ov5640.patch \
             file://0013-stm32mp235d-uGEA-porting-on-micro5.patch \
             file://0014-stm32mp2xx-uGea-Fixed-pixel-clock-panel-on-micro5.patch \
+            file://0015-stm32mp257d-uGea-porting-on-micro5.patch \
             "
 
 KERNEL_CONFIG_FRAGMENTS:append:stm32mp1common = " ${WORKDIR}/fragments/${LINUX_VERSION}/fragment-05-engicam.config"
