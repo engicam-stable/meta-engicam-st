@@ -10,5 +10,6 @@ SRC_URI += "file://0001-fdts-stm32mp157a-ugea-microdev-mx-initial-commit.patch \
             file://0008-stm32mp235d-uGEA-changed-vdd2_ddr-power-and-DDR-freq.patch \
             file://0009-stm32mp257d-uGea-porting-on-micro5.patch \
             file://0006-stm32mp257d-uGea-fixed-RAM-size.patch \
+            file://0007-stm32mp257F-uGea-set-DDR-speed-to-1066MHz.patch \
             "
 
