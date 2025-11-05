@@ -8,9 +8,7 @@ part_metadata2="p2" #Partition metadata2
 part_fip1="p3" #Partition fip-a
 part_fip2="p4" #Partition fip-b
 part_bootfs="p6" #Partition bootfs
-part_vendorfs="p7" #Partition vendorfs
-part_rootfs="p8" #Partition rootfs
-part_userfs="p9" #Partition userfs
+part_rootfs="p7" #Partition rootfs
 
 
 function check_file
@@ -105,15 +103,13 @@ function usage
 		Specify /usr/share/eng_emmc_tools/gpt-emmc to use the following gpt:
 
 		Number  Start (sector)    End (sector)  Size       Code  Name
-		1            1024            2047   512.0 KiB   FFFF  metadata1
-		2            2048            3071   512.0 KiB   FFFF  metadata2
-		3            3072           11263   4.0 MiB     FFFF  fip-a
-		4           11264           19455   4.0 MiB     FFFF  fip-b
-		5           19456           20479   512.0 KiB   B000  u-boot-env
-		6           20480          151551   64.0 MiB    8300  bootfs
-		7          151552          526335   183.0 MiB   8300  vendorfs
-		8          526336         6817791   3.0 GiB     8300  rootfs
-		9         6817792        15272575   4.0 GiB     8300  userfs
+			1            1024            2047   512.0 KiB   FFFF  metadata1
+			2            2048            3071   512.0 KiB   FFFF  metadata2
+			3            3072           11263   4.0 MiB     FFFF  fip-a
+			4           11264           19455   4.0 MiB     FFFF  fip-b
+			5           19456           20479   512.0 KiB   B000  u-boot-env
+			6           20480          151551   64.0 MiB    8300  bootfs
+			7          151552        15272575   7.2 GiB     8300  rootfs
 	  "
 		echo ""
 		echo "ATTENTION: be aware that the current script will format the bootfs partition, resetting the U-boot environment"
@@ -179,62 +175,45 @@ function write_rootfs
   mkfs.ext4 -F $1$part_rootfs
 	error $?
 
-  mkdir -p /media/p8
+  mkdir -p /media/p7
 
-  mount $1$part_rootfs /media/p8
+  mount $1$part_rootfs /media/p7
 
   echo "Fill rootfs   ..."
-  tar -xvf $2 -C /media/p8/ 2>&1 >/dev/null
+  tar -xvf $2 -C /media/p7/ 2>&1 >/dev/null
 
   sync
-	umount /media/p8
-	rm -rf /media/p8
+	umount /media/p7
+	rm -rf /media/p7
 	echo "Done"
 }
 
 function write_bootfs_fs
 {
 
-  mkfs.ext4 -F $1$part_vendorfs
-	error $?
   mkfs.ext4 -F $1$part_rootfs
 	error $?
-  mkfs.ext4 -F $1$part_userfs
-	error $?
-
 
   mkdir -p /media/p6
   mkdir -p /media/p7
-  mkdir -p /media/p8
-  mkdir -p /media/p9
+
   mount $1$part_bootfs /media/p6
 	error $?
-  mount $1$part_vendorfs /media/p7
-	error $?
-  mount $1$part_rootfs /media/p8
-	error $?
-  mount $1$part_userfs /media/p9
+  mount $1$part_rootfs /media/p7
 	error $?
 
   echo "Fill bootfs   ..."
 	rm -rf /media/p6/*
   tar -xvf $2"bootfs.tar.xz" -C /media/p6/ 2>&1 >/dev/null
-  echo "Fill vendorfs ..."
-  tar -xvf $2"vendorfs.tar.xz" -C /media/p7/ 2>&1 >/dev/null
   echo "Fill rootfs   ..."
-  tar -xvf $2"rootfs.tar.xz" -C /media/p8/ 2>&1 >/dev/null
-  echo "Fill userfs   ..."
-  tar -xvf $2"userfs.tar.xz" -C /media/p9 2>&1 >/dev/null
+  tar -xvf $2"rootfs.tar.xz" -C /media/p7/ 2>&1 >/dev/null
+
 
   sync
 	umount /media/p6
 	umount /media/p7
-	umount /media/p8
-	umount /media/p9
 	rm -rf /media/p6
 	rm -rf /media/p7
-	rm -rf /media/p8
-	rm -rf /media/p9
 	echo "Done"
 }
 
@@ -247,44 +226,26 @@ function write_full_image
 
   mkfs.ext4 -O ^metadata_csum,^dir_index -F $1$part_bootfs
 	error $?
-  mkfs.ext4 -F $1$part_vendorfs
-	error $?
   mkfs.ext4 -F $1$part_rootfs
-	error $?
-  mkfs.ext4 -F $1$part_userfs
 	error $?
 
   mkdir -p /media/p6
   mkdir -p /media/p7
-  mkdir -p /media/p8
-  mkdir -p /media/p9
   mount $1$part_bootfs /media/p6
 	error $?
-  mount $1$part_vendorfs /media/p7
-	error $?
-  mount $1$part_rootfs /media/p8
-	error $?
-  mount $1$part_userfs /media/p9
+  mount $1$part_rootfs /media/p7
 	error $?
 
   echo "Fill bootfs   ..."
   tar -xvf $2"bootfs.tar.xz" -C /media/p6/ 2>&1 >/dev/null
-  echo "Fill vendorfs ..."
-  tar -xvf $2"vendorfs.tar.xz" -C /media/p7/ 2>&1 >/dev/null
   echo "Fill rootfs   ..."
-  tar -xvf $2"rootfs.tar.xz" -C /media/p8/ 2>&1 >/dev/null
-  echo "Fill userfs   ..."
-  tar -xvf $2"userfs.tar.xz" -C /media/p9 2>&1 >/dev/null
+  tar -xvf $2"rootfs.tar.xz" -C /media/p7/ 2>&1 >/dev/null
 
   sync
 	umount /media/p6
 	umount /media/p7
-	umount /media/p8
-	umount /media/p9
 	rm -rf /media/p6
 	rm -rf /media/p7
-	rm -rf /media/p8
-	rm -rf /media/p9
 	echo "Done"
 }
 ############
@@ -379,9 +340,7 @@ fi
 if grep -q "bootfs_fs" <<< "$command" ;
 then
   check_file "${pathfile}bootfs.tar.xz"
-  check_file "${pathfile}vendorfs.tar.xz"
   check_file "${pathfile}rootfs.tar.xz"
-  check_file "${pathfile}userfs.tar.xz"
 fi
 
 if grep -q "full_image" <<< "$command" ;
@@ -390,9 +349,7 @@ then
 	check_file "${pathfile}metadata.bin"
   check_file "${pathfile}fip.bin"
   check_file "${pathfile}bootfs.tar.xz"
-  check_file "${pathfile}vendorfs.tar.xz"
   check_file "${pathfile}rootfs.tar.xz"
-  check_file "${pathfile}userfs.tar.xz"
 fi
 
 
