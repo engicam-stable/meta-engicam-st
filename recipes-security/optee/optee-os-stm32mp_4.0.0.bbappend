@@ -17,6 +17,7 @@ SRC_URI += "file://0001-core-arch-arm-dts-stm32mp157a-ugea-microdev-mx-initi.pat
             file://0015-stm32mp257d-uGea-porting-on-micro5.patch \
             file://0009-stm32mp257d-uGea-fixed-RAM-size.patch \
             file://0010-stm32mp257F-uGea-firewall-settings-and-fixed-ram-pmi.patch \
+            file://0011-stm32mp257d-uGea-Fixed-resmem-sizes.patch \
             "
 
 #ST_OPTEE_CORE_DEBUG:stm32mp13common = "y"

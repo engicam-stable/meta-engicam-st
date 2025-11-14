@@ -16,6 +16,8 @@ SRC_URI += "file://0001-arch-arm-boot-dts-st-stm32mp157a-ugea-microdev-mx-in.pat
             file://0014-stm32mp2xx-uGea-Fixed-pixel-clock-panel-on-micro5.patch \
             file://0015-stm32mp257d-uGea-porting-on-micro5.patch \
             file://0009-stm32mp257d-uGea-fixed-RAM-size.patch \
+            file://0016-Added-mxl-86110-driver.patch \
+            file://0017-stm32mp257d-uGea-porting-on-EDIMM-2.0.patch \
             "
 
 KERNEL_CONFIG_FRAGMENTS:append:stm32mp1common = " ${WORKDIR}/fragments/${LINUX_VERSION}/fragment-05-engicam.config"
