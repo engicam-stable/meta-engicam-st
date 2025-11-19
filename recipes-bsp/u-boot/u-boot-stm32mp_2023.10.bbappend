@@ -12,5 +12,6 @@ SRC_URI += "file://0001-arch-arm-dts-stm32mp157a-ugea-microdev-mx-initial-co.pat
             file://0010-stm32mp257d-uGea-porting-on-micro5.patch \
             file://0005-stm32mp257d-uGea-fixed-RAM-size.patch \
             file://0006-stm32mp257d-ugea-on-micro5-fixed-ltdc-pins.patch \
+            file://0007-stm32mp257D-Smarcore-XTouch2-Porting.patch \
             "
 
