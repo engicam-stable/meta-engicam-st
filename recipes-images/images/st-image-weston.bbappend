@@ -9,6 +9,8 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     mmc-utils \
     mtd-utils-ubifs \
     u-boot-stm32mp-splash \
+    u-boot-fw-utils \
+    u-boot-fw-config-stm32mp \
     "
 
 CORE_IMAGE_EXTRA_INSTALL:remove = " packagegroup-st-demo "
