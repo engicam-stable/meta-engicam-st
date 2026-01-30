@@ -1,0 +1,33 @@
+From 23b711d8d2744094340aa92e930ca54a6e8d2038 Mon Sep 17 00:00:00 2001
+From: Engicam <support@engicam.com>
+Date: Fri, 30 Jan 2026 11:47:06 +0100
+Subject: [PATCH] stm32mp257d uGea micro 5: fixed reset lcd
+
+---
+ arch/arm64/boot/dts/st/stm32mp257d-ugea-micro5-mx.dts | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257d-ugea-micro5-mx.dts b/arch/arm64/boot/dts/st/stm32mp257d-ugea-micro5-mx.dts
+index 758ea1513..5e7f9e529 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257d-ugea-micro5-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257d-ugea-micro5-mx.dts
+@@ -161,6 +161,16 @@ wifi_mode: regulator-wifi_mode {
+ 		regulator-always-on;
+ 	};
+ 
++	lcd_nrst: regulator-lcd_nrst {
++		compatible = "regulator-fixed";
++		regulator-name = "lcd_nrst";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&gpiob 6 0>;
++		enable-active-high;
++		regulator-always-on;
++	};
++
+ 	sound {
+ 		compatible = "simple-audio-card";
+ 		simple-audio-card,name = "tas2780-audio";
+-- 
+2.43.0
+
