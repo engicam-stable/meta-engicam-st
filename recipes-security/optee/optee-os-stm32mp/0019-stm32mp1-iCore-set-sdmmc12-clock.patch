@@ -1,0 +1,31 @@
+From ae765f50382bdc3a93483e3525f734210907db93 Mon Sep 17 00:00:00 2001
+From: il_dude <support@engicam.com>
+Date: Fri, 20 Feb 2026 16:22:19 +0100
+Subject: [PATCH] stm32mp1 iCore: set sdmmc12 clock
+
+---
+ core/arch/arm/dts/stm32mp157a-icore-starterkit2-mx.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/arch/arm/dts/stm32mp157a-icore-starterkit2-mx.dts b/core/arch/arm/dts/stm32mp157a-icore-starterkit2-mx.dts
+index cb1cfe84e..6256046d9 100644
+--- a/core/arch/arm/dts/stm32mp157a-icore-starterkit2-mx.dts
++++ b/core/arch/arm/dts/stm32mp157a-icore-starterkit2-mx.dts
+@@ -188,7 +188,7 @@
+ 		CLK_CKPER_DISABLED
+ 		CLK_FMC_ACLK
+ 		CLK_ETH_PLL3Q
+-		CLK_SDMMC12_HCLK6
++		CLK_SDMMC12_PLL3R
+ 		CLK_DSI_DSIPLL
+ 		CLK_STGEN_HSI
+ 		CLK_USBPHY_HSE
+@@ -279,7 +279,7 @@
+ 
+ 		pll3_cfg1: pll3_cfg1 {
+ 			st,pll_vco = < &pll3_vco_600Mhz >;
+-			st,pll_div_pqr = < 2 11 1 >;
++			st,pll_div_pqr = < 2 11 11 >;
+ 		};
+ 		/* USER CODE BEGIN pll3 */
+ 		/* USER CODE END pll3 */

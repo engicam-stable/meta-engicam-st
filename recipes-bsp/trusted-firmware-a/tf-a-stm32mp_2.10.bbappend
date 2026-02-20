@@ -13,5 +13,6 @@ SRC_URI += "file://0001-fdts-stm32mp157a-ugea-microdev-mx-initial-commit.patch \
             file://0007-stm32mp257F-uGea-set-DDR-speed-to-1066MHz.patch \
             file://0008-stm32mp257D-Smarcore-XTouch2-Porting.patch \
             file://0009-stm32mp257d-f-uGea-set-DDR-speed-to-1200-MHz-and-cor.patch \
+            file://0010-fdts-stm32mp157a-icore-starterkit2-mx-add-support.patch \
             "
 

@@ -22,6 +22,8 @@ SRC_URI += "file://0001-arch-arm-boot-dts-st-stm32mp157a-ugea-microdev-mx-in.pat
             file://0019-MP257D-iCore-Porting-CTouch2-with-Ampire-10.patch \
             file://0020-stm32mp257d-iCore-porting-i.Touch-edimm-7inch.patch \
             file://0021-stm32mp257d-uGea-micro-5-fixed-reset-lcd.patch \
+            file://0022-arch-arm-dts-boot-st-stm32mp157a-icore-starterkit2-m.patch \
+            file://0023-stm32mp1-iCore-fixed-lvds.patch \
             "
 
 KERNEL_CONFIG_FRAGMENTS:append:stm32mp1common = " ${WORKDIR}/fragments/${LINUX_VERSION}/fragment-05-engicam.config"

@@ -1,0 +1,23 @@
+From caada853cb2b9b9ac79eedde4462276d23435be9 Mon Sep 17 00:00:00 2001
+From: il_dude <support@engicam.com>
+Date: Fri, 20 Feb 2026 16:34:01 +0100
+Subject: [PATCH] stm32mp15 iCore - env partition in config
+
+---
+ arch/arm/dts/stm32mp157a-icore-starterkit2-mx-u-boot.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm/dts/stm32mp157a-icore-starterkit2-mx-u-boot.dtsi b/arch/arm/dts/stm32mp157a-icore-starterkit2-mx-u-boot.dtsi
+index 32ea4ca0c22..2cc1e6fd95d 100644
+--- a/arch/arm/dts/stm32mp157a-icore-starterkit2-mx-u-boot.dtsi
++++ b/arch/arm/dts/stm32mp157a-icore-starterkit2-mx-u-boot.dtsi
+@@ -15,6 +15,9 @@
+ / {
+ 
+ 	/* USER CODE BEGIN root */
++        config {
++               u-boot,mmc-env-partition = "u-boot-env";
++        };
+ 	/* USER CODE END root */
+ 
+ }; /*root*/

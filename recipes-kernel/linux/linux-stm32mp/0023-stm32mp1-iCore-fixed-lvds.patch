@@ -1,0 +1,65 @@
+From c7569bbb2e86b8518a651a34f2b614fb7bd12a21 Mon Sep 17 00:00:00 2001
+From: Francesco <your.email@example.com>
+Date: Thu, 19 Feb 2026 10:38:45 +0100
+Subject: [PATCH] stm32mp1 iCore: fixed lvds
+
+---
+ .../st/stm32mp157a-icore-starterkit2-mx.dts   | 26 +++++++++----------
+ 1 file changed, 12 insertions(+), 14 deletions(-)
+
+diff --git a/arch/arm/boot/dts/st/stm32mp157a-icore-starterkit2-mx.dts b/arch/arm/boot/dts/st/stm32mp157a-icore-starterkit2-mx.dts
+index db29104e7..418c8547d 100644
+--- a/arch/arm/boot/dts/st/stm32mp157a-icore-starterkit2-mx.dts
++++ b/arch/arm/boot/dts/st/stm32mp157a-icore-starterkit2-mx.dts
+@@ -244,24 +244,21 @@ panel {
+ 		compatible = "panel-lvds";
+ 		backlight = <&panel_backlight>;
+ 		data-mapping = "vesa-24";
+-		height-mm = <136>;
+-		width-mm = <217>;
++		height-mm = <125>;
++		width-mm = <223>;
+ 		status = "okay";
+ 
+-		panel-timing {/* 1024x600 @65MHz */
+-			clock-frequency = <65000000>;
++		panel-timing {/* 1024x600 @60Hz */
++			clock-frequency = <51450000>;
+ 			hactive = <1024>;
+ 			vactive = <600>;
+-			hsync-len = <136>;
+-			hfront-porch = <20>;
+-			hback-porch = <160>;
++			hsync-len = <8>;
++			hfront-porch = <156>;
++			hback-porch = <156>;
+ 			vsync-len = <6>;
+-			vfront-porch = <3>;
+-			vback-porch = <29>;
+-			//hsync-active = <0>;
+-			//vsync-active = <0>;
+-			//de-active = <1>;
+-			//pixelclk-active = <0>;
++			vfront-porch = <16>;
++			vback-porch = <16>;
++			de-active = <1>;
+ 		};
+ 
+ 		port {
+@@ -856,6 +853,7 @@ port@1 {
+ 			reg = <1>;
+ 			dsim_to_sn65dsi8: endpoint {
+ 				remote-endpoint = <&sn65dsi83_in>;
++				data-lanes = <1 2>;
+ 			};
+ 		};
+ 	};
+@@ -1053,7 +1051,7 @@ &i2c6 {
+ 	/delete-property/dma-names;
+ 
+ 	lvds_bridge: sn65dsi83@2c {
+-		compatible = "ti,sn65dsi83";
++		compatible = "ti,sn65dsi84";
+ 		reg = <0x2c>;
+ 
+ 		enable-gpios = <&gpiof 15 GPIO_ACTIVE_HIGH>;

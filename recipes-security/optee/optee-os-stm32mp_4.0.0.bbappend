@@ -21,6 +21,9 @@ SRC_URI += "file://0001-core-arch-arm-dts-stm32mp157a-ugea-microdev-mx-initi.pat
             file://0012-stm32mp257D-Smarcore-XTouch2-Porting.patch \
             file://0013-stm32mp257d-iCore-deprot-pins-for-iTouch-edimm-7.patch \
             file://0016-stm32mp257d-f-uGea-firewall-settings.patch \
+            file://0017-core-arch-arm-dts-stm32mp157a-icore-starterkit2-mx-a.patch \
+            file://0018-stm32mp1-iCore-enabled-dsi-pll.patch \
+            file://0019-stm32mp1-iCore-set-sdmmc12-clock.patch \
             "
 
 #ST_OPTEE_CORE_DEBUG:stm32mp13common = "y"
