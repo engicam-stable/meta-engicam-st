@@ -24,6 +24,7 @@ SRC_URI += "file://0001-core-arch-arm-dts-stm32mp157a-ugea-microdev-mx-initi.pat
             file://0017-core-arch-arm-dts-stm32mp157a-icore-starterkit2-mx-a.patch \
             file://0018-stm32mp1-iCore-enabled-dsi-pll.patch \
             file://0019-stm32mp1-iCore-set-sdmmc12-clock.patch \
+            file://0020-stm32mp235d-iCore-Porting-on-edimm2.patch \
             "
 
 #ST_OPTEE_CORE_DEBUG:stm32mp13common = "y"
