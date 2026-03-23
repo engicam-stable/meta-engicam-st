@@ -8,5 +8,6 @@ SRC_URI += "file://0001-Initial-commit-157-ugea.patch \
             file://0006-135-uGea-Added-support-for-microdev.patch \
             file://0007-135-ugea-Added-support-for-F-version.patch \
             file://0008-135-uGea-added-1GB-RAM-version.patch \
+            file://0009-stm32mp1-Changed-fiptool-align-option-value.patch \
             "
 
