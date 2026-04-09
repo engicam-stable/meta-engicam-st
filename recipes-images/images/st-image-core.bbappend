@@ -12,3 +12,7 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     "
 
 
+# IMAGE_INSTALL:append:stm32mp23d-ugea = " \
+#     lwb5plus-sdio-sa-firmware \
+#     linux-firmware-bluetooth-bcm43xx \
+#     "

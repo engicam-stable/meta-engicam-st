@@ -16,3 +16,7 @@ CORE_IMAGE_EXTRA_INSTALL += " \
 CORE_IMAGE_EXTRA_INSTALL:remove = " packagegroup-st-demo "
 
 
+# IMAGE_INSTALL:append:stm32mp25f-ugea = " \
+#     kernel-module-ti-backports \
+#     ti351-firmware \
+# "

@@ -1,0 +1,65 @@
+From 84cd64a4567a85ff6659ee0b991f0aaa295022ea Mon Sep 17 00:00:00 2001
+From: Mattia <mattia.paladini@engicam.com>
+Date: Thu, 9 Apr 2026 09:53:25 +0200
+Subject: [PATCH] stm32mp23d uGEA: enable 32kHz clock output on MCO1 (porting
+ on microdev3)
+
+---
+ .../arm/dts/stm32mp235d-ugead-micro5-mx-rcc.dtsi    |  2 ++
+ core/arch/arm/dts/stm32mp235d-ugead-micro5-mx.dts   | 13 +++++++++++++
+ 2 files changed, 15 insertions(+)
+
+diff --git a/core/arch/arm/dts/stm32mp235d-ugead-micro5-mx-rcc.dtsi b/core/arch/arm/dts/stm32mp235d-ugead-micro5-mx-rcc.dtsi
+index 5d25a2555..bc77b09ea 100644
+--- a/core/arch/arm/dts/stm32mp235d-ugead-micro5-mx-rcc.dtsi
++++ b/core/arch/arm/dts/stm32mp235d-ugead-micro5-mx-rcc.dtsi
+@@ -77,6 +77,7 @@
+ 		FLEXGEN_CFG(59, XBAR_SRC_PLL4, 0, 1)
+ 		FLEXGEN_CFG(60, XBAR_SRC_PLL4, 0, 23)
+ 		FLEXGEN_CFG(63, XBAR_SRC_PLL4, 0, 2)
++		FLEXGEN_CFG(61, XBAR_SRC_LSE, 0, 0)
+ 	>;
+ 
+ 	st,busclk = <
+@@ -96,6 +97,7 @@
+ 		MUX_CFG(MUX_DTS, MUX_DTS_MSI)
+ 
+ 		MUX_CFG(MUX_RTC, MUX_RTC_LSI)
++		MCO_CFG(MCO1, MUX_MCO1_FLEX61, 1)
+ 
+ 	>;
+ 
+diff --git a/core/arch/arm/dts/stm32mp235d-ugead-micro5-mx.dts b/core/arch/arm/dts/stm32mp235d-ugead-micro5-mx.dts
+index a2c5f28c1..934655ce9 100644
+--- a/core/arch/arm/dts/stm32mp235d-ugead-micro5-mx.dts
++++ b/core/arch/arm/dts/stm32mp235d-ugead-micro5-mx.dts
+@@ -92,9 +92,20 @@
+ 			pinmux = <STM32_PINMUX('C', 13, ANALOG)>;
+ 		};
+ 	};
++
++	mco1_pins_a: mco1-0 {
++        pins {
++            pinmux = <STM32_PINMUX('I', 6, AF1)>; 
++            bias-disable;
++            drive-push-pull;
++            slew-rate = <0>;
++        };
++    };
++
+ 	/* USER CODE END pinctrl */
+ };
+ 
++
+ &pinctrl_z {
+ 	/* USER CODE BEGIN pinctrl_z */
+ 	/* USER CODE END pinctrl_z */
+@@ -478,6 +489,8 @@
+ 
+ &rcc {
+ 	status = "okay";
++	pinctrl-names = "default";
++    pinctrl-0 = <&mco1_pins_a>;
+ 
+ 	/* USER CODE BEGIN rcc */
+ 	st,c1msrd = <2>;
