@@ -56,8 +56,41 @@ Ex. First build
 -----------
 
 ```
-DISTRO=openstlinux-weston MACHINE=stm32mp15-ugea source layers/meta-st/scripts/envsetup.sh build
-bitbake-layers add-layer ../sources/meta-engicam-st
-bitbake st-image-weston
+cd layers
+git clone https://github.com/engicam-stable/meta-engicam-st.git -b scarthgap-6.6_v24.12
+cd ..
+
+DISTRO=openstlinux-weston MACHINE=stm32mp15-eval source layers/meta-st/scripts/envsetup.sh build
+sed -i 's/^MACHINE = "stm32mp15-eval"/MACHINE = "stm32mp15-ugea"/' conf/local.conf
+
+bitbake-layers add-layer ../layers/meta-engicam-st
+bitbake st-image-core
 ```
+
+```
+Build Configuration:
+BB_VERSION           = "2.8.0"
+BUILD_SYS            = "x86_64-linux"
+NATIVELSBSTRING      = "ubuntu-22.04"
+TARGET_SYS           = "arm-ostl-linux-gnueabi"
+MACHINE              = "stm32mp15-ugea"
+DISTRO               = "openstlinux-weston"
+DISTRO_VERSION       = "5.0.3-snapshot-20251215"
+TUNE_FEATURES        = "arm vfp cortexa7 neon vfpv4 thumb callconvention-hard"
+TARGET_FPU           = "hard"
+DISTRO_CODENAME      = "scarthgap"
+GCCVERSION           = "13.%"
+PREFERRED_PROVIDER_virtual/kernel = "linux-stm32mp"
+meta-python          
+meta-oe              
+meta-gnome           
+meta-multimedia      
+meta-networking      
+meta-webserver       = "HEAD:1235dd4ed4a57e67683c045ad76b6a0f9e896b45"
+meta-st-stm32mp      = "HEAD:69a81db920e98ff3e3922f59eecbc50d91c31299"
+meta-st-openstlinux  = "HEAD:a25d4806880cdc73471e3c1824a87901b5a4e44f"
+meta                 = "HEAD:236ac1b43308df722a78d3aa20aef065dfae5b2b"
+meta-engicam-st      = "scarthgap-6.6_v24.12:a76276fad7d4ffd209f695d8633029539a8bc6ad"
+```
+
 
