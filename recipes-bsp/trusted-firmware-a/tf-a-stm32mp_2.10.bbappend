@@ -15,5 +15,6 @@ SRC_URI += "file://0001-fdts-stm32mp157a-ugea-microdev-mx-initial-commit.patch \
             file://0009-stm32mp257d-f-uGea-set-DDR-speed-to-1200-MHz-and-cor.patch \
             file://0010-fdts-stm32mp157a-icore-starterkit2-mx-add-support.patch \
             file://0011-stm32mp235d-iCore-Porting-on-edimm2.patch \
+            file://0012-stm32mp257D-iCore-Added-support-for-CTouch-Ampire7.patch \
             "
 

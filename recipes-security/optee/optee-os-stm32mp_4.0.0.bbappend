@@ -25,8 +25,9 @@ SRC_URI += "file://0001-core-arch-arm-dts-stm32mp157a-ugea-microdev-mx-initi.pat
             file://0018-stm32mp1-iCore-enabled-dsi-pll.patch \
             file://0019-stm32mp1-iCore-set-sdmmc12-clock.patch \
             file://0020-stm32mp235d-iCore-Porting-on-edimm2.patch \
-            file://0021-stm32mp23d-uGEA-enable-32kHz-clock-output-on-MCO1-po.patch \
+            file://0021-stm32mp23d-uGEA-enable-32kHz-clock-output-on-MCO1-po.patch \                
             file://0022-stm32mp2-iCore-Fixed-reserved-memory-filtering-for-M.patch \
+            file://0023-stm32mp257D-iCore-Added-support-for-CTouch-Ampire7.patch \
             "
 
 #ST_OPTEE_CORE_DEBUG:stm32mp13common = "y"
