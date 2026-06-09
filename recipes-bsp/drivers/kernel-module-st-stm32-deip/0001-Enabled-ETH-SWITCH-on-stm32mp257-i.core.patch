@@ -1,0 +1,49 @@
+From 53cf7d07b3756577d637da6fbd497d851c585e27 Mon Sep 17 00:00:00 2001
+From: engicam <support@engicam.com>
+Date: Mon, 20 Apr 2026 17:19:54 +0200
+Subject: [PATCH] Enabled ETH SWITCH on stm32mp257 i.core
+
+---
+ st.stm32-deip/stm32_deip.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/st.stm32-deip/stm32_deip.c b/st.stm32-deip/stm32_deip.c
+index 6a17003..5332c5e 100644
+--- a/st.stm32-deip/stm32_deip.c
++++ b/st.stm32-deip/stm32_deip.c
+@@ -5,6 +5,8 @@
+  * Copyright (C) STMicroelectronics SA 2022
+  * Author:  Alexandre Torgue <alexandre.torgue@foss.st.com> for STMicroelectronics.
+  */
++#define DEBUG
++
+ #include <linux/clk.h>
+ #include <linux/mfd/syscon.h>
+ #include <linux/module.h>
+@@ -78,6 +80,14 @@ static int stm32_deip_init(struct device *dev, struct stm32_deip *deip)
+ 		}
+ 	}
+ 
++	if (deip->ck_ker_ethswref) {
++		ret = clk_prepare_enable(deip->ck_ker_ethswref);
++		if (ret) {
++			dev_err(dev, "fail to enable ck_ker_ethswref\n");
++			return ret;
++		}
++	}
++
+ 	switch (deip->phy_interface) {
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+@@ -100,9 +110,10 @@ static int stm32_deip_init(struct device *dev, struct stm32_deip *deip)
+ 		 */
+ 		if (deip->rmmii_int_ref && deip->ck_ker_ethswref) {
+ 			/*  Ref clock from RCC */
++			dev_dbg(dev, "ETHSW inside if\n");
+ 			val |= ETHSW_REF_SEL_RCC;
+ 			clk_rate = clk_get_rate(deip->ck_ker_ethswref);
+-			if (clk_rate != ETHSW_CK_F_25M || clk_rate != ETHSW_CK_F_50M) {
++			if (clk_rate != ETHSW_CK_F_25M && clk_rate != ETHSW_CK_F_50M) {
+ 				dev_err(dev, "ck_ker_ethswref not at the well rate\n");
+ 				return -EINVAL;
+ 			};

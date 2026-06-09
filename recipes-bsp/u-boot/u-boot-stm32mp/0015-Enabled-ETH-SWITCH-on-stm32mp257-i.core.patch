@@ -1,0 +1,184 @@
+From 80da4ff1f4d19a6f115d187dbad22835c501aba6 Mon Sep 17 00:00:00 2001
+From: engicam <support@engicam.com>
+Date: Mon, 20 Apr 2026 17:39:49 +0200
+Subject: [PATCH] Enabled ETH SWITCH on stm32mp257 i.core
+
+---
+ arch/arm/dts/stm32mp235d-icore-edimm2-mx.dts  | 66 +++++++++++++++++--
+ arch/arm/dts/stm32mp257d-icored-edimm2-mx.dts | 65 ++++++++++++++++--
+ 2 files changed, 123 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm/dts/stm32mp235d-icore-edimm2-mx.dts b/arch/arm/dts/stm32mp235d-icore-edimm2-mx.dts
+index 32f737b9a1e..6757f66cbec 100644
+--- a/arch/arm/dts/stm32mp235d-icore-edimm2-mx.dts
++++ b/arch/arm/dts/stm32mp235d-icore-edimm2-mx.dts
+@@ -311,6 +311,46 @@
+ 		};
+ 	};
+ 
++
++	eth1_rmii_pins_a: eth1-rmii-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('A', 15, AF10)>, /* ETH1_RMII_TXD0 */
++				 <STM32_PINMUX('C', 1, AF10)>, /* ETH1_RMII_TXD1 */
++				 <STM32_PINMUX('A', 13, AF10)>; /* ETH1_RMII_TX_EN*/
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('F', 3, AF9)>; /* ETH1_CLK */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins3 {
++			pinmux = <STM32_PINMUX('F', 1, AF10)>, /* ETH1_RMII_RXD0 */
++				 <STM32_PINMUX('C', 2, AF10)>, /* ETH1_RMII_RXD1 */
++				 <STM32_PINMUX('A', 11, AF10)>; /* ETH1_RMII_CRS_DV */
++			bias-disable;
++		};
++		pins4 {
++			pinmux = <STM32_PINMUX('C', 6, AF13)>; /* ETH1_PHY_INTN */
++			bias-disable;
++		};
++	};
++
++	eth1_rmii_sleep_pins_a: eth1-sleep-rmii-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('A', 15, ANALOG)>, /* ETH1_RMII_TXD0 */
++				 <STM32_PINMUX('C', 1, ANALOG)>, /* ETH1_RMII_TXD1 */
++				 <STM32_PINMUX('A', 13, ANALOG)>, /* ETH1_RMII_TX_EN*/
++				 <STM32_PINMUX('F', 3, ANALOG)>, /* ETH1_CLK */
++				 <STM32_PINMUX('F', 1, ANALOG)>, /* ETH1_RMII_RXD0 */
++				 <STM32_PINMUX('C', 2, ANALOG)>, /* ETH1_RMII_RXD1 */
++				 <STM32_PINMUX('A', 11, ANALOG)>, /* ETH1_RMII_CRS_DV */
++				 <STM32_PINMUX('C', 6, ANALOG)>; /* ETH1_PHY_INTN */
++		};
++	};
+ 	/* USER CODE BEGIN pinctrl */
+ 	/* USER CODE END pinctrl */
+ };
+@@ -328,15 +368,33 @@
+ };
+ 
+ &eth1 {
+-	pinctrl-names = "default", "sleep";
+-	pinctrl-0 = <&eth1_mdio_pins_mx>;
+-	pinctrl-1 = <&eth1_mdio_sleep_pins_mx>;
++	/* USER CODE BEGIN eth1 */
++	pinctrl-names = "default";
++	pinctrl-0 = <&eth1_mdio_pins_mx &eth1_rmii_pins_a>;
+ 	status = "okay";
++	//pinctrl-1 = <&eth1_mdio_sleep_pins_mx>;
+ 
+-	/* USER CODE BEGIN eth1 */
++	phy-mode = "rmii";
++	max-speed = <100>;
++	st,eth-ref-clk-sel;
++	phy-handle = <&phy1_eth1>;
++
++	mdio0 {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		compatible = "snps,dwmac-mdio";
++			phy1_eth1: ethernet-phy@0 {
++				compatible = "ethernet-phy-id0007.c0f0";
++				reset-gpios =  <&gpiog 8 GPIO_ACTIVE_LOW>;
++				reset-assert-us = <10000>;
++				reset-deassert-us = <80000>;
++				reg = <0>;
++			};
++	};	
+ 	/* USER CODE END eth1 */
+ };
+ 
++
+ &eth2 {
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&eth2_mdio_pins_mx>;
+diff --git a/arch/arm/dts/stm32mp257d-icored-edimm2-mx.dts b/arch/arm/dts/stm32mp257d-icored-edimm2-mx.dts
+index 4e6fc686ca4..590a7faeab1 100644
+--- a/arch/arm/dts/stm32mp257d-icored-edimm2-mx.dts
++++ b/arch/arm/dts/stm32mp257d-icored-edimm2-mx.dts
+@@ -311,6 +311,46 @@
+ 		};
+ 	};
+ 
++	eth1_rmii_pins_a: eth1-rmii-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('A', 15, AF10)>, /* ETH1_RMII_TXD0 */
++				 <STM32_PINMUX('C', 1, AF10)>, /* ETH1_RMII_TXD1 */
++				 <STM32_PINMUX('A', 13, AF10)>; /* ETH1_RMII_TX_EN*/
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('F', 3, AF9)>; /* ETH1_CLK */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins3 {
++			pinmux = <STM32_PINMUX('F', 1, AF10)>, /* ETH1_RMII_RXD0 */
++				 <STM32_PINMUX('C', 2, AF10)>, /* ETH1_RMII_RXD1 */
++				 <STM32_PINMUX('A', 11, AF10)>; /* ETH1_RMII_CRS_DV */
++			bias-disable;
++		};
++		pins4 {
++			pinmux = <STM32_PINMUX('C', 6, AF13)>; /* ETH1_PHY_INTN */
++			bias-disable;
++		};
++	};
++
++	eth1_rmii_sleep_pins_a: eth1-sleep-rmii-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('A', 15, ANALOG)>, /* ETH1_RMII_TXD0 */
++				 <STM32_PINMUX('C', 1, ANALOG)>, /* ETH1_RMII_TXD1 */
++				 <STM32_PINMUX('A', 13, ANALOG)>, /* ETH1_RMII_TX_EN*/
++				 <STM32_PINMUX('F', 3, ANALOG)>, /* ETH1_CLK */
++				 <STM32_PINMUX('F', 1, ANALOG)>, /* ETH1_RMII_RXD0 */
++				 <STM32_PINMUX('C', 2, ANALOG)>, /* ETH1_RMII_RXD1 */
++				 <STM32_PINMUX('A', 11, ANALOG)>, /* ETH1_RMII_CRS_DV */
++				 <STM32_PINMUX('C', 6, ANALOG)>; /* ETH1_PHY_INTN */
++		};
++	};
++
+ 	/* USER CODE BEGIN pinctrl */
+ 	/* USER CODE END pinctrl */
+ };
+@@ -338,12 +378,29 @@
+ };
+ 
+ &eth1 {
+-	pinctrl-names = "default", "sleep";
+-	pinctrl-0 = <&eth1_mdio_pins_mx>;
+-	pinctrl-1 = <&eth1_mdio_sleep_pins_mx>;
++	/* USER CODE BEGIN eth1 */
++	pinctrl-names = "default";
++	pinctrl-0 = <&eth1_mdio_pins_mx &eth1_rmii_pins_a>;
+ 	status = "okay";
++	//pinctrl-1 = <&eth1_mdio_sleep_pins_mx>;
+ 
+-	/* USER CODE BEGIN eth1 */
++	phy-mode = "rmii";
++	max-speed = <100>;
++	st,eth-ref-clk-sel;
++	phy-handle = <&phy1_eth1>;
++
++	mdio0 {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		compatible = "snps,dwmac-mdio";
++			phy1_eth1: ethernet-phy@0 {
++				compatible = "ethernet-phy-id0007.c0f0";
++				reset-gpios =  <&gpiog 8 GPIO_ACTIVE_LOW>;
++				reset-assert-us = <10000>;
++				reset-deassert-us = <80000>;
++				reg = <0>;
++			};
++	};	
+ 	/* USER CODE END eth1 */
+ };
+ 

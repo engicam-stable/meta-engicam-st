@@ -62,6 +62,10 @@ repo init -u https://github.com/STMicroelectronics/oe-manifest.git \
 repo sync
 ```
 
+From commit "__stm32mp257 Icore: enabled ethernet switch__" (b16fdcc3ed5f7a9e2377ed3723844b2f1ebd7b76) also needed
+- [meta-st-stm32mp-tsn-swch](https://github.com/STMicroelectronics/meta-st-stm32mp-tsn-swch)
+- [meta-st-stm32mp-tsn-acm](https://github.com/STMicroelectronics/meta-st-stm32mp-tsn-acm)
+Both on branch scarthgap branch
 ---
 
 ## Add meta-engicam-st

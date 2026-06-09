@@ -1,0 +1,162 @@
+From 167f88af8ce84bb0d9be6437dcd234d5a28f3af5 Mon Sep 17 00:00:00 2001
+From: engicam <support@engicam.com>
+Date: Mon, 20 Apr 2026 17:32:22 +0200
+Subject: [PATCH] Enabled ETH SWITCH on stm32mp257 i.core
+
+---
+ arch/arm64/boot/dts/st/stm32mp257.dtsi        |  5 +-
+ .../dts/st/stm32mp257d-icored-edimm2-mx.dts   | 85 ++++++++++++++++---
+ 2 files changed, 77 insertions(+), 13 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp257.dtsi b/arch/arm64/boot/dts/st/stm32mp257.dtsi
+index b9823fd07..af5983c0d 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257.dtsi
++++ b/arch/arm64/boot/dts/st/stm32mp257.dtsi
+@@ -11,11 +11,12 @@ switch0: ttt-sw@4c000000 {
+ 		#size-cells     = <1>;
+ 		compatible = "st,stm32-deip";
+ 		clock-names = "ethsw-bus-clk", "ethsw-clk",
+-			      "ethswacmcfg-bus-clk", "ethswacmmsg-bus-clk";
++			      "ethswacmcfg-bus-clk", "ethswacmmsg-bus-clk", "ethsw-ref-clk";
+ 		clocks = <&rcc CK_BUS_ETHSW>,
+ 			 <&rcc CK_KER_ETHSW>,
+ 			 <&rcc CK_BUS_ETHSWACMCFG>,
+-			 <&rcc CK_BUS_ETHSWACMMSG>;
++			 <&rcc CK_BUS_ETHSWACMMSG>,
++			<&rcc CK_KER_ETHSWREF>;
+ 		st,syscon = <&syscfg 0x3800>;
+ 		ranges = <0x4c000000 0x4c000000 0x2000000>,
+ 			 <0x4b000000 0x4b000000 0xc0000>;
+diff --git a/arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts b/arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts
+index 226ca7b2e..b88bf3503 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts
+@@ -23,7 +23,7 @@
+ /* USER CODE END includes */
+ 
+ / {
+-	model = "STMicroelectronics custom STM32CubeMX board - openstlinux-6.6-yocto-scarthgap-mpu-v24.11.06";
++	model = "STMicroelectronics custom STM32CubeMX board - openstlinux-6.6-yocto-scarthgap-mpu-v24.11.06  1.4	 | ";
+ 	compatible = "st,stm32mp257d-icored-edimm2-mx", "st,stm32mp257";
+ 
+ 	memory@80000000 {
+@@ -644,6 +644,27 @@ pins4 {
+ 		};
+ 	};
+ 
++	eth3_rmii_pins_a: eth3-rmii-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('A', 6, AF14)>, /* ETH3_RMII_TXD0 */
++				 <STM32_PINMUX('A', 7, AF14)>, /* ETH3_RMII_TXD1 */
++				 <STM32_PINMUX('A', 3, AF14)>; /* ETH3_RMII_TX_EN*/
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('A', 9, AF14)>, /* ETH3_RMII_RXD0 */
++				 <STM32_PINMUX('A', 10, AF14)>, /* ETH3_RMII_RXD1 */
++				 <STM32_PINMUX('A', 2, AF14)>; /* ETH3_RMII_CRS_DV */
++			bias-disable;
++		};
++		pins3 {
++			pinmux = <STM32_PINMUX('A', 1, AF14)>; /* ETH3_PHY_INTN */
++			bias-disable;
++		};
++	};
++
+ 	eth2_rmii_pins_a: eth2_rmii-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('F', 4, AF9)>, /* ETH2_CLK */
+@@ -708,21 +729,22 @@ &dts {
+ };
+ 
+ &eth1 {
+-	pinctrl-names = "default", "sleep";
+-	pinctrl-0 = <&eth1_mdio_pins_mx>;
+-	pinctrl-1 = <&eth1_mdio_sleep_pins_mx>;
+-	status = "okay";
+-
+-	/* USER CODE BEGIN eth1 */
+ 	pinctrl-names = "default";
+-	pinctrl-0 = <&eth1_mdio_pins_mx &eth1_rmii_pins_a>;
++	pinctrl-0 = <&eth1_mdio_pins_mx>;
+ 	//pinctrl-1 = <&eth1_mdio_sleep_pins_mx>;
++	status = "okay";
+ 
+-	phy-mode = "rmii";
+-	max-speed = <100>;
+-	st,eth-ref-clk-sel;
++	phy-mode = "rgmii";
++    //st,eth-ref-clk-sel;
++	st,ext-phyclk;
++    snps,ext-systime;
+ 	phy-handle = <&phy1_eth1>;
+ 
++	fixed_link: fixed-link {
++        speed = <1000>;
++        full-duplex;
++    };
++
+ 	mdio0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+@@ -732,12 +754,31 @@ phy1_eth1: ethernet-phy@0 {
+ 				reset-gpios =  <&gpiog 8 GPIO_ACTIVE_LOW>;
+ 				reset-assert-us = <10000>;
+ 				reset-deassert-us = <80000>;
++				max-speed = <100>;
+ 				reg = <0>;
+ 			};
++			phy2_eth1: ethernet-phy@1 {
++				compatible = "ethernet-phy-id0007.c0f0";
++				reset-gpios =  <&gpiog 12 GPIO_ACTIVE_LOW>;
++				reset-assert-us = <10000>;
++				reset-deassert-us = <80000>;
++				max-speed = <100>;
++				reg = <1>;
++			};
+ 	};
+ 	/* USER CODE END eth1 */
+ };
+ 
++&switch0 {
++       pinctrl-names = "default";
++       pinctrl-0 = <&eth1_rmii_pins_a>, <&eth3_rmii_pins_a>;
++       status = "okay";
++       phy-mode = "rmii";
++       st,ethsw-rmii-internal-refclk;
++       st,ethsw-internal-125;
++};
++
++
+ &eth2 {
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&eth2_mdio_pins_mx>;
+@@ -1300,3 +1341,25 @@ scmi_vdd3v3_usb:regulator@20{
+ };
+ /* USER CODE END addons */
+ 
++/*
++ETH3_RMII_TXD0 - PA6
++ETH3_RMII_TXD1 - PA7
++
++ETH3_RMII_TX_EN
++ETH3_RMII_nINT
++
++ETH3_RMII_RXD0
++ETH3_RMII_RXD1
++
++ETH3_RMII_CRS_DV
++ETH3_nRST
++
++ETH3_TXP
++ETH3_TXN
++ETH3_RXP
++ETH3_RXN
++
++ETH3_nLINK
++ETH3_nACT
++
++*/
+\ No newline at end of file
