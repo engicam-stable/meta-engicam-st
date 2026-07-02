@@ -1,0 +1,61 @@
+From 15655017efab30d025a5332efbd0b15b7bf335ba Mon Sep 17 00:00:00 2001
+From: Mattia <mattia.paladini@engicam.com>
+Date: Wed, 1 Jul 2026 11:56:39 +0200
+Subject: [PATCH] stm32mp25d-uGEA enable 32kHz clock output on MCO1
+
+---
+ core/arch/arm/dts/stm32mp257d-ugea-micro5-mx.dts    | 13 ++++++++++++-
+ .../arm/dts/stm32mp257f-ugea-micro5-mx-rcc.dtsi     |  2 ++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/core/arch/arm/dts/stm32mp257d-ugea-micro5-mx.dts b/core/arch/arm/dts/stm32mp257d-ugea-micro5-mx.dts
+index 7652b3e99..2f8fdd170 100644
+--- a/core/arch/arm/dts/stm32mp257d-ugea-micro5-mx.dts
++++ b/core/arch/arm/dts/stm32mp257d-ugea-micro5-mx.dts
+@@ -90,7 +90,16 @@
+ 		pwr_wakeup_pin_2: pwr_pins2 {
+ 			pinmux = <STM32_PINMUX('C', 13, ANALOG)>;
+ 		};		
+-	};		
++	};	
++
++	mco1_pins_a: mco1-0 {
++        pins {
++            pinmux = <STM32_PINMUX('I', 6, AF1)>; 
++            bias-disable;
++            drive-push-pull;
++            slew-rate = <0>;
++        };
++    };	
+ 	/* USER CODE END pinctrl */
+ };
+ 
+@@ -502,6 +511,8 @@
+ 
+ &rcc {
+ 	status = "okay";
++	pinctrl-names = "default";
++    pinctrl-0 = <&mco1_pins_a>;
+ 
+ 	/* USER CODE BEGIN rcc */
+ 	st,c1msrd = <2>;
+diff --git a/core/arch/arm/dts/stm32mp257f-ugea-micro5-mx-rcc.dtsi b/core/arch/arm/dts/stm32mp257f-ugea-micro5-mx-rcc.dtsi
+index 10c294209..cffdb5370 100644
+--- a/core/arch/arm/dts/stm32mp257f-ugea-micro5-mx-rcc.dtsi
++++ b/core/arch/arm/dts/stm32mp257f-ugea-micro5-mx-rcc.dtsi
+@@ -77,6 +77,7 @@
+ 		FLEXGEN_CFG(59, XBAR_SRC_PLL4, 0, 1)
+ 		FLEXGEN_CFG(60, XBAR_SRC_PLL4, 0, 23)
+ 		FLEXGEN_CFG(63, XBAR_SRC_PLL4, 0, 2)
++		FLEXGEN_CFG(61, XBAR_SRC_LSE, 0, 0)
+ 	>;
+ 
+ 	st,busclk = <
+@@ -96,6 +97,7 @@
+ 		MUX_CFG(MUX_DTS, MUX_DTS_HSE)
+ 
+ 		MUX_CFG(MUX_RTC, MUX_RTC_LSI)
++		MCO_CFG(MCO1, MUX_MCO1_FLEX61, 1)
+ 
+ 	>;
+ 
