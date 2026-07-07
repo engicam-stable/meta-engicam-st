@@ -33,7 +33,7 @@ Engicam BSP meta-layer for STMicroelectronics STM32MP platforms, based on the ST
 | Machine | SoC | Module | Supported boards |
 |---|---|---|---|
 | `stm32mp23d-icore` | STM32MP235D | iCore STM32MP2 | Capacitive Starter Kit EDIMM 2.0 |
-| `stm32mp23d-ugea` | STM32MP235D | MicroGEA STM32MP2 | Micro5, MicroDev3 |
+| `stm32mp23d-ugea` | STM32MP235D | MicroGEA STM32MP2 | Micro5, MicroDev3, MicroTouch |
 
 ---
 
@@ -180,7 +180,7 @@ Use `lsblk` to identify the correct device.
 | `stm32mp25f-ugea` | `stm32mp257f-ugea-micro5-mx` (default), `stm32mp257f-ugea-microtouch` |
 | `stm32mp25d-ugea` | `stm32mp257d-ugea-micro5-mx` (default), `stm32mp257d-ugea-edimm2` |
 | `stm32mp23d-icore` | `stm32mp235d-icore-edimm2-mx` |
-| `stm32mp23d-ugea` | `stm32mp235d-ugead-micro5-mx` (default), `stm32mp235d-ugead-microdev3` |
+| `stm32mp23d-ugea` | `stm32mp235d-ugead-micro5-mx` (default), `stm32mp235d-ugead-microdev3`, `stm32mp235d-ugea-microtouch` |
 
 ### MP1 note — FlashLayout path
 
