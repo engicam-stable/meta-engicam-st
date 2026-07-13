@@ -1,7 +1,7 @@
-From 93b45a9af34fbb0d52713895c42798164c928eb1 Mon Sep 17 00:00:00 2001
-From: FraUtel <francesco.utel@engicam.com>
-Date: Tue, 7 Jul 2026 14:35:50 +0200
-Subject: [PATCH] stm32mp23d-ugea: Porting on microtouch
+From 79218c3ecd6eaa0debc2a357cda0fa8121fe6507 Mon Sep 17 00:00:00 2001
+From: engicam <support@engicam.com>
+Date: Fri, 10 Jul 2026 17:50:49 +0200
+Subject: [PATCH 2/2] stm32mp23d-ugea: Porting on microtouch
 
 ---
  .../dts/st/stm32mp235d-ugea-microtouch.dts    | 1165 +++++++++++++++++
@@ -1179,3 +1179,6 @@ index 000000000..9c49ae34c
 +};
 +/* USER CODE END addons */
 +
+-- 
+2.43.0
+

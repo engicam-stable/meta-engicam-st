@@ -1,7 +1,7 @@
-From 9e4974010ab3daaef607f0217f3de49180f39e19 Mon Sep 17 00:00:00 2001
-From: Mattia <mattia.paladini@engicam.com>
-Date: Wed, 1 Jul 2026 11:52:29 +0200
-Subject: [PATCH] stm32mp25d-uGEA porting on microdev3
+From 9a33f05b136c6da8039ffc4cdb0c0303f5629f7c Mon Sep 17 00:00:00 2001
+From: engicam <support@engicam.com>
+Date: Fri, 10 Jul 2026 17:50:28 +0200
+Subject: [PATCH 1/2] stm32mp25d-uGEA porting on microdev3
 
 ---
  .../dts/st/stm32mp257d-ugea-microdev3.dts     | 1075 +++++++++++++++++
@@ -1089,3 +1089,6 @@ index 000000000..cde47f4dc
 +	};
 +};
 +/* USER CODE END addons */
+-- 
+2.43.0
+

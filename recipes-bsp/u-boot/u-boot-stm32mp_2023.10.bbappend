@@ -17,6 +17,5 @@ SRC_URI += "file://0001-arch-arm-dts-stm32mp157a-ugea-microdev-mx-initial-co.pat
             file://0012-stm32mp15-iCore-env-partition-in-config.patch \
             file://0013-stm32mp235d-iCore-Porting-on-edimm2.patch \
             file://0014-stm32mp257D-iCore-Added-support-for-CTouch-Ampire7.patch \
-            file://0015-Enabled-ETH-SWITCH-on-stm32mp257-i.core.patch \
             "
 
