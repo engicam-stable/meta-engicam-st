@@ -11,6 +11,7 @@ SRC_URI += "file://0001-Initial-commit-157-ugea.patch \
             file://0009-135-ugea-Added-support-for-F-version.patch \
             file://0010-135d-uGea-i2c5-deprotection.patch \
             file://0011-135-uGea-added-1GB-RAM-version.patch \
+            file://0012-135-Gea-Added-support-for-F-version.patch \
             "
 
 EXTRA_OEMAKE +=  "CFG_STM32_CRYP=n"

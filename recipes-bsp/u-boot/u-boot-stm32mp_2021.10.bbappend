@@ -12,5 +12,6 @@ SRC_URI += "file://0001-Initial-commit-157-ugea.patch \
             file://0010-135-ugea-Added-support-for-F-version.patch \
             file://0011-Set-internal-pull-up-on-uart4-RX.patch \
             file://0012-135-uGea-added-1GB-RAM-version.patch \
+            file://0013-135-Gea-Added-support-for-F-version.patch \
             "
 
