@@ -1,5 +1,5 @@
 ---
-board: microgea-evaluation-board
+board: microgea_evb
 module: mp257d_ugea
 ---
 
