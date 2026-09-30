@@ -31,6 +31,8 @@ SRC_URI += "file://0001-core-arch-arm-dts-stm32mp157a-ugea-microdev-mx-initi.pat
             file://0024-stm32mp25d-uGEA-enable-32kHz-clock-output-on-MCO1.patch \
             file://0025-stm32mp257d-ugea-enabled-timer-2-for-pwm-backlight-e.patch \
             file://0026-mp23d-Added-support-microgea-EVB-revB.patch \
+            file://0001-decprot-gpio-for-stm32mp23d-icore.patch \
+            file://0002-fix.patch \
             "
 
 #ST_OPTEE_CORE_DEBUG:stm32mp13common = "y"
