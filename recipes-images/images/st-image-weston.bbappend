@@ -13,10 +13,13 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     u-boot-fw-config-stm32mp \
     "
 
-CORE_IMAGE_EXTRA_INSTALL:remove = " packagegroup-st-demo "
-
+IMAGE_INSTALL:remove = " packagegroup-st-demo"
+#CORE_IMAGE_EXTRA_INSTALL:remove = " packagegroup-st-demo "
+IMAGE_INSTALL:remove = "kmscube weston-examples"
 
 # IMAGE_INSTALL:append:stm32mp25f-ugea = " \
 #     kernel-module-ti-backports \
 #     ti351-firmware \
 # "
+
+NO_RECOMMENDATIONS = "1"

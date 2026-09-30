@@ -9,6 +9,8 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     mmc-utils \
     mtd-utils-ubifs \
     u-boot-stm32mp-splash \
+    bmaptool \
+    gptfdisk \
     "
 
 
