@@ -1,0 +1,729 @@
+From 3dade8b9a5bf00644c98131af4432b7ea73e94bc Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Thu, 1 Oct 2026 16:36:21 +0200
+Subject: [PATCH] Ported mmc driver from 6.6.78
+
+---
+ drivers/mmc/host/cqhci-core.c       |  2 +-
+ drivers/mmc/host/mmc_spi.c          |  9 ++--
+ drivers/mmc/host/mmci.c             | 22 +++++----
+ drivers/mmc/host/mmci_stm32_sdmmc.c | 13 ++++--
+ drivers/mmc/host/mtk-sd.c           | 66 +++++++++++---------------
+ drivers/mmc/host/sdhci-esdhc-imx.c  |  6 +++
+ drivers/mmc/host/sdhci-msm.c        | 69 +++++++++++++++++++++++----
+ drivers/mmc/host/sdhci-of-aspeed.c  |  1 +
+ drivers/mmc/host/sdhci-pci-core.c   | 72 +++++++++++++++++++++++++++++
+ drivers/mmc/host/sdhci-pci-gli.c    | 38 +++++++++------
+ drivers/mmc/host/sdhci-pci.h        |  1 +
+ drivers/mmc/host/sdhci-tegra.c      |  1 -
+ drivers/mmc/host/sunxi-mmc.c        |  6 +--
+ 13 files changed, 219 insertions(+), 87 deletions(-)
+
+diff --git a/drivers/mmc/host/cqhci-core.c b/drivers/mmc/host/cqhci-core.c
+index 41e94cd14..fe7a4eac9 100644
+--- a/drivers/mmc/host/cqhci-core.c
++++ b/drivers/mmc/host/cqhci-core.c
+@@ -612,7 +612,7 @@ static int cqhci_request(struct mmc_host *mmc, struct mmc_request *mrq)
+ 		cqhci_writel(cq_host, 0, CQHCI_CTL);
+ 		mmc->cqe_on = true;
+ 		pr_debug("%s: cqhci: CQE on\n", mmc_hostname(mmc));
+-		if (cqhci_readl(cq_host, CQHCI_CTL) && CQHCI_HALT) {
++		if (cqhci_readl(cq_host, CQHCI_CTL) & CQHCI_HALT) {
+ 			pr_err("%s: cqhci: CQE failed to exit halt state\n",
+ 			       mmc_hostname(mmc));
+ 		}
+diff --git a/drivers/mmc/host/mmc_spi.c b/drivers/mmc/host/mmc_spi.c
+index 2a99ffb61..30b93dc93 100644
+--- a/drivers/mmc/host/mmc_spi.c
++++ b/drivers/mmc/host/mmc_spi.c
+@@ -223,10 +223,6 @@ static int mmc_spi_response_get(struct mmc_spi_host *host,
+ 	u8 	leftover = 0;
+ 	unsigned short rotator;
+ 	int 	i;
+-	char	tag[32];
+-
+-	snprintf(tag, sizeof(tag), "  ... CMD%d response SPI_%s",
+-		cmd->opcode, maptype(cmd));
+ 
+ 	/* Except for data block reads, the whole response will already
+ 	 * be stored in the scratch buffer.  It's somewhere after the
+@@ -379,8 +375,9 @@ static int mmc_spi_response_get(struct mmc_spi_host *host,
+ 	}
+ 
+ 	if (value < 0)
+-		dev_dbg(&host->spi->dev, "%s: resp %04x %08x\n",
+-			tag, cmd->resp[0], cmd->resp[1]);
++		dev_dbg(&host->spi->dev,
++			"  ... CMD%d response SPI_%s: resp %04x %08x\n",
++			cmd->opcode, maptype(cmd), cmd->resp[0], cmd->resp[1]);
+ 
+ 	/* disable chipselect on errors and some success cases */
+ 	if (value >= 0 && cs_on)
+diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+index 7fbc0529e..409115fa7 100644
+--- a/drivers/mmc/host/mmci.c
++++ b/drivers/mmc/host/mmci.c
+@@ -2052,19 +2052,23 @@ static int mmci_get_cd(struct mmc_host *mmc)
+ static int mmci_sig_volt_switch(struct mmc_host *mmc, struct mmc_ios *ios)
+ {
+ 	struct mmci_host *host = mmc_priv(mmc);
+-	int ret;
+ 
+-	ret = mmc_regulator_set_vqmmc(mmc, ios);
++	if (!IS_ERR(mmc->supply.vqmmc)) {
++		int ret;
+ 
+-	if (!ret && host->ops && host->ops->post_sig_volt_switch)
+-		ret = host->ops->post_sig_volt_switch(host, ios);
+-	else if (ret)
+-		ret = 0;
++		ret = mmc_regulator_set_vqmmc(mmc, ios);
+ 
+-	if (ret < 0)
+-		dev_warn(mmc_dev(mmc), "Voltage switch failed\n");
++		if (!ret && host->ops && host->ops->post_sig_volt_switch)
++			ret = host->ops->post_sig_volt_switch(host, ios);
+ 
+-	return ret;
++		return min(ret, 0);
++	}
++
++	/* No vqmmc regulator, assume fixed regulator at 3.3V */
++	if (mmc->ios.signal_voltage == MMC_SIGNAL_VOLTAGE_330)
++		return 0;
++
++	return -EINVAL;
+ }
+ 
+ static void mmci_enable_sdio_irq(struct mmc_host *mmc, int enable)
+diff --git a/drivers/mmc/host/mmci_stm32_sdmmc.c b/drivers/mmc/host/mmci_stm32_sdmmc.c
+index 70ca2837b..29ad3001f 100644
+--- a/drivers/mmc/host/mmci_stm32_sdmmc.c
++++ b/drivers/mmc/host/mmci_stm32_sdmmc.c
+@@ -80,6 +80,7 @@ struct sdmmc_dlyb {
+ 	void __iomem *base;
+ 	u32 unit;
+ 	u32 max;
++	unsigned int min_freq;
+ 	struct sdmmc_tuning_ops *ops;
+ };
+ 
+@@ -411,7 +412,8 @@ static void mmci_sdmmc_set_pwrreg(struct mmci_host *host, unsigned int pwr)
+ 	if (dlyb && dlyb->ops->set_input_ck)
+ 		dlyb->ops->set_input_ck(dlyb);
+ 
+-	if (ios.power_mode == MMC_POWER_OFF) {
++	if (ios.power_mode == MMC_POWER_OFF ||
++	    ios.power_mode == MMC_POWER_UP) {
+ 		/* Only a reset could power-off sdmmc */
+ 		reset_control_assert(host->rst);
+ 		udelay(2);
+@@ -681,7 +683,7 @@ static int sdmmc_execute_tuning(struct mmc_host *mmc, u32 opcode)
+ 
+ 	if ((host->mmc->ios.timing != MMC_TIMING_UHS_SDR104 &&
+ 	     host->mmc->ios.timing != MMC_TIMING_MMC_HS200) ||
+-	    host->mmc->actual_clock <= 50000000)
++	    host->mmc->actual_clock <= dlyb->min_freq)
+ 		return 0;
+ 
+ 	if (!dlyb || !dlyb->base)
+@@ -792,10 +794,13 @@ void sdmmc_variant_init(struct mmci_host *host)
+ 		return;
+ 
+ 	dlyb->base = base_dlyb;
+-	if (of_device_is_compatible(np, "st,stm32mp25-sdmmc2"))
++	if (of_device_is_compatible(np, "st,stm32mp25-sdmmc2")) {
+ 		dlyb->ops = &dlyb_tuning_mp25_ops;
+-	else
++		dlyb->min_freq = 100000000;
++	} else {
+ 		dlyb->ops = &dlyb_tuning_mp15_ops;
++		dlyb->min_freq = 50000000;
++	}
+ 
+ 	host->variant_priv = dlyb;
+ 	host->mmc_ops->execute_tuning = sdmmc_execute_tuning;
+diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
+index 8b755f162..4f4b7607e 100644
+--- a/drivers/mmc/host/mtk-sd.c
++++ b/drivers/mmc/host/mtk-sd.c
+@@ -2674,20 +2674,18 @@ static int msdc_drv_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	/* Allocate MMC host for this device */
+-	mmc = mmc_alloc_host(sizeof(struct msdc_host), &pdev->dev);
++	mmc = devm_mmc_alloc_host(&pdev->dev, sizeof(struct msdc_host));
+ 	if (!mmc)
+ 		return -ENOMEM;
+ 
+ 	host = mmc_priv(mmc);
+ 	ret = mmc_of_parse(mmc);
+ 	if (ret)
+-		goto host_free;
++		return ret;
+ 
+ 	host->base = devm_platform_ioremap_resource(pdev, 0);
+-	if (IS_ERR(host->base)) {
+-		ret = PTR_ERR(host->base);
+-		goto host_free;
+-	}
++	if (IS_ERR(host->base))
++		return PTR_ERR(host->base);
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+ 	if (res) {
+@@ -2698,53 +2696,45 @@ static int msdc_drv_probe(struct platform_device *pdev)
+ 
+ 	ret = mmc_regulator_get_supply(mmc);
+ 	if (ret)
+-		goto host_free;
++		return ret;
+ 
+ 	ret = msdc_of_clock_parse(pdev, host);
+ 	if (ret)
+-		goto host_free;
++		return ret;
+ 
+ 	host->reset = devm_reset_control_get_optional_exclusive(&pdev->dev,
+ 								"hrst");
+-	if (IS_ERR(host->reset)) {
+-		ret = PTR_ERR(host->reset);
+-		goto host_free;
+-	}
++	if (IS_ERR(host->reset))
++		return PTR_ERR(host->reset);
+ 
+ 	/* only eMMC has crypto property */
+ 	if (!(mmc->caps2 & MMC_CAP2_NO_MMC)) {
+ 		host->crypto_clk = devm_clk_get_optional(&pdev->dev, "crypto");
+ 		if (IS_ERR(host->crypto_clk))
+-			host->crypto_clk = NULL;
+-		else
++			return PTR_ERR(host->crypto_clk);
++		else if (host->crypto_clk)
+ 			mmc->caps2 |= MMC_CAP2_CRYPTO;
+ 	}
+ 
+ 	host->irq = platform_get_irq(pdev, 0);
+-	if (host->irq < 0) {
+-		ret = host->irq;
+-		goto host_free;
+-	}
++	if (host->irq < 0)
++		return host->irq;
+ 
+ 	host->pinctrl = devm_pinctrl_get(&pdev->dev);
+-	if (IS_ERR(host->pinctrl)) {
+-		ret = PTR_ERR(host->pinctrl);
+-		dev_err(&pdev->dev, "Cannot find pinctrl!\n");
+-		goto host_free;
+-	}
++	if (IS_ERR(host->pinctrl))
++		return dev_err_probe(&pdev->dev, PTR_ERR(host->pinctrl),
++				     "Cannot find pinctrl");
+ 
+ 	host->pins_default = pinctrl_lookup_state(host->pinctrl, "default");
+ 	if (IS_ERR(host->pins_default)) {
+-		ret = PTR_ERR(host->pins_default);
+ 		dev_err(&pdev->dev, "Cannot find pinctrl default!\n");
+-		goto host_free;
++		return PTR_ERR(host->pins_default);
+ 	}
+ 
+ 	host->pins_uhs = pinctrl_lookup_state(host->pinctrl, "state_uhs");
+ 	if (IS_ERR(host->pins_uhs)) {
+-		ret = PTR_ERR(host->pins_uhs);
+ 		dev_err(&pdev->dev, "Cannot find pinctrl uhs!\n");
+-		goto host_free;
++		return PTR_ERR(host->pins_uhs);
+ 	}
+ 
+ 	/* Support for SDIO eint irq ? */
+@@ -2823,7 +2813,7 @@ static int msdc_drv_probe(struct platform_device *pdev)
+ 	ret = msdc_ungate_clock(host);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Cannot ungate clocks!\n");
+-		goto release_mem;
++		goto release_clk;
+ 	}
+ 	msdc_init_hw(host);
+ 
+@@ -2833,14 +2823,14 @@ static int msdc_drv_probe(struct platform_device *pdev)
+ 					     GFP_KERNEL);
+ 		if (!host->cq_host) {
+ 			ret = -ENOMEM;
+-			goto host_free;
++			goto release;
+ 		}
+ 		host->cq_host->caps |= CQHCI_TASK_DESC_SZ_128;
+ 		host->cq_host->mmio = host->base + 0x800;
+ 		host->cq_host->ops = &msdc_cmdq_ops;
+ 		ret = cqhci_init(host->cq_host, mmc, true);
+ 		if (ret)
+-			goto host_free;
++			goto release;
+ 		mmc->max_segs = 128;
+ 		/* cqhci 16bit length */
+ 		/* 0 size, means 65536 so we don't have to -1 here */
+@@ -2867,21 +2857,20 @@ static int msdc_drv_probe(struct platform_device *pdev)
+ end:
+ 	pm_runtime_disable(host->dev);
+ release:
+-	platform_set_drvdata(pdev, NULL);
+ 	msdc_deinit_hw(host);
++release_clk:
+ 	msdc_gate_clock(host);
++	platform_set_drvdata(pdev, NULL);
+ release_mem:
++	device_init_wakeup(&pdev->dev, false);
+ 	if (host->dma.gpd)
+ 		dma_free_coherent(&pdev->dev,
+ 			2 * sizeof(struct mt_gpdma_desc),
+ 			host->dma.gpd, host->dma.gpd_addr);
+ 	if (host->dma.bd)
+ 		dma_free_coherent(&pdev->dev,
+-			MAX_BD_NUM * sizeof(struct mt_bdma_desc),
+-			host->dma.bd, host->dma.bd_addr);
+-host_free:
+-	mmc_free_host(mmc);
+-
++				  MAX_BD_NUM * sizeof(struct mt_bdma_desc),
++				  host->dma.bd, host->dma.bd_addr);
+ 	return ret;
+ }
+ 
+@@ -2906,9 +2895,8 @@ static void msdc_drv_remove(struct platform_device *pdev)
+ 			2 * sizeof(struct mt_gpdma_desc),
+ 			host->dma.gpd, host->dma.gpd_addr);
+ 	dma_free_coherent(&pdev->dev, MAX_BD_NUM * sizeof(struct mt_bdma_desc),
+-			host->dma.bd, host->dma.bd_addr);
+-
+-	mmc_free_host(mmc);
++			  host->dma.bd, host->dma.bd_addr);
++	device_init_wakeup(&pdev->dev, false);
+ }
+ 
+ static void msdc_save_reg(struct msdc_host *host)
+diff --git a/drivers/mmc/host/sdhci-esdhc-imx.c b/drivers/mmc/host/sdhci-esdhc-imx.c
+index 3b8030f35..e4e9b84f2 100644
+--- a/drivers/mmc/host/sdhci-esdhc-imx.c
++++ b/drivers/mmc/host/sdhci-esdhc-imx.c
+@@ -235,6 +235,7 @@ struct esdhc_platform_data {
+ 
+ struct esdhc_soc_data {
+ 	u32 flags;
++	u32 quirks;
+ };
+ 
+ static const struct esdhc_soc_data esdhc_imx25_data = {
+@@ -306,10 +307,12 @@ static struct esdhc_soc_data usdhc_imx7ulp_data = {
+ 			| ESDHC_FLAG_HAVE_CAP1 | ESDHC_FLAG_HS200
+ 			| ESDHC_FLAG_PMQOS | ESDHC_FLAG_HS400
+ 			| ESDHC_FLAG_STATE_LOST_IN_LPMODE,
++	.quirks = SDHCI_QUIRK_NO_LED,
+ };
+ static struct esdhc_soc_data usdhc_imxrt1050_data = {
+ 	.flags = ESDHC_FLAG_USDHC | ESDHC_FLAG_STD_TUNING
+ 			| ESDHC_FLAG_HAVE_CAP1 | ESDHC_FLAG_HS200,
++	.quirks = SDHCI_QUIRK_NO_LED,
+ };
+ 
+ static struct esdhc_soc_data usdhc_imx8qxp_data = {
+@@ -318,6 +321,7 @@ static struct esdhc_soc_data usdhc_imx8qxp_data = {
+ 			| ESDHC_FLAG_HS400 | ESDHC_FLAG_HS400_ES
+ 			| ESDHC_FLAG_STATE_LOST_IN_LPMODE
+ 			| ESDHC_FLAG_CLK_RATE_LOST_IN_PM_RUNTIME,
++	.quirks = SDHCI_QUIRK_NO_LED,
+ };
+ 
+ static struct esdhc_soc_data usdhc_imx8mm_data = {
+@@ -325,6 +329,7 @@ static struct esdhc_soc_data usdhc_imx8mm_data = {
+ 			| ESDHC_FLAG_HAVE_CAP1 | ESDHC_FLAG_HS200
+ 			| ESDHC_FLAG_HS400 | ESDHC_FLAG_HS400_ES
+ 			| ESDHC_FLAG_STATE_LOST_IN_LPMODE,
++	.quirks = SDHCI_QUIRK_NO_LED,
+ };
+ 
+ struct pltfm_imx_data {
+@@ -1664,6 +1669,7 @@ static int sdhci_esdhc_imx_probe(struct platform_device *pdev)
+ 
+ 	imx_data->socdata = device_get_match_data(&pdev->dev);
+ 
++	host->quirks |= imx_data->socdata->quirks;
+ 	if (imx_data->socdata->flags & ESDHC_FLAG_PMQOS)
+ 		cpu_latency_qos_add_request(&imx_data->pm_qos_req, 0);
+ 
+diff --git a/drivers/mmc/host/sdhci-msm.c b/drivers/mmc/host/sdhci-msm.c
+index e113b99a3..945d08531 100644
+--- a/drivers/mmc/host/sdhci-msm.c
++++ b/drivers/mmc/host/sdhci-msm.c
+@@ -134,9 +134,18 @@
+ /* Timeout value to avoid infinite waiting for pwr_irq */
+ #define MSM_PWR_IRQ_TIMEOUT_MS 5000
+ 
++/* Max load for eMMC Vdd supply */
++#define MMC_VMMC_MAX_LOAD_UA	570000
++
+ /* Max load for eMMC Vdd-io supply */
+ #define MMC_VQMMC_MAX_LOAD_UA	325000
+ 
++/* Max load for SD Vdd supply */
++#define SD_VMMC_MAX_LOAD_UA	800000
++
++/* Max load for SD Vdd-io supply */
++#define SD_VQMMC_MAX_LOAD_UA	22000
++
+ #define msm_host_readl(msm_host, host, offset) \
+ 	msm_host->var_ops->msm_readl_relaxed(host, offset)
+ 
+@@ -1403,11 +1412,48 @@ static int sdhci_msm_set_pincfg(struct sdhci_msm_host *msm_host, bool level)
+ 	return ret;
+ }
+ 
+-static int sdhci_msm_set_vmmc(struct mmc_host *mmc)
++static void msm_config_vmmc_regulator(struct mmc_host *mmc, bool hpm)
++{
++	int load;
++
++	if (!hpm)
++		load = 0;
++	else if (!mmc->card)
++		load = max(MMC_VMMC_MAX_LOAD_UA, SD_VMMC_MAX_LOAD_UA);
++	else if (mmc_card_mmc(mmc->card))
++		load = MMC_VMMC_MAX_LOAD_UA;
++	else if (mmc_card_sd(mmc->card))
++		load = SD_VMMC_MAX_LOAD_UA;
++	else
++		return;
++
++	regulator_set_load(mmc->supply.vmmc, load);
++}
++
++static void msm_config_vqmmc_regulator(struct mmc_host *mmc, bool hpm)
++{
++	int load;
++
++	if (!hpm)
++		load = 0;
++	else if (!mmc->card)
++		load = max(MMC_VQMMC_MAX_LOAD_UA, SD_VQMMC_MAX_LOAD_UA);
++	else if (mmc_card_sd(mmc->card))
++		load = SD_VQMMC_MAX_LOAD_UA;
++	else
++		return;
++
++	regulator_set_load(mmc->supply.vqmmc, load);
++}
++
++static int sdhci_msm_set_vmmc(struct sdhci_msm_host *msm_host,
++			      struct mmc_host *mmc, bool hpm)
+ {
+ 	if (IS_ERR(mmc->supply.vmmc))
+ 		return 0;
+ 
++	msm_config_vmmc_regulator(mmc, hpm);
++
+ 	return mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, mmc->ios.vdd);
+ }
+ 
+@@ -1420,6 +1466,8 @@ static int msm_toggle_vqmmc(struct sdhci_msm_host *msm_host,
+ 	if (msm_host->vqmmc_enabled == level)
+ 		return 0;
+ 
++	msm_config_vqmmc_regulator(mmc, level);
++
+ 	if (level) {
+ 		/* Set the IO voltage regulator to default voltage level */
+ 		if (msm_host->caps_0 & CORE_3_0V_SUPPORT)
+@@ -1642,7 +1690,8 @@ static void sdhci_msm_handle_pwr_irq(struct sdhci_host *host, int irq)
+ 	}
+ 
+ 	if (pwr_state) {
+-		ret = sdhci_msm_set_vmmc(mmc);
++		ret = sdhci_msm_set_vmmc(msm_host, mmc,
++					 pwr_state & REQ_BUS_ON);
+ 		if (!ret)
+ 			ret = sdhci_msm_set_vqmmc(msm_host, mmc,
+ 					pwr_state & REQ_BUS_ON);
+@@ -1867,20 +1916,20 @@ static int sdhci_msm_program_key(struct cqhci_host *cq_host,
+ 	struct sdhci_msm_host *msm_host = sdhci_pltfm_priv(pltfm_host);
+ 	union cqhci_crypto_cap_entry cap;
+ 
++	if (!(cfg->config_enable & CQHCI_CRYPTO_CONFIGURATION_ENABLE))
++		return qcom_ice_evict_key(msm_host->ice, slot);
++
+ 	/* Only AES-256-XTS has been tested so far. */
+ 	cap = cq_host->crypto_cap_array[cfg->crypto_cap_idx];
+ 	if (cap.algorithm_id != CQHCI_CRYPTO_ALG_AES_XTS ||
+ 		cap.key_size != CQHCI_CRYPTO_KEY_SIZE_256)
+ 		return -EINVAL;
+ 
+-	if (cfg->config_enable & CQHCI_CRYPTO_CONFIGURATION_ENABLE)
+-		return qcom_ice_program_key(msm_host->ice,
+-					    QCOM_ICE_CRYPTO_ALG_AES_XTS,
+-					    QCOM_ICE_CRYPTO_KEY_SIZE_256,
+-					    cfg->crypto_key,
+-					    cfg->data_unit_size, slot);
+-	else
+-		return qcom_ice_evict_key(msm_host->ice, slot);
++	return qcom_ice_program_key(msm_host->ice,
++				    QCOM_ICE_CRYPTO_ALG_AES_XTS,
++				    QCOM_ICE_CRYPTO_KEY_SIZE_256,
++				    cfg->crypto_key,
++				    cfg->data_unit_size, slot);
+ }
+ 
+ #else /* CONFIG_MMC_CRYPTO */
+diff --git a/drivers/mmc/host/sdhci-of-aspeed.c b/drivers/mmc/host/sdhci-of-aspeed.c
+index 42d54532c..8379a0620 100644
+--- a/drivers/mmc/host/sdhci-of-aspeed.c
++++ b/drivers/mmc/host/sdhci-of-aspeed.c
+@@ -510,6 +510,7 @@ static const struct of_device_id aspeed_sdhci_of_match[] = {
+ 	{ .compatible = "aspeed,ast2600-sdhci", .data = &ast2600_sdhci_pdata, },
+ 	{ }
+ };
++MODULE_DEVICE_TABLE(of, aspeed_sdhci_of_match);
+ 
+ static struct platform_driver aspeed_sdhci_driver = {
+ 	.driver		= {
+diff --git a/drivers/mmc/host/sdhci-pci-core.c b/drivers/mmc/host/sdhci-pci-core.c
+index 7039af268..6b351810a 100644
+--- a/drivers/mmc/host/sdhci-pci-core.c
++++ b/drivers/mmc/host/sdhci-pci-core.c
+@@ -21,6 +21,7 @@
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
+ #include <linux/gpio.h>
++#include <linux/gpio/machine.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/pm_qos.h>
+ #include <linux/debugfs.h>
+@@ -1234,6 +1235,29 @@ static const struct sdhci_pci_fixes sdhci_intel_byt_sdio = {
+ 	.priv_size	= sizeof(struct intel_host),
+ };
+ 
++/* DMI quirks for devices with missing or broken CD GPIO info */
++static const struct gpiod_lookup_table vexia_edu_atla10_cd_gpios = {
++	.dev_id = "0000:00:12.0",
++	.table = {
++		GPIO_LOOKUP("INT33FC:00", 38, "cd", GPIO_ACTIVE_HIGH),
++		{ }
++	},
++};
++
++static const struct dmi_system_id sdhci_intel_byt_cd_gpio_override[] = {
++	{
++		/* Vexia Edu Atla 10 tablet 9V version */
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
++			DMI_MATCH(DMI_BOARD_NAME, "Aptio CRB"),
++			/* Above strings are too generic, also match on BIOS date */
++			DMI_MATCH(DMI_BIOS_DATE, "08/25/2014"),
++		},
++		.driver_data = (void *)&vexia_edu_atla10_cd_gpios,
++	},
++	{ }
++};
++
+ static const struct sdhci_pci_fixes sdhci_intel_byt_sd = {
+ #ifdef CONFIG_PM_SLEEP
+ 	.resume		= byt_resume,
+@@ -1252,6 +1276,7 @@ static const struct sdhci_pci_fixes sdhci_intel_byt_sd = {
+ 	.add_host	= byt_add_host,
+ 	.remove_slot	= byt_remove_slot,
+ 	.ops		= &sdhci_intel_byt_ops,
++	.cd_gpio_override = sdhci_intel_byt_cd_gpio_override,
+ 	.priv_size	= sizeof(struct intel_host),
+ };
+ 
+@@ -2036,6 +2061,42 @@ static const struct dev_pm_ops sdhci_pci_pm_ops = {
+  *                                                                           *
+ \*****************************************************************************/
+ 
++static struct gpiod_lookup_table *sdhci_pci_add_gpio_lookup_table(
++	struct sdhci_pci_chip *chip)
++{
++	struct gpiod_lookup_table *cd_gpio_lookup_table;
++	const struct dmi_system_id *dmi_id = NULL;
++	size_t count;
++
++	if (chip->fixes && chip->fixes->cd_gpio_override)
++		dmi_id = dmi_first_match(chip->fixes->cd_gpio_override);
++
++	if (!dmi_id)
++		return NULL;
++
++	cd_gpio_lookup_table = dmi_id->driver_data;
++	for (count = 0; cd_gpio_lookup_table->table[count].key; count++)
++		;
++
++	cd_gpio_lookup_table = kmemdup(dmi_id->driver_data,
++				       /* count + 1 terminating entry */
++				       struct_size(cd_gpio_lookup_table, table, count + 1),
++				       GFP_KERNEL);
++	if (!cd_gpio_lookup_table)
++		return ERR_PTR(-ENOMEM);
++
++	gpiod_add_lookup_table(cd_gpio_lookup_table);
++	return cd_gpio_lookup_table;
++}
++
++static void sdhci_pci_remove_gpio_lookup_table(struct gpiod_lookup_table *lookup_table)
++{
++	if (lookup_table) {
++		gpiod_remove_lookup_table(lookup_table);
++		kfree(lookup_table);
++	}
++}
++
+ static struct sdhci_pci_slot *sdhci_pci_probe_slot(
+ 	struct pci_dev *pdev, struct sdhci_pci_chip *chip, int first_bar,
+ 	int slotno)
+@@ -2111,8 +2172,19 @@ static struct sdhci_pci_slot *sdhci_pci_probe_slot(
+ 		device_init_wakeup(&pdev->dev, true);
+ 
+ 	if (slot->cd_idx >= 0) {
++		struct gpiod_lookup_table *cd_gpio_lookup_table;
++
++		cd_gpio_lookup_table = sdhci_pci_add_gpio_lookup_table(chip);
++		if (IS_ERR(cd_gpio_lookup_table)) {
++			ret = PTR_ERR(cd_gpio_lookup_table);
++			goto remove;
++		}
++
+ 		ret = mmc_gpiod_request_cd(host->mmc, "cd", slot->cd_idx,
+ 					   slot->cd_override_level, 0);
++
++		sdhci_pci_remove_gpio_lookup_table(cd_gpio_lookup_table);
++
+ 		if (ret && ret != -EPROBE_DEFER)
+ 			ret = mmc_gpiod_request_cd(host->mmc, NULL,
+ 						   slot->cd_idx,
+diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
+index 77911a57b..11c404374 100644
+--- a/drivers/mmc/host/sdhci-pci-gli.c
++++ b/drivers/mmc/host/sdhci-pci-gli.c
+@@ -902,28 +902,40 @@ static void gl9767_disable_ssc_pll(struct pci_dev *pdev)
+ 	gl9767_vhs_read(pdev);
+ }
+ 
++static void gl9767_set_low_power_negotiation(struct pci_dev *pdev, bool enable)
++{
++	u32 value;
++
++	gl9767_vhs_write(pdev);
++
++	pci_read_config_dword(pdev, PCIE_GLI_9767_CFG, &value);
++	if (enable)
++		value &= ~PCIE_GLI_9767_CFG_LOW_PWR_OFF;
++	else
++		value |= PCIE_GLI_9767_CFG_LOW_PWR_OFF;
++	pci_write_config_dword(pdev, PCIE_GLI_9767_CFG, value);
++
++	gl9767_vhs_read(pdev);
++}
++
+ static void sdhci_gl9767_set_clock(struct sdhci_host *host, unsigned int clock)
+ {
+ 	struct sdhci_pci_slot *slot = sdhci_priv(host);
+ 	struct mmc_ios *ios = &host->mmc->ios;
+ 	struct pci_dev *pdev;
+-	u32 value;
+ 	u16 clk;
+ 
+ 	pdev = slot->chip->pdev;
+ 	host->mmc->actual_clock = 0;
+ 
+-	gl9767_vhs_write(pdev);
+-
+-	pci_read_config_dword(pdev, PCIE_GLI_9767_CFG, &value);
+-	value |= PCIE_GLI_9767_CFG_LOW_PWR_OFF;
+-	pci_write_config_dword(pdev, PCIE_GLI_9767_CFG, value);
+-
++	gl9767_set_low_power_negotiation(pdev, false);
+ 	gl9767_disable_ssc_pll(pdev);
+ 	sdhci_writew(host, 0, SDHCI_CLOCK_CONTROL);
+ 
+-	if (clock == 0)
++	if (clock == 0) {
++		gl9767_set_low_power_negotiation(pdev, true);
+ 		return;
++	}
+ 
+ 	clk = sdhci_calc_clk(host, clock, &host->mmc->actual_clock);
+ 	if (clock == 200000000 && ios->timing == MMC_TIMING_UHS_SDR104) {
+@@ -932,12 +944,7 @@ static void sdhci_gl9767_set_clock(struct sdhci_host *host, unsigned int clock)
+ 	}
+ 
+ 	sdhci_enable_clk(host, clk);
+-
+-	pci_read_config_dword(pdev, PCIE_GLI_9767_CFG, &value);
+-	value &= ~PCIE_GLI_9767_CFG_LOW_PWR_OFF;
+-	pci_write_config_dword(pdev, PCIE_GLI_9767_CFG, value);
+-
+-	gl9767_vhs_read(pdev);
++	gl9767_set_low_power_negotiation(pdev, true);
+ }
+ 
+ static void gli_set_9767(struct sdhci_host *host)
+@@ -1071,6 +1078,9 @@ static int gl9767_init_sd_express(struct mmc_host *mmc, struct mmc_ios *ios)
+ 		sdhci_writew(host, value, SDHCI_CLOCK_CONTROL);
+ 	}
+ 
++	pci_read_config_dword(pdev, PCIE_GLI_9767_CFG, &value);
++	value &= ~PCIE_GLI_9767_CFG_LOW_PWR_OFF;
++	pci_write_config_dword(pdev, PCIE_GLI_9767_CFG, value);
+ 	gl9767_vhs_read(pdev);
+ 
+ 	return 0;
+diff --git a/drivers/mmc/host/sdhci-pci.h b/drivers/mmc/host/sdhci-pci.h
+index 153704f81..4973fa859 100644
+--- a/drivers/mmc/host/sdhci-pci.h
++++ b/drivers/mmc/host/sdhci-pci.h
+@@ -156,6 +156,7 @@ struct sdhci_pci_fixes {
+ #endif
+ 
+ 	const struct sdhci_ops	*ops;
++	const struct dmi_system_id *cd_gpio_override;
+ 	size_t			priv_size;
+ };
+ 
+diff --git a/drivers/mmc/host/sdhci-tegra.c b/drivers/mmc/host/sdhci-tegra.c
+index 1ad0a6b3a..7b6b82bec 100644
+--- a/drivers/mmc/host/sdhci-tegra.c
++++ b/drivers/mmc/host/sdhci-tegra.c
+@@ -1525,7 +1525,6 @@ static const struct sdhci_pltfm_data sdhci_tegra186_pdata = {
+ 	.quirks = SDHCI_QUIRK_BROKEN_TIMEOUT_VAL |
+ 		  SDHCI_QUIRK_SINGLE_POWER_WRITE |
+ 		  SDHCI_QUIRK_NO_HISPD_BIT |
+-		  SDHCI_QUIRK_BROKEN_ADMA_ZEROLEN_DESC |
+ 		  SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN,
+ 	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN |
+ 		   SDHCI_QUIRK2_ISSUE_CMD_DAT_RESET_TOGETHER,
+diff --git a/drivers/mmc/host/sunxi-mmc.c b/drivers/mmc/host/sunxi-mmc.c
+index d3bd0ac99..e0ab5fd63 100644
+--- a/drivers/mmc/host/sunxi-mmc.c
++++ b/drivers/mmc/host/sunxi-mmc.c
+@@ -1191,10 +1191,9 @@ static const struct sunxi_mmc_cfg sun50i_a64_emmc_cfg = {
+ 	.needs_new_timings = true,
+ };
+ 
+-static const struct sunxi_mmc_cfg sun50i_a100_cfg = {
++static const struct sunxi_mmc_cfg sun50i_h616_cfg = {
+ 	.idma_des_size_bits = 16,
+ 	.idma_des_shift = 2,
+-	.clk_delays = NULL,
+ 	.can_calibrate = true,
+ 	.mask_data0 = true,
+ 	.needs_new_timings = true,
+@@ -1217,8 +1216,9 @@ static const struct of_device_id sunxi_mmc_of_match[] = {
+ 	{ .compatible = "allwinner,sun20i-d1-mmc", .data = &sun20i_d1_cfg },
+ 	{ .compatible = "allwinner,sun50i-a64-mmc", .data = &sun50i_a64_cfg },
+ 	{ .compatible = "allwinner,sun50i-a64-emmc", .data = &sun50i_a64_emmc_cfg },
+-	{ .compatible = "allwinner,sun50i-a100-mmc", .data = &sun50i_a100_cfg },
++	{ .compatible = "allwinner,sun50i-a100-mmc", .data = &sun20i_d1_cfg },
+ 	{ .compatible = "allwinner,sun50i-a100-emmc", .data = &sun50i_a100_emmc_cfg },
++	{ .compatible = "allwinner,sun50i-h616-mmc", .data = &sun50i_h616_cfg },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, sunxi_mmc_of_match);

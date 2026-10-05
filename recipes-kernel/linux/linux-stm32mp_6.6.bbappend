@@ -33,6 +33,7 @@ SRC_URI += "file://0001-arch-arm-boot-dts-st-stm32mp157a-ugea-microdev-mx-in.pat
             file://0030-stm32mp257d-ugea-porting-evb-ugea.patch \
             file://0031-stm32mp235d-microtouch-modified-for-unicalpy-testing.patch \
             file://0032-mp25d-mp23d-Added-support-for-microgea-EVB-revB.patch \
+            file://0033-Ported-mmc-driver-from-6.6.78.patch \
             "
 
 KERNEL_CONFIG_FRAGMENTS:append:stm32mp1common = " ${WORKDIR}/fragments/${LINUX_VERSION}/fragment-05-engicam.config"
