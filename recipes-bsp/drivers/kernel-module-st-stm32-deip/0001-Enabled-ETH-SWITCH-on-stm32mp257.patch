@@ -1,0 +1,28 @@
+From 85844bda47cdf235256f3a8dfca0b396892063d7 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Thu, 8 Oct 2026 10:10:37 +0200
+Subject: [PATCH] Enabled ETH SWITCH on stm32mp257
+
+---
+ st.stm32-deip/stm32_deip.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/st.stm32-deip/stm32_deip.c b/st.stm32-deip/stm32_deip.c
+index c1a8eaf..d5e45ac 100644
+--- a/st.stm32-deip/stm32_deip.c
++++ b/st.stm32-deip/stm32_deip.c
+@@ -77,6 +77,14 @@ static int stm32_deip_init(struct device *dev, struct stm32_deip *deip)
+ 		}
+ 	}
+ 
++	if (deip->ck_ker_ethswref) {
++	ret = clk_prepare_enable(deip->ck_ker_ethswref);
++		if (ret) {
++			dev_err(dev, "fail to enable ck_ker_ethswref\n");
++			return ret;
++		}
++	}
++
+ 	switch (deip->phy_interface) {
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 	case PHY_INTERFACE_MODE_RGMII_ID:

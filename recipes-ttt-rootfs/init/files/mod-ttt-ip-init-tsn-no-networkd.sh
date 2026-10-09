@@ -47,13 +47,20 @@ st_configure() {
     fi
 }
 
-# Set the interfaces up like in the interfaces files
-# Usage: set_interfaces_up
-set_interfaces_up()
-{
+set_interfaces_mac() {
     get_mac
     ip link set dev sw0ep address $MAC
+    # set mac address for sw0p1, sw0p2, sw0p3
+    if [ -n "$ST_SPECIFIC_MAC" ]; then
+        ip link set dev sw0p1 address $(get_st_mac 1 $MAC)
+        ip link set dev sw0p2 address $(get_st_mac 2 $MAC)
+        ip link set dev sw0p3 address $(get_st_mac 3 $MAC)
+    fi
     ip link set dev sw0ep up
+}
+
+set_interfaces_up()
+{
     # ask to network to put an ip address on this interface
     udhcpc -isw0ep  &
     #ip addr add 192.168.0.10 dev sw0ep
@@ -115,9 +122,9 @@ stop_daemons()
 
 start()
 {
-    echo "[INFO]: ST configuration of IP"
-    st_configure
     echo "[INFO]: ST set brigde interface"
+    st_configure
+    set_interfaces_mac
     set_interfaces_up
     echo "[INFO]: start service"
     start_daemons
@@ -127,6 +134,10 @@ stop() {
     stop_daemons
     set_interfaces_down
 }
+
+if [ -e /usr/bin/st-specific_macaddress.sh ]; then
+    source  /usr/bin/st-specific_macaddress.sh
+fi
 
 case "$1" in
     start)
