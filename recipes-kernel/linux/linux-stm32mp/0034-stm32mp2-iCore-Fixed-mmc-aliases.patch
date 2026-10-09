@@ -1,0 +1,85 @@
+From 35fcf1e8e5042e4af2dcf3ae91dbd796d994246e Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 9 Oct 2026 14:21:07 +0200
+Subject: [PATCH] stm32mp2 iCore - Fixed mmc aliases
+
+---
+ arch/arm64/boot/dts/st/stm32mp235d-icore-edimm2-mx.dts       | 2 ++
+ arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch-ampire7.dts | 2 ++
+ arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch2-amp10.dts  | 2 ++
+ arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch2-yes7.dts   | 2 ++
+ arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts      | 4 +++-
+ 5 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/st/stm32mp235d-icore-edimm2-mx.dts b/arch/arm64/boot/dts/st/stm32mp235d-icore-edimm2-mx.dts
+index 226ca7b2e..a8ec0a7e6 100644
+--- a/arch/arm64/boot/dts/st/stm32mp235d-icore-edimm2-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp235d-icore-edimm2-mx.dts
+@@ -46,6 +46,8 @@ aliases{
+ 		serial4 = &uart5;
+ 		rtc0 = &pcf8523;
+ 		rtc1 = &rtc;
++                mmc0 = &sdmmc1;
++                mmc1 = &sdmmc2;
+ 	};
+ 
+ 	chosen{
+diff --git a/arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch-ampire7.dts b/arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch-ampire7.dts
+index 28a9cc051..972041a18 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch-ampire7.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch-ampire7.dts
+@@ -46,6 +46,8 @@ aliases{
+ 		serial4 = &uart5;
+ 		rtc0 = &pcf8563;
+ 		rtc1 = &rtc;
++                mmc0 = &sdmmc1;
++                mmc1 = &sdmmc2;
+ 	};
+ 
+ 	chosen{
+diff --git a/arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch2-amp10.dts b/arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch2-amp10.dts
+index 8f7306924..fe41d0726 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch2-amp10.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch2-amp10.dts
+@@ -46,6 +46,8 @@ aliases{
+ 		serial4 = &uart5;
+ 		rtc0 = &pcf8563;
+ 		rtc1 = &rtc;
++                mmc0 = &sdmmc1;
++                mmc1 = &sdmmc2;
+ 	};
+ 
+ 	chosen{
+diff --git a/arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch2-yes7.dts b/arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch2-yes7.dts
+index ba5c27cfc..a01353dc7 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch2-yes7.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257d-icored-ctouch2-yes7.dts
+@@ -46,6 +46,8 @@ aliases{
+ 		serial4 = &uart5;
+ 		rtc0 = &pcf8563;
+ 		rtc1 = &rtc;
++                mmc0 = &sdmmc1;
++                mmc1 = &sdmmc2;
+ 	};
+ 
+ 	chosen{
+diff --git a/arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts b/arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts
+index b88bf3503..67d619fdd 100644
+--- a/arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts
++++ b/arch/arm64/boot/dts/st/stm32mp257d-icored-edimm2-mx.dts
+@@ -46,6 +46,8 @@ aliases{
+ 		serial4 = &uart5;
+ 		rtc0 = &pcf8523;
+ 		rtc1 = &rtc;
++		mmc0 = &sdmmc1;
++		mmc1 = &sdmmc2;
+ 	};
+ 
+ 	chosen{
+@@ -1362,4 +1364,4 @@ ETH3_RXN
+ ETH3_nLINK
+ ETH3_nACT
+ 
+-*/
+\ No newline at end of file
++*/
