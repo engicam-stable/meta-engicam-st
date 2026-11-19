@@ -1,0 +1,50 @@
+From f1716560636c0d05674dcb5a57791dff5b6420ef Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Thu, 19 Nov 2026 10:37:00 +0100
+Subject: [PATCH] Fixed HSI_MON rcc rif configuration
+
+---
+ core/arch/arm/dts/stm32mp235d-icore-edimm2-mx-rif.dtsi       | 2 +-
+ core/arch/arm/dts/stm32mp257d-icored-edimm2-mx-rif.dtsi      | 2 +-
+ core/arch/arm/dts/stm32mp257d-smarcored-xtouch10-mx-rif.dtsi | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/core/arch/arm/dts/stm32mp235d-icore-edimm2-mx-rif.dtsi b/core/arch/arm/dts/stm32mp235d-icore-edimm2-mx-rif.dtsi
+index 59187aff7..aae744bb0 100644
+--- a/core/arch/arm/dts/stm32mp235d-icore-edimm2-mx-rif.dtsi
++++ b/core/arch/arm/dts/stm32mp235d-icore-edimm2-mx-rif.dtsi
+@@ -576,7 +576,7 @@
+ 		RIFPROT(RIF_RCC_RESOURCE(110), EMPTY_SEMWL, RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* Feature = OSPI1_CFGR */
+ 		RIFPROT(RIF_RCC_RESOURCE(111), EMPTY_SEMWL, RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* Feature = OSPI2_CFGR */
+ 		RIFPROT(RIF_RCC_RESOURCE(112), EMPTY_SEMWL, RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* Feature = FMC_CFGR */
+-		RIFPROT(RIF_RCC_RESOURCE(113), EMPTY_SEMWL, RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* Feature = HSI_MON */
++		RIFPROT(RIF_RCC_RESOURCE(113), RIF_UNUSED, RIF_UNLOCK, RIF_SEC, RIF_NPRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* Feature = HSI_MON */
+ 	>;
+ };
+ 
+diff --git a/core/arch/arm/dts/stm32mp257d-icored-edimm2-mx-rif.dtsi b/core/arch/arm/dts/stm32mp257d-icored-edimm2-mx-rif.dtsi
+index bd0784fd9..675e89867 100644
+--- a/core/arch/arm/dts/stm32mp257d-icored-edimm2-mx-rif.dtsi
++++ b/core/arch/arm/dts/stm32mp257d-icored-edimm2-mx-rif.dtsi
+@@ -580,7 +580,7 @@
+ 		RIFPROT(RIF_RCC_RESOURCE(110), EMPTY_SEMWL, RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* Feature = OSPI1_CFGR */
+ 		RIFPROT(RIF_RCC_RESOURCE(111), EMPTY_SEMWL, RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* Feature = OSPI2_CFGR */
+ 		RIFPROT(RIF_RCC_RESOURCE(112), EMPTY_SEMWL, RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* Feature = FMC_CFGR */
+-		RIFPROT(RIF_RCC_RESOURCE(113), EMPTY_SEMWL, RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* Feature = HSI_MON */
++		RIFPROT(RIF_RCC_RESOURCE(113), RIF_UNUSED, RIF_UNLOCK, RIF_SEC, RIF_NPRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* Feature = HSI_MON */
+ 	>;
+ };
+ 
+diff --git a/core/arch/arm/dts/stm32mp257d-smarcored-xtouch10-mx-rif.dtsi b/core/arch/arm/dts/stm32mp257d-smarcored-xtouch10-mx-rif.dtsi
+index d1d824bb8..79b02b111 100644
+--- a/core/arch/arm/dts/stm32mp257d-smarcored-xtouch10-mx-rif.dtsi
++++ b/core/arch/arm/dts/stm32mp257d-smarcored-xtouch10-mx-rif.dtsi
+@@ -581,7 +581,7 @@
+ 		RIFPROT(RIF_RCC_RESOURCE(110), EMPTY_SEMWL, RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* Feature = OSPI1_CFGR */
+ 		RIFPROT(RIF_RCC_RESOURCE(111), EMPTY_SEMWL, RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* Feature = OSPI2_CFGR */
+ 		RIFPROT(RIF_RCC_RESOURCE(112), EMPTY_SEMWL, RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* Feature = FMC_CFGR */
+-		RIFPROT(RIF_RCC_RESOURCE(113), EMPTY_SEMWL, RIF_UNLOCK, RIF_NSEC, RIF_NPRIV, RIF_UNUSED, RIF_SEM_EN, RIF_CFEN) /* Feature = HSI_MON */
++		RIFPROT(RIF_RCC_RESOURCE(113), RIF_UNUSED, RIF_UNLOCK, RIF_SEC, RIF_NPRIV, RIF_CID1, RIF_SEM_DIS, RIF_CFEN) /* Feature = HSI_MON */
+ 	>;
+ };
+ 
