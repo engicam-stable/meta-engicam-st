@@ -1,0 +1,30 @@
+From 03e724a76fdee4df6027a65b6b52740f229c7433 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 20 Nov 2026 12:29:12 +0100
+Subject: [PATCH] stm32mp1: deprotect i2c4
+
+---
+ core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts b/core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts
+index 59b1e8848..710d6c416 100644
+--- a/core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts
++++ b/core/arch/arm/dts/stm32mp157a-ugea-microdev-mx.dts
+@@ -162,6 +162,8 @@
+ 		/*STM32CubeMX generates a basic and standard configuration for ETZPC.
+ 		Additional device configurations can be added here if needed.
+ 		"etzpc" node could be also overloaded in "addons" User-Section.*/
++	DECPROT(STM32MP1_ETZPC_I2C4_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++	DECPROT(STM32MP1_ETZPC_SAI2_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+ 	/* USER CODE END etzpc_decprot */
+ 	>;
+ 
+@@ -184,6 +186,7 @@
+ 		CLK_STGEN_HSI
+ 		CLK_SDMMC3_HCLK2
+ 		CLK_I2C12_HSI
++		CLK_I2C46_HSI
+ 		CLK_UART24_HSE
+ 		CLK_UART35_PCLK1
+ 		CLK_UART78_PCLK1

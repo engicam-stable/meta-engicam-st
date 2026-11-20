@@ -35,6 +35,7 @@ SRC_URI += "file://0001-core-arch-arm-dts-stm32mp157a-ugea-microdev-mx-initi.pat
             file://0002-fix.patch \
             file://0024-Enabled-ETH-SWITCH-on-stm32mp257-i.core.patch \
             file://0025-Fixed-HSI_MON-rcc-rif-configuration.patch \
+            file://0026-stm32mp1-deprotect-i2c4.patch \
             "
 
 #ST_OPTEE_CORE_DEBUG:stm32mp13common = "y"

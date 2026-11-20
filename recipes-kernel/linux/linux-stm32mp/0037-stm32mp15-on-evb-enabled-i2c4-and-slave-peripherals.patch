@@ -1,0 +1,255 @@
+From b510bf0ab46355f979a2e6f7ef4b66956abf6a96 Mon Sep 17 00:00:00 2001
+From: FraUtel <francesco.utel@engicam.com>
+Date: Fri, 20 Nov 2026 12:31:19 +0100
+Subject: [PATCH] stm32mp15 on evb: enabled i2c4 and slave peripherals
+
+---
+ arch/arm/boot/dts/st/stm32mp157a-ugea-evb.dts | 187 ++++++++++++++++++
+ .../dts/st/stm32mp157a-ugea-microdev-mx.dts   |   1 +
+ 2 files changed, 188 insertions(+)
+
+diff --git a/arch/arm/boot/dts/st/stm32mp157a-ugea-evb.dts b/arch/arm/boot/dts/st/stm32mp157a-ugea-evb.dts
+index d715ba383..795e36ef9 100644
+--- a/arch/arm/boot/dts/st/stm32mp157a-ugea-evb.dts
++++ b/arch/arm/boot/dts/st/stm32mp157a-ugea-evb.dts
+@@ -54,6 +54,7 @@ aliases {
+ 		serial3 = &uart7;
+ 		mmc0 = &sdmmc1;
+ 		mmc1 = &sdmmc3;
++		ethernet0 = &ethernet0;
+ 	};
+ 
+ 	chosen {
+@@ -92,6 +93,15 @@ v3v3: v3v3 {
+ 		regulator-always-on;
+ 	};
+ 
++	v1v8: regulator-v1v8 {
++			compatible = "regulator-fixed";
++			regulator-name = "v1v8";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-always-on;
++			vin-supply = <&v3v3>;
++	};
++
+ 	/*reg_bl: regulator-bt {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "bt";
+@@ -185,6 +195,23 @@ panel_backlight: panel-backlight {
+ 	};
+ 	/* USER CODE END root */
+ 
++	sound: sound {
++		compatible = "audio-graph-card";
++		label = "ugea_STM32MP1";
++		//routing =
++		//	"MIC_IN", "Capture",
++		//	"Capture", "Mic Bias",
++		//	"Playback", "HP_OUT";
++		widgets =
++            "Microphone", "Mic Jack",
++            "Headphone", "Headphone Jack";
++        routing =
++            "MIC_IN", "Mic Jack",
++            "Mic Jack", "Mic Bias";
++		dais = <&sai2a_port &sai2b_port>;
++		status = "okay";
++	};
++
+ 	clocks{
+ 
+ 		/* USER CODE BEGIN clocks */
+@@ -315,6 +342,39 @@ pins {
+ 		};
+ 	};
+ 
++	sai2a_pins_mx: sai2a_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('I', 6, AF10)>; /* SAI2_SD_A */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++	};
++	sai2b_pins_mx: sai2b_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('E', 11, AF10)>, /* SAI2_SD_B */
++					 <STM32_PINMUX('C', 0, AF8)>, /* SAI2_FS_B */
++					 <STM32_PINMUX('E', 12, AF10)>, /* SAI2_SCK_B */
++					 <STM32_PINMUX('E', 14, AF10)>; /* SAI2_MCLK_B */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <0>;
++		};
++	};
++	sai2a_sleep_pins_mx: sai2a_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('I', 6, ANALOG)>; /* SAI2_SD_A */
++		};
++	};
++	sai2b_sleep_pins_mx: sai2b_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('E', 11, ANALOG)>, /* SAI2_SD_B */
++					 <STM32_PINMUX('C', 0, ANALOG)>, /* SAI2_FS_B */
++					 <STM32_PINMUX('E', 12, ANALOG)>, /* SAI2_SCK_B */
++					 <STM32_PINMUX('E', 14, ANALOG)>; /* SAI2_MCLK_B */
++		};
++	};
++
+ 	ltdc_pins_mx: ltdc_mx-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('B', 8, AF14)>, /* LTDC_B6 */
+@@ -678,6 +738,22 @@ pins {
+ &pinctrl_z {
+ 
+ 	/* USER CODE BEGIN pinctrl_z */
++	i2c4_pins_z_mx: i2c4_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('Z', 4, AF6)>, /* I2C4_SCL */
++					 <STM32_PINMUX('Z', 5, AF6)>; /* I2C4_SDA */
++			bias-pull-up;
++			drive-open-drain;
++			slew-rate = <0>;
++		};
++	};
++
++	i2c4_sleep_pins_z_mx: i2c4_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX('Z', 4, ANALOG)>, /* I2C4_SCL */
++					 <STM32_PINMUX('Z', 5, ANALOG)>; /* I2C4_SDA */
++		};
++	};
+ 	/* USER CODE END pinctrl_z */
+ };
+ 
+@@ -860,6 +936,117 @@ polytouch: edt-ft5x26@38 {
+ 	/* USER CODE END i2c2 */
+ };
+ 
++&i2c4 {
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&i2c4_pins_z_mx>;
++	pinctrl-1 = <&i2c4_sleep_pins_z_mx>;
++	status = "okay";
++
++	/* Enable secure clock/reset via scmi */
++	clocks = <&scmi_clk CK_SCMI_I2C4>;
++	resets = <&scmi_reset RST_SCMI_I2C4>;
++
++	/* USER CODE BEGIN i2c2 */
++	/delete-property/dmas;
++	/delete-property/dma-names;
++
++	pcf8523: rtc@68 { /*RTC*/
++		compatible = "nxp,pcf8523";
++		reg = <0x68>;
++	};
++
++	eeprom@53 { /*EEPROM*/
++		compatible = "atmel,24c64";
++		reg = <0x53>;
++		pagesize = <64>;
++	};
++
++	sgtl5000: codec@a { /*SGTL500 - Audio*/
++		compatible = "fsl,sgtl5000";
++		reg = <0x0a>;
++		#sound-dai-cells = <0>;
++		clocks = <&sai2b>; /* The codec is a consumer of SAI2B master clock */
++		clock-names = "MCLK"; /* Feed MCLK codec clock with SAI2B master clock provider */
++		VDDA-supply = <&v3v3>;
++		VDDIO-supply = <&v3v3>;
++		VDDD-supply = <&v1v8>;
++
++		micbias-resistor-k-ohms = <2>;
++        micbias-voltage-m-volts = <2250>;
++
++		sgtl5000_port: port {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			sgtl5000_tx_endpoint: endpoint@0 {
++				reg = <0>;
++				remote-endpoint = <&sai2a_endpoint>;
++				frame-master;
++				bitclock-master;
++			};
++
++			sgtl5000_rx_endpoint: endpoint@1 {
++				reg = <1>;
++				remote-endpoint = <&sai2b_endpoint>;
++				frame-master;
++				bitclock-master;
++			};
++		};
++	};
++
++	/* USER CODE END i2c2 */
++};
++
++&sai2 {
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&sai2a_pins_mx>, <&sai2b_pins_mx>;
++	pinctrl-1 = <&sai2a_sleep_pins_mx>, <&sai2b_sleep_pins_mx>;
++	status = "okay";
++
++    /* USER CODE BEGIN sai2 */
++    clocks = <&rcc SAI2>, <&rcc PLL3_R>, <&rcc PLL3_R>; /* x8k and x11k both on PLL3_R (unused), keep PLL3_Q for ETH */
++    clock-names = "pclk", "x8k", "x11k"; /* Peripheral and parent clock configuration.  */
++    /* USER CODE END sai2 */
++
++	sai2a: audio-controller@4400b004{
++		status = "okay";
++
++		st,sync = <&sai2b 2>;
++		clocks = <&rcc SAI2_K>, <&sai2b>; /* SAI2A is a consumer of SAI2B master clock */
++		clock-names = "sai_ck", "MCLK";   /* Feed SAI2A MCLK clock with SAI2B master clock provider */
++		dma-names = "rx";                               /* SAI set as receiver */
++
++		sai2a_port: port {
++			sai2a_endpoint: endpoint {
++					remote-endpoint = <&sgtl5000_tx_endpoint>;
++					format = "i2s";
++					mclk-fs = <256>;
++			};
++		};
++	};
++
++	sai2b: audio-controller@4400b024{
++		status = "okay";
++
++		//st,sync = <&sai2a 2>;
++		//clocks = <&rcc CK_KER_SAI2>, <&sai2a>;
++		//clock-names = "sai_ck", "MCLK";
++		//dma-names = "rx";
++		#clock-cells = <0>;/* Set SAI2B as master clock provider */
++		dma-names = "tx"; /* SAI set as transmitter */
++		clocks = <&rcc SAI2_K>;
++		clock-names = "sai_ck";
++
++		sai2b_port: port {
++			sai2b_endpoint: endpoint {
++				remote-endpoint = <&sgtl5000_rx_endpoint>;
++				format = "i2s";
++				mclk-fs = <256>; /* Set mclk/fs ratio. (256 or 512) */
++			};
++		};
++	};
++};
++
+ &ltdc {
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&ltdc_pins_mx>;
+diff --git a/arch/arm/boot/dts/st/stm32mp157a-ugea-microdev-mx.dts b/arch/arm/boot/dts/st/stm32mp157a-ugea-microdev-mx.dts
+index f91e8ab6a..0c9136c96 100644
+--- a/arch/arm/boot/dts/st/stm32mp157a-ugea-microdev-mx.dts
++++ b/arch/arm/boot/dts/st/stm32mp157a-ugea-microdev-mx.dts
+@@ -54,6 +54,7 @@ aliases {
+ 		serial3 = &uart7;
+ 		mmc0 = &sdmmc1;
+ 		mmc1 = &sdmmc3;
++		ethernet0 = &ethernet0;
+ 	};
+ 
+ 	chosen {
