@@ -37,6 +37,7 @@ SRC_URI += "file://0001-arch-arm-boot-dts-st-stm32mp157a-ugea-microdev-mx-in.pat
             file://0028-Enabled-ETH-SWITCH-on-stm32mp257-i.core.patch \
             file://0034-stm32mp2-iCore-Fixed-mmc-aliases.patch \
             file://0035-stm32mp257d-iCore-Porting-cTouch3-Yes7.patch \
+            file://0036-Added-support-for-stm32mp15-on-EVB.patch \
             "
 
 KERNEL_CONFIG_FRAGMENTS:append:stm32mp1common = " ${WORKDIR}/fragments/${LINUX_VERSION}/fragment-05-engicam.config"
